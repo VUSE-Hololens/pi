@@ -1,6 +1,6 @@
 #include "transmit.h"
 
-static int PACKET_SIZE = 1000; // anticipate + 28 packet size for headers
+static int PACKET_SIZE = 58000; // anticipate + 28 packet size for headers
 
 transmit::transmit(const char* remoteIp, const char* remotePort) {
 
@@ -161,6 +161,12 @@ void transmit::checkTransmissionBuffer() {
 }
 
 void transmit::loadBuffer(uchar* jpegBuf, int jpegSize, char type, bool isTjCompressed) {
+	
+	// check if jpeg will need to be sent as multiple packets
+	if (jpegSize > PACKET_SIZE) {
+		throw new std::out_of_range("jpeg too large, would need multiple packets");
+	}
+
 	struct packet* transmissionPacket = new packet();
 	transmissionPacket->jpegBuf = jpegBuf;
 	transmissionPacket->type = type;

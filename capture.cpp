@@ -36,6 +36,11 @@ capture::~capture()
 }
 
 void capture::startCaptureAndTransmit() {
+	// compression control
+	int height = 1080; // pixels
+	int width = 1920; // pixels
+	int jpegQuality = 50; // reduce if causes exceptions due to too large of images requiring multiple packets
+	
 	uint8_t* buf;
 	while(1) {
 		myCAM.flush_fifo();
@@ -66,7 +71,10 @@ void capture::startCaptureAndTransmit() {
 			buf[i++] = myCAM.read_reg(0x3D);
 		}
 		// Don't need to free buf because transmit class takes care of it
-	transmitter.transmitRGBPreCompressed(buf, size);
+		//transmitter.transmitRGBPreCompressed(buf, size);
+
+		// compresses buffer, transmits
+		transmitter.transmitRGBImage(buf, width, height, jpegQuality);
 	}
 }
 
