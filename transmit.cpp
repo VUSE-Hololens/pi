@@ -1,6 +1,6 @@
 #include "transmit.h"
 
-static int PACKET_SIZE = 58000; // anticipate + 28 packet size for headers
+static int PACKET_SIZE = 20000; // anticipate + 28 packet size for headers
 
 transmit::transmit(const char* remoteIp, const char* remotePort) {
 
@@ -77,13 +77,13 @@ void transmit::doTransmit(struct packet* transmissionPacket) {
 	initial_transmission[1] = (char)(num_packets & 0xff); // Get the lower byte
 	initial_transmission[2] = (char)(((num_packets) >> 8) & 0xff); // Get the upper byte
 
-	// Index + size transmission are little endian
+																   // Index + size transmission are little endian
 
-	// Send the first char (start char + indicates what type of image)
+																   // Send the first char (start char + indicates what type of image)
 	ret = sendto(sock, initial_transmission, initial_transmission_length, 0, (const struct sockaddr*) &address, sizeof(struct sockaddr_in));
 
 	uchar* transmission_data = new uchar[len]; // We may have over 256 packets ergo can't use 1 byte. We actually use 3 bytes for the packet index because it lets us
-	// distinguish image data from start of transmission packet
+											   // distinguish image data from start of transmission packet
 
 	int cur_ind = 0;
 	for (int i = 0; i < num_packets; ++i) {
@@ -99,7 +99,8 @@ void transmit::doTransmit(struct packet* transmissionPacket) {
 
 	if (transmissionPacket->isTjCompressed) {
 		tjFree(transmissionPacket->jpegBuf);
-	} else {
+	}
+	else {
 		delete[] transmissionPacket->jpegBuf;
 	}
 	// Need to free transission_data to avoid using too much memory....
@@ -118,7 +119,7 @@ void transmit::doTransmit(struct packet* transmissionPacket) {
 		ret = sendto(sock, startPtr, packetSize, 0, (const struct sockaddr*) &address, sizeof(struct sockaddr_in));
 		if (ret < 0) {
 			// throwLastError("transmit failed");
-	}
+		}
 		startPtr += packetSize;
 	}
 
@@ -137,8 +138,8 @@ void transmit::doTransmit(struct packet* transmissionPacket) {
 
 }
 
-void transmit::throwLastError(std::string errorLabel){
-	std::cout <<  strerror(errno);
+void transmit::throwLastError(std::string errorLabel) {
+	std::cout << strerror(errno);
 	throw std::system_error(errno, std::system_category(), errorLabel);
 }
 
@@ -161,12 +162,6 @@ void transmit::checkTransmissionBuffer() {
 }
 
 void transmit::loadBuffer(uchar* jpegBuf, int jpegSize, char type, bool isTjCompressed) {
-	
-	// check if jpeg will need to be sent as multiple packets
-	if (jpegSize > PACKET_SIZE) {
-		throw new std::out_of_range("jpeg too large, would need multiple packets");
-	}
-
 	struct packet* transmissionPacket = new packet();
 	transmissionPacket->jpegBuf = jpegBuf;
 	transmissionPacket->type = type;
