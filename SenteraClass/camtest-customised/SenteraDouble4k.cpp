@@ -32,7 +32,6 @@ bool live_session;
 
 SenteraDouble4k::SenteraDouble4k()
 {
-	int port_status;
 	char user_input[80];
 	int packet_length = 0;
 	struct timeval currTime;
@@ -69,7 +68,7 @@ SenteraDouble4k::~SenteraDouble4k()
 int SenteraDouble4k::startServer(){
 	
 	if (serv_status > -1) {
-		printf("Server already running!")
+		printf("Server already running!");
 		return 0;
 	}
 
@@ -91,7 +90,7 @@ int SenteraDouble4k::startServer(){
 	}
 
 	// Configure Receiving Socket
-	s_rec = configure_receive(port_status, si_other_rec);
+	s_rec = configure_receive(localPort, si_other_rec);
 	if (!s_rec)
 	{
 		fprintf(stderr, "!! Unable to configure receiving socket. !!");
@@ -285,7 +284,7 @@ int configure_receive(int myport, sockaddr_in& si_other)
 
 	// Refer IP address and port to the socket
 	si_other.sin_family = AF_INET;
-	si_other.sin_port = htons(localPort);
+	si_other.sin_port = htons(myport);
 	if (inet_aton(server_ipaddr, &si_other.sin_addr) == 0)
 	{
 		fprintf(stderr, "!! inet_aton() failed !!\n");
