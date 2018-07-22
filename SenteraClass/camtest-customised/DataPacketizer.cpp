@@ -1,30 +1,6 @@
-// *****************************************************************************
-// **************************** System Includes ********************************
-// *****************************************************************************
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <string.h>
-#include <time.h>
-#include <errno.h>
-#include <cstdlib>
 
-// Include additional libraries & declare variables based on operating system
-// UNIX ONLY Libraries
-#include <sys/time.h>
-#include <sys/ioctl.h>
-#include <poll.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-
-// UNIX socket library
-#include <sys/socket.h>
-// *****************************************************************************
-// **************************** User Includes **********************************
-// *****************************************************************************
+// includes
 #include "DataPacketizer.h"
-#include "packets.h"
 
 // *****************************************************************************
 // ********************************* DEFINES ***********************************

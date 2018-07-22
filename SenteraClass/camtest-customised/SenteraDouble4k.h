@@ -11,15 +11,11 @@
 
 // user includes
 #include "Bufferizer.h"
-#include "Packetizer.h"
+#include "DataPacketizer.h"
 #include "packets.h"
 
-
+// defines
 #define BUFLEN 512
-
-#define HEADER_ZERO 0x46
-#define HEADER_ONE 0x57
-#define GENERATOR_POLYNOMIAL 0x87
 
 // PACKET HEADERS - TO PAYLOAD
 #define SEND_AIRCRAFT_MEDATADA 0x01 // To Payload Aircraft Metadata
