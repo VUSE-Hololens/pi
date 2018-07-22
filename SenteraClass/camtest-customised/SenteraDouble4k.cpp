@@ -135,14 +135,14 @@ int initializeSession(uint8_t sessionType)
 	return 0;
 }
 
-public int end_session() {
+int end_session() {
 	live_session = false;
 	close(s_send);
 	close(s_rec);
 	return 0;
 }
 
-private void makeSessionPacket(uint8_t sessionType, uint8_t *buf) 
+void makeSessionPacket(uint8_t sessionType, uint8_t *buf) 
 {
 	switch (sessionType & 0xFF) {
 		case SEND_IMAGER_TRIGGER: {
@@ -193,8 +193,7 @@ private void makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 }
 
 // Configures a given socket returning a socket ID, -1 indicates failure
-private int configure_socket(int myport, sockaddr_in& si_other, bool bind_socket)
-
+int configure_socket(int myport, sockaddr_in& si_other, bool bind_socket)
 {
 	struct in_addr local_interface;
 	int i, s;
