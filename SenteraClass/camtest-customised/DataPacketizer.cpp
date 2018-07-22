@@ -23,9 +23,8 @@
 // *****************************************************************************
 // **************************** User Includes **********************************
 // *****************************************************************************
-#include "Packetizer.h"
+#include "DataPacketizer.h"
 #include "crc.h"
-#include "suas_types.h"
 #include "packets.h"
 
 // *****************************************************************************
@@ -111,10 +110,6 @@ fw_imager_zoom_t DataPacketizer::zoom(uint8_t trigger_mask)
     fw_imager_zoom_t imager_zoom;
     memset(&imager_zoom, 0, sizeof(imager_zoom));
     
-    // Initialize zoom mode from user input
-    int32 tmp_s32;
-    uint32_t tmp_u32;
-
     imager_zoom.zoomMode = 0x02 & 0xFF; //Mode - Rate (1), Steps (2). --- should stay Steps 
 
     // Initialize value for rate or steps from user input as applicable
@@ -205,8 +200,8 @@ fw_aircraft_metadata_t DataPacketizer::location_metadata()
     fw_aircraft_metadata_t aircraft;
     memset(&aircraft, 0, sizeof(aircraft));
     
-    float tmp_float;
-	int tmp_16 = 0; // set later?
+	float tmp_float = 0;
+	int tmp_16 = 0; // set later? for now everything is 0
 
     aircraft.gpsLat = (int)(tmp_float * 1e7);		//Lattitude
     aircraft.gpsLon = (int)(tmp_float * 1e7);		//Longitude

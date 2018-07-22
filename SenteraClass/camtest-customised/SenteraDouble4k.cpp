@@ -5,7 +5,7 @@
 #include "SenteraDouble4k.h"
 
 // class variables
-uint8 buf[BUFLEN];  //Possibly mutex lock this for thread safety  // Buffer to hold content of constructed packet
+private uint8 buf[BUFLEN];  //Possibly mutex lock this for thread safety  // Buffer to hold content of constructed packet
 
 struct sockaddr_in si_other_send;
 int slen_send = sizeof(si_other_send);
@@ -13,51 +13,53 @@ int slen_send = sizeof(si_other_send);
 struct sockaddr_in si_other_rec;
 int slen_rec = sizeof(si_other_send);
 
-char server_ipaddr[80] = "192.168.143.141";                 // Default IP of camera
-char local_ipaddr[80] = "192.168.143.130";                  // Default local IP
-uint16 port = 60530;                                        // Default port of camera
+char server_ipaddr[80] = "192.168.143.141";								// Default IP of camera
+char local_ipaddr[80] = "192.168.143.130";								// Default local IP
+uint16 port = 60530;													// Default port of camera
+uint16 localPort = 60531;												// Default local port for receiving
 
-int num_cameras = 2;                                        // Default to a double camera
-const int FILE_HISTORY_SIZE = 10;                           // The number of saved files to store
-fw_imager_data_ready_t recent_images[8][FILE_HISTORY_SIZE]; // Store individual history of the last 8 images recorded in a circular buffer
-int recent_images_length[8];                                // The number of recent images stored in the buffer
-int recent_images_start[8];                                 // The current index of the circular buffer
-fw_system_time_ack_t recent_time_ack;						// The most recent system time acknowledgement data
+const int num_cameras = 2;												// Double camera
+const int FILE_HISTORY_SIZE = 10;										// The number of saved files to store
+fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last 8 images recorded in a circular buffer
+int recent_images_length[num_cameras];									// The number of recent images stored in the buffer
+int recent_images_start[num_cameras];									// The current index of the circular buffer
+fw_payload_metadata_t camera_metadata[num_cameras];						// Store up to 8 IDs worth of camera info
+bool camera_metadata_valid[num_cameras];								// Indicates whether each ID was valid 
+unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
+fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 
-fw_payload_metadata_t camera_metadata[8];                   // Store up to 8 IDs worth of camera info
-bool camera_metadata_valid[8];                              // Indicates whether each ID was valid 
-unsigned long long camera_metadata_last_update_us[8];       // Timestamp of last update 
 
 uint8 trigger_mask = 0x03;
+int serv_status = -1;
 bool live_session;
 
 SenteraDouble4k::SenteraDouble4k()
 {
-	int port;
 	int port_status;
 	char user_input[80];
-	int j;
 	int packet_length = 0;
-	struct timeval currTv;
+	struct timeval currTime;
 	char mainSessionName[64];
 	char fpfName[96];
 	bool new_packet;
 	
 	fw_payload_metadata_t status;
 	// Assume we start without a connection
-	for (int i = 0; i<8; i++) {
+	for (int i = 0; i<num_cameras; i++) {
 		camera_metadata_valid[i] = false;
 		camera_metadata_last_update_us[i] = 0;
 	}
 
 	// Reset our circular buffer
-	for (int i = 0; i< 8; i++) {
+	for (int i = 0; i< num_cameras; i++) {
 		recent_images_length[i] = 0;
 		recent_images_start[i] = 0;
 	}
 
 	// configure send and receive sockets
-	start_server();
+	serv_status = startServer();
+
+	//start a session
 }
 
 SenteraDouble4k::~SenteraDouble4k()
@@ -65,8 +67,13 @@ SenteraDouble4k::~SenteraDouble4k()
 }
 
 
-public int SenteraDouble4k::start_server(){
-		
+public int SenteraDouble4k::startServer(){
+	
+	if (serv_status < -1) {
+		printf("Server already running!")
+		return 0;
+	}
+
 	// If we run locally on the camera, don't bind to the port or we fail
 	bool bind_send_socket = true;
 	if (strcmp(local_ipaddr, server_ipaddr) == 0)
@@ -91,13 +98,19 @@ public int SenteraDouble4k::start_server(){
 		fprintf(stderr, "!! Unable to configure receiving socket. !!");
 		return -1;
 	}
-	return 0;
+	return 1;
 }
 
 public int initialize_session(uint8_t sessionType) 
 {
+	// check if server is set up
+	if (serv_status == -1) {
+		printf("Server not initialized! Cannot start session.");
+		return -1;
+	}
+
 	// make and send packet of data 
-	make_session_packet(sessionType);
+	makeSessionPacket(sessionType);
 	if (packet_length > 0 && sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1)
 	{
 		printf("Failed to send packet: %d", errno);
@@ -125,7 +138,7 @@ public int end_session() {
 	return 0;
 }
 
-private void make_session_packet(uint8_t sessionType) 
+private void makeSessionPacket(uint8_t sessionType) 
 {
 	switch (sessionType & 0xFF) {
 		case SEND_IMAGER_TRIGGER: {
@@ -267,7 +280,7 @@ int configure_receive(int myport, sockaddr_in& si_other)
 
 	// Refer IP address and port to the socket
 	si_other.sin_family = AF_INET;
-	si_other.sin_port = htons(myport);
+	si_other.sin_port = htons(localPort);
 	if (inet_aton(server_ipaddr, &si_other.sin_addr) == 0)
 	{
 		fprintf(stderr, "!! inet_aton() failed !!\n");
@@ -398,13 +411,13 @@ int query_status_packet()
 			}
 
 			// Get the time we received the packet (approx)
-			struct timeval currTv;
-			gettimeofday(&currTv, NULL);
-			unsigned long long timestamp = (((unsigned long long)currTv.tv_sec) * 1000000) + ((unsigned long long)currTv.tv_usec);
+			struct timeval currTime;
+			gettimeofday(&currTime, NULL);
+			unsigned long long timestamp = (((unsigned long long)currTime.tv_sec) * 1000000) + ((unsigned long long)currTime.tv_usec);
 
 			// Store the most recent packet for each camera
 			// A packet can be for more than one camera.
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < num_cameras; i++)
 			{
 				if (status.imagerID & (0x01 << i))
 				{

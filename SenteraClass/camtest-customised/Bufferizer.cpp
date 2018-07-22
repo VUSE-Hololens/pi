@@ -8,24 +8,6 @@
 #include <time.h>
 #include <errno.h>
 
-// Define IS_WINDOWS if compiled on a Windows machine
-#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
-#define IS_WINDOWS (1==1)
-#endif
-
-// Include additional libraries & declare variables based on operating system
-#if IS_WINDOWS
-// For WinSock 2 & Windows API
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <Windows.h>
-
-// For polling user input
-#include <conio.h>
-
-// Tell linker Ws2_32.lib file is needed
-#pragma comment(lib, "Ws2_32.lib")
-#else
 // UNIX ONLY Libraries
 #include <sys/time.h>
 #include <sys/ioctl.h>
@@ -36,7 +18,7 @@
 
 // UNIX socket library
 #include <sys/socket.h>
-#endif
+
 // *****************************************************************************
 // **************************** User Includes **********************************
 // *****************************************************************************
@@ -48,10 +30,6 @@
 // *****************************************************************************
 // ********************************* Defines ***********************************
 // *****************************************************************************
-#if IS_WINDOWS
-// Define type for preview command
-typedef uint32_t in_addr_t;
-#endif
 
 // *****************************************************************************
 // ************************** Namespace Directives *****************************
@@ -115,7 +93,7 @@ uint8_t Bufferizer::CRC8_7(uint8_t cur_crc, uint8_t *msg, uint32_t msg_size)
 
     for (i = 0; i < msg_size; i++)
     {
-        crc = crc8_7_table[crc ^ msg[i]];
+        crc = Bufferizer::CRC8_7_table[crc ^ msg[i]];
     }
     return crc;
 }
@@ -222,7 +200,7 @@ int Bufferizer::videotime(fw_video_session_t& video_session, uint8_t *buf)
     buf[n] = video_session.timeStamp >> 48;    n++;
     buf[n] = video_session.timeStamp >> 56;    n++;
 
-    buf[n] = CRC8_7(0, &buf[2], n - 2);  n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2);  n++;
     return n;
 }
 
@@ -281,7 +259,7 @@ int Bufferizer::videoadvanced(fw_video_session_advanced_t& video_session_adv, ui
     buf[n] = video_session_adv.vResolution >> 0;    n++;
     buf[n] = video_session_adv.vResolution >> 8;    n++;
 
-    buf[n] = CRC8_7(0, &buf[2], n - 2);  n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2);  n++;
     return n;
 }
 
@@ -318,7 +296,7 @@ int Bufferizer::videoadjust(fw_video_adjust_t& video_adjust, uint8_t *buf)
     buf[n] = video_adjust.gain >> 8;    n++;
 
 
-    buf[n] = CRC8_7(0, &buf[2], n - 2);  n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2);  n++;
     return n;
 }
 
@@ -354,7 +332,7 @@ int Bufferizer::exposureadjust(fw_exposure_adjust_t& exposure_adjust, uint8_t *b
     buf[n] = exposure_adjust.digital_gain >> 16;    n++;
     buf[n] = exposure_adjust.digital_gain >> 24;    n++;
 
-    buf[n] = CRC8_7(0, &buf[2], n - 2);  n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2);  n++;
     return n;
 }
 
@@ -380,7 +358,7 @@ int Bufferizer::focus(fw_focus_session_t& focus, uint8_t *buf)
     buf[n] = focus.exposureUs >> 8;    n++;
     buf[n] = focus.exposureUs >> 16;    n++;
     buf[n] = focus.exposureUs >> 24;    n++;
-    buf[n] = CRC8_7(0, &buf[2], n - 2);  n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2);  n++;
     return n;
 }
 
@@ -406,7 +384,7 @@ int Bufferizer::sf(fw_still_focus_session_t& still_focus, uint8_t *buf)
     buf[n] = still_focus.exposureUs >> 8;    n++;
     buf[n] = still_focus.exposureUs >> 16;    n++;
     buf[n] = still_focus.exposureUs >> 24;    n++;
-    buf[n] = CRC8_7(0, &buf[2], n - 2);  n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2);  n++;
     return n;
 }
 
@@ -433,7 +411,7 @@ int Bufferizer::trigger(fw_imager_trigger_t& trigger, uint8_t *buf)
     buf[n] = trigger.trigMode;               n++;
     buf[n] = trigger.trigPeriod >> 0;  n++;
     buf[n] = trigger.trigPeriod >> 8;  n++;
-    buf[n] = CRC8_7(0, &buf[2], n - 2); n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2); n++;
 
     return n;
 }
@@ -459,7 +437,7 @@ int Bufferizer::zoom(fw_imager_zoom_t& zoom, uint8_t *buf)
     buf[n] = zoom.zoomMode;               n++;
     buf[n] = zoom.zoomRate;               n++;
     buf[n] = zoom.zoomSteps;               n++;
-    buf[n] = CRC8_7(0, &buf[2], n - 2); n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2); n++;
 
     return n;
 }
@@ -495,7 +473,7 @@ int Bufferizer::preview_stream_setup(fw_imager_preview_stream_setup_t& preview, 
     buf[n] = preview.cameraConfig >> 24;     n++;
     buf[n] = preview.overlayConfig;          n++;
 
-    buf[n] = CRC8_7(0, &buf[2], n - 2); n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2); n++;
 
     return n;
 }
@@ -527,7 +505,7 @@ int Bufferizer::elevation_metadata(fw_elevation_metadata_t& elevation, uint8_t *
     memcpy(&buf[n], &elevation.terrainMSL, sizeof(float)); n += sizeof(float);
     memcpy(&buf[n], &elevation.cameraMSL, sizeof(float)); n += sizeof(float);
 
-    buf[n] = CRC8_7(0, &buf[2], n - 2); n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2); n++;
 
     return n;
 }
@@ -638,7 +616,7 @@ int Bufferizer::aircraft_metadata(fw_aircraft_metadata_t& aircraft, uint8_t *buf
     memcpy(&buf[n], &aircraft.baro, sizeof(float)); n += sizeof(float);
     memcpy(&buf[n], &aircraft.agl, sizeof(float)); n += sizeof(float);
 
-    buf[n] = CRC8_7(0, &buf[2], n - 2); n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2); n++;
     return n;
 
 }
@@ -671,7 +649,7 @@ int Bufferizer::system_time(fw_system_time_t& time, uint8_t *buf)
     buf[n] = time.timeStamp >> 40;  n++;
     buf[n] = time.timeStamp >> 48;  n++;
     buf[n] = time.timeStamp >> 56;  n++;
-    buf[n] = CRC8_7(0, &buf[2], n - 2); n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2); n++;
 
     return n;
 }
@@ -696,7 +674,7 @@ int Bufferizer::video_adjust_relative(fw_video_adjust_relative_t& adjust, uint8_
     buf[n] = adjust.imgSelect;      n++;
     buf[n] = adjust.evCommand;      n++;
     buf[n] = adjust.isoCommand;     n++;
-    buf[n] = CRC8_7(0, &buf[2], n - 2); n++;
+    buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2); n++;
 
     return n;
 }

@@ -10,10 +10,6 @@
 //user defined includes
 #include <packets.h>
 
-#define SENTERA_IP = "192.168.143.141";
-#define SENTERA_PORT = "60530";
-#define LOCAL_PORT = "60531";
-
 #define BUFLEN 512
 
 #define HEADER_ZERO 0x46
@@ -49,23 +45,27 @@
 #define RECV_FOCUS_SCORE 0xD0 // From Payload Focus Score
 #define RECV_PAYLOAD_EXCEPTION 0xFF // From Payload Payload Exception
 
-public class SenteraDouble4k 
+public class SenteraDouble4k // imolements sensor
 {
 // Variables
 public:
 
 private:
+	const int num_cameras;
+	const int FILE_HISTORY_SIZE;
 
 // methods
 public:
 	SenteraDouble4k();
 	~SenteraDouble4k();
-	void StartSession(byte sessionType);
+	int startServer(byte sessionType);
+	int initialize_session(uint8_t sessionType);
 
 private:
 	char[] makeStillCapturePacket(char sessionCmd);
-
-	void sendPacket(char[] packet);
-	void recvSenteraData();
+	int configure_socket(int myport, sockaddr_in& si_other, bool bind_socket);
+	int configure_receive(int myport, sockaddr_in& si_other);
+	void makeSessionPacket(uint8_t sessionType);
+	int query_status_packet()
 
 };
