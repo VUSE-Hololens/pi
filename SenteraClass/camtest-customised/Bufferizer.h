@@ -20,10 +20,12 @@
 
 // UNIX socket library
 #include <sys/socket.h>
+
+
 // *****************************************************************************
 // **************************** User Includes **********************************
 // *****************************************************************************
-#include "Packetizer.h"
+#include "DataPacketizer.h"
 #include "packets.h"
 
 class Bufferizer
