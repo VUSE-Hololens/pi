@@ -59,11 +59,10 @@ private:
 public:
 	SenteraDouble4k();
 	~SenteraDouble4k();
-	int startServer(byte sessionType);
+	int startServer(uint8_t sessionType);
 	int initialize_session(uint8_t sessionType);
 
 private:
-	char[] makeStillCapturePacket(char sessionCmd);
 	int configure_socket(int myport, sockaddr_in& si_other, bool bind_socket);
 	int configure_receive(int myport, sockaddr_in& si_other);
 	void makeSessionPacket(uint8_t sessionType, uint8_t *buf);

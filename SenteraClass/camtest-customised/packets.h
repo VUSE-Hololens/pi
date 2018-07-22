@@ -186,7 +186,7 @@ typedef struct {
 
 typedef struct {
     uint8_t  sessionCmd;     // Session command type.
-    uint8_t  sessionName[128];// Session name, a NULL terminated ASCII string. (Increased to 128 bits and fpf removed in Rev R)
+    uint8_t  sessionName[128]; // Session name, a NULL terminated ASCII string. (Increased to 128 bits and fpf removed in Rev R)
     uint8_t  utcYear;        // UTC year - 1900.
     uint8_t  utcMonth;       // UTC month.
     uint8_t  utcDay;         // UTC day.

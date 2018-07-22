@@ -24,7 +24,8 @@ fw_imager_session_t DataPacketizer::session()
 
     if (imager_session.sessionCmd == 0)
     {
-		imager_session.sessionName = "SenteraSession1";
+		char name[128] = "SenteraSession1";
+		imager_session.sessionName = (uint8_t)name;
 
         // Add UTC time data to the session open packet.
         imager_session.resumeSession = 1 & 0xF;
@@ -115,19 +116,15 @@ fw_imager_preview_stream_setup_t DataPacketizer::preview_stream_setup(uint8_t tr
     imager_preview.videoStatus = 0x01 & 0xFF; //Enable(1), Disable(0)
 
     // Prompt user for stream information
-    char ip_address_dest[20];
     in_addr_t dest_in_addr;
     if (imager_preview.videoStatus == 1)
     {
-        // Initialize stream's destination IP from user input
-        ip_address_dest = 0; // default IPv4 address
-
-        // Initialize destination IP element from user input
-        dest_in_addr = inet_addr(ip_address_dest);
+        // Initialize destination IP element 
+        dest_in_addr = inet_addr("0"); //0 indicates default/previous IP
         imager_preview.videoDstIP = ntohl((uint32_t)dest_in_addr);
         printf("Dest IP: %x\n", imager_preview.videoDstIP);
 
-        // Initialize destination port element from user input
+        // Initialize destination port element 
         uint16_t port_int = 0; // default port (8080)
         imager_preview.videoDstPort = port_int & 0xFFFF;
 
