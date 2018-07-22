@@ -5,7 +5,7 @@
 // class variables
 struct sockaddr_in si_other_send;										// Socket address of camera
 struct sockaddr_in si_other_rec;										// Socket address receiving
-int slen_recv = sizeof(si_other_rec);
+int slen_rec = sizeof(si_other_rec);
 
 int s_send, s_rec;														// Sending and Receiving Sockets
 
@@ -111,7 +111,12 @@ int initializeSession(uint8_t sessionType)
 	uint8_t buf[BUFLEN];
 
 	// make packet of data 
-	makeSessionPacket(sessionType, buf);
+	int packet_length = makeSessionPacket(sessionType, buf);
+	if (packet_length <= 0)
+	{
+		printf("Failed to create packet");
+		return -1;
+	}
 
 	//send packet of data
 	int status = sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, sizeof(si_other_send));
@@ -122,6 +127,7 @@ int initializeSession(uint8_t sessionType)
 	}
 
 	// listen for updates
+	int new_packet = 0;
 	live_session = true;
 	while (live_session)
 	{
@@ -142,8 +148,9 @@ int end_session() {
 	return 0;
 }
 
-void makeSessionPacket(uint8_t sessionType, uint8_t *buf) 
+int makeSessionPacket(uint8_t sessionType, uint8_t *buf) 
 {
+	int packet_length = -1;
 	switch (sessionType & 0xFF) {
 		case SEND_IMAGER_TRIGGER: {
 			fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
@@ -166,7 +173,7 @@ void makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 			break;
 		}
 		case SEND_VIDEO_ADJUST: {
-			fw_video_Adjust_t video_adjust = DataPacketizer::video_adjust();
+			fw_video_adjust_t video_adjust = DataPacketizer::video_adjust();
 			packet_length = Bufferizer::videoadjust(video_adjust, buf);
 			break;
 		}
@@ -176,8 +183,9 @@ void makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 			break;
 		}
 		case SEND_SYSTEM_TIME: {
-			fw_system_time_t system_time = DataPacketizer::system_time();
-			packet_length = Bufferizer::system_time(system_time, buf);
+			printf("SystemTime option not implemented yet.");
+			//fw_system_time_t system_time = DataPacketizer::system_time();
+			//packet_length = Bufferizer::system_time(system_time, buf);
 			break;
 		}
 		case SEND_EXPOSURE_ADJUST: {
@@ -187,8 +195,10 @@ void makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 		}
 		default: {
 			printf("Cannot initialize session of type ");
+			return -1;
 		}
 	}
+	return packet_length;
 
 }
 
@@ -318,7 +328,7 @@ int configure_receive(int myport, sockaddr_in& si_other)
 
 int query_status_packet()
 {
-	uint8 rec_buf[BUFLEN];
+	uint8_t rec_buf[BUFLEN];
 	int rec_data;
 	int current_packet = 0;
 	errno = 0;

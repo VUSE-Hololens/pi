@@ -63,6 +63,6 @@ public:
 private:
 	int configure_socket(int myport, sockaddr_in& si_other, bool bind_socket);
 	int configure_receive(int myport, sockaddr_in& si_other);
-	void makeSessionPacket(uint8_t sessionType, uint8_t *buf);
+	int makeSessionPacket(uint8_t sessionType, uint8_t *buf);
 	int query_status_packet();
 };
