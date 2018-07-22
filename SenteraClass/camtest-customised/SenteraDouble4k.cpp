@@ -99,56 +99,6 @@ int SenteraDouble4k::startServer(){
 	return 1;
 }
 
-
-int initializeSession(uint8_t sessionType)
-{
-	// check if server is set up
-	if (serv_status == -1) {
-		printf("Server not initialized! Cannot start session.");
-		return -1;
-	}
-
-	// initialize packet to fill and send
-	uint8_t buf[BUFLEN];
-
-	// make packet of data 
-	int packet_length = makeSessionPacket(sessionType, &buf);
-	if (packet_length <= 0)
-	{
-		printf("Failed to create packet");
-		return -1;
-	}
-
-	//send packet of data
-	int status = sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, sizeof(si_other_send));
-	if (packet_length > 0 && status == -1)
-	{
-		printf("Failed to send packet: %d", errno);
-		return -1;
-	}
-
-	// listen for updates
-	int new_packet = 0;
-	live_session = true;
-	while (live_session)
-	{
-		bool receivedData = false;
-		while (!receivedData)
-		{
-			new_packet = (query_status_packet() == 1);
-			receivedData = true;
-		}
-	}
-	return 0;
-}
-
-int end_session() {
-	live_session = false;
-	close(s_send);
-	close(s_rec);
-	return 0;
-}
-
 int makeSessionPacket(uint8_t sessionType, uint8_t *buf) 
 {
 	int packet_length = -1;
@@ -520,4 +470,53 @@ int query_status_packet()
 	} while (current_packet > 0);
 
 	return newdata_received;
+}
+
+int initializeSession(uint8_t sessionType)
+{
+	// check if server is set up
+	if (serv_status == -1) {
+		printf("Server not initialized! Cannot start session.");
+		return -1;
+	}
+
+	// initialize packet to fill and send
+	uint8_t buf[BUFLEN];
+
+	// make packet of data 
+	int packet_length = makeSessionPacket(sessionType, &buf);
+	if (packet_length <= 0)
+	{
+		printf("Failed to create packet");
+		return -1;
+	}
+
+	//send packet of data
+	int status = sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, sizeof(si_other_send));
+	if (packet_length > 0 && status == -1)
+	{
+		printf("Failed to send packet: %d", errno);
+		return -1;
+	}
+
+	// listen for updates
+	int new_packet = 0;
+	live_session = true;
+	while (live_session)
+	{
+		bool receivedData = false;
+		while (!receivedData)
+		{
+			new_packet = (query_status_packet() == 1);
+			receivedData = true;
+		}
+	}
+	return 0;
+}
+
+int end_session() {
+	live_session = false;
+	close(s_send);
+	close(s_rec);
+	return 0;
 }
