@@ -3,33 +3,33 @@
 #include "Bufferizer.h"
 #include "Packetizer.h"
 #include "SenteraDouble4k.h"
+#include "packets.h"
 
 // class variables
-private uint8 buf[BUFLEN];  //Possibly mutex lock this for thread safety  // Buffer to hold content of constructed packet
+struct sockaddr_in si_other_send;										// Socket address of camera
+struct sockaddr_in si_other_rec;										// Socket address receiving
+int slen_recv = sizeof(si_other_rec);
 
-struct sockaddr_in si_other_send;
-int slen_send = sizeof(si_other_send);
-
-struct sockaddr_in si_other_rec;
-int slen_rec = sizeof(si_other_send);
+int s_send, s_rec;														// Sending and Receiving Sockets
 
 char server_ipaddr[80] = "192.168.143.141";								// Default IP of camera
 char local_ipaddr[80] = "192.168.143.130";								// Default local IP
-uint16 port = 60530;													// Default port of camera
+uint16 cameraPort = 60530;												// Default port of camera
 uint16 localPort = 60531;												// Default local port for receiving
 
+// for receiving
 const int num_cameras = 2;												// Double camera
 const int FILE_HISTORY_SIZE = 10;										// The number of saved files to store
-fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last 8 images recorded in a circular buffer
+fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last num_cameras images recorded in a circular buffer of FILE_HISTORY_SIZE
 int recent_images_length[num_cameras];									// The number of recent images stored in the buffer
 int recent_images_start[num_cameras];									// The current index of the circular buffer
-fw_payload_metadata_t camera_metadata[num_cameras];						// Store up to 8 IDs worth of camera info
+fw_payload_metadata_t camera_metadata[num_cameras];						// Store up to num_cameras worth of camera info
 bool camera_metadata_valid[num_cameras];								// Indicates whether each ID was valid 
 unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
 fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 
 
-uint8 trigger_mask = 0x03;
+uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 int serv_status = -1;
 bool live_session;
 
@@ -59,7 +59,6 @@ SenteraDouble4k::SenteraDouble4k()
 	// configure send and receive sockets
 	serv_status = startServer();
 
-	//start a session
 }
 
 SenteraDouble4k::~SenteraDouble4k()
@@ -69,7 +68,7 @@ SenteraDouble4k::~SenteraDouble4k()
 
 public int SenteraDouble4k::startServer(){
 	
-	if (serv_status < -1) {
+	if (serv_status > -1) {
 		printf("Server already running!")
 		return 0;
 	}
@@ -78,13 +77,13 @@ public int SenteraDouble4k::startServer(){
 	bool bind_send_socket = true;
 	if (strcmp(local_ipaddr, server_ipaddr) == 0)
 	{
-		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", port);
+		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort);
 		bind_send_socket = false;
 	}
 
 	// Configure Sending Socket
 	// If we try to bind sending socket, and it is multicast, the program breaks
-	s_send = configure_socket(port, si_other_send, bind_send_socket);
+	s_send = configure_socket(cameraPort, si_other_send, bind_send_socket);
 	if (!s_send)
 	{
 		fprintf(stderr, "!! Unable to configure sending socket. !!");
@@ -101,7 +100,7 @@ public int SenteraDouble4k::startServer(){
 	return 1;
 }
 
-public int initialize_session(uint8_t sessionType) 
+public int initializeSession(uint8_t sessionType) 
 {
 	// check if server is set up
 	if (serv_status == -1) {
@@ -109,9 +108,15 @@ public int initialize_session(uint8_t sessionType)
 		return -1;
 	}
 
-	// make and send packet of data 
-	makeSessionPacket(sessionType);
-	if (packet_length > 0 && sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1)
+	// initialize packet to fill and send
+	uint8_t buf[BUFLEN];
+
+	// make packet of data 
+	makeSessionPacket(sessionType, buf);
+
+	//send packet of data
+	int status = sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, sizeof(si_other_send));
+	if (packet_length > 0 && status == -1)
 	{
 		printf("Failed to send packet: %d", errno);
 		return -1;
@@ -138,11 +143,11 @@ public int end_session() {
 	return 0;
 }
 
-private void makeSessionPacket(uint8_t sessionType) 
+private void makeSessionPacket(uint8_t sessionType, uint8_t *buf) 
 {
 	switch (sessionType & 0xFF) {
 		case SEND_IMAGER_TRIGGER: {
-			fw_imager_trigger_t imager_trigger = Packetizer::trigger(trigger_mask); // Construct new session packet
+			fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
 			packet_length = Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
 			break;
 		}
@@ -152,7 +157,7 @@ private void makeSessionPacket(uint8_t sessionType)
 			break;
 		}
 		case SEND_VIDEO_CAPTURE: {
-			fw_video_session_t video_session = PresetDataPacketizer::video();
+			fw_video_session_t video_session = DataPacketizer::video();
 			packet_length = Bufferizer::video(video_session, buf);
 			break;
 		}
@@ -162,8 +167,8 @@ private void makeSessionPacket(uint8_t sessionType)
 			break;
 		}
 		case SEND_VIDEO_ADJUST: {
-			fw_video_Adjust_t video_adjust = DataPacketizer::video_adjust()
-				packet_length = Bufferizer::videoadjust(video_adjust, buf);
+			fw_video_Adjust_t video_adjust = DataPacketizer::video_adjust();
+			packet_length = Bufferizer::videoadjust(video_adjust, buf);
 			break;
 		}
 		case SEND_IMAGER_ZOOM: {
@@ -181,15 +186,14 @@ private void makeSessionPacket(uint8_t sessionType)
 			packet_length = Bufferizer::exposureadjust(exposure_adjust, buf);
 			break;
 		}
-		default:
-		{
+		default: {
 			printf("Cannot initialize session of type ");
 		}
 	}
+
 }
 
 // Configures a given socket returning a socket ID, -1 indicates failure
-// UNIX socket-friendly function for configuring sockets
 private int configure_socket(int myport, sockaddr_in& si_other, bool bind_socket)
 
 {
@@ -205,12 +209,13 @@ private int configure_socket(int myport, sockaddr_in& si_other, bool bind_socket
 		return -1;
 	}
 
+	/* Dont need to be sending broadcast data 
 	// Configure socket for sending broadcast data 
 	if (setsockopt(s, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast)) == -1)
 	{
 		fprintf(stderr, "!! Failed allow broadcasts. !!\n");
 		return -1;
-	}
+	}*/ 
 
 	// Allow binding to address already in use
 	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
@@ -432,6 +437,9 @@ int query_status_packet()
 		// Handle new image avilable packets
 		else if (rec_buf[2] == RECV_IMAGE_DATA_READY)
 		{
+
+			printf("Received Image Data Ready Packet);
+
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x21 && rec_buf[4] == 0x00)) return 0;
 
