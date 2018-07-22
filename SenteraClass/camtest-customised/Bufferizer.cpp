@@ -49,7 +49,7 @@ uint8_t Bufferizer::CRC8_7(uint8_t cur_crc, uint8_t *msg, uint32_t msg_size)
 
     for (i = 0; i < msg_size; i++)
     {
-        crc = Bufferizer::CRC8_7_table[crc ^ msg[i]];
+        crc = CRC8_7_table[crc ^ msg[i]];
     }
     return crc;
 }

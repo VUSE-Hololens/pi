@@ -120,7 +120,7 @@ fw_imager_preview_stream_setup_t DataPacketizer::preview_stream_setup(uint8_t tr
     if (imager_preview.videoStatus == 1)
     {
         // Initialize stream's destination IP from user input
-        ip_address_dest = 0x00; // default IPv4 address
+        ip_address_dest = 0; // default IPv4 address
 
         // Initialize destination IP element from user input
         dest_in_addr = inet_addr(ip_address_dest);
@@ -183,14 +183,14 @@ fw_aircraft_metadata_t DataPacketizer::location_metadata()
 	aircraft.gpsAlt = 0; 							//Altitude (m)
 
     // Aircraft attitude data.
-    aircraft.roll = (int16)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Aircraft roll (deg)
-    aircraft.pitch = (int16)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Aircraft pitch (deg)
-    aircraft.yaw = (int16)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Aircraft yaw (deg)
+    aircraft.roll = (int16_t)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Aircraft roll (deg)
+    aircraft.pitch = (int16_t)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Aircraft pitch (deg)
+    aircraft.yaw = (int16_t)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Aircraft yaw (deg)
 
     // Payload attitude data.
-    aircraft.payloadRoll = (int16)(tmp_16 * (3.14159 / 180.0) * 1e4);	//Payload Roll (deg)
-    aircraft.payloadEl = (int16)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Payload Pitch (deg)
-    aircraft.payloadAz = (int16)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Payload Yaw (deg)
+    aircraft.payloadRoll = (int16_t)(tmp_16 * (3.14159 / 180.0) * 1e4);	//Payload Roll (deg)
+    aircraft.payloadEl = (int16_t)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Payload Pitch (deg)
+    aircraft.payloadAz = (int16_t)(tmp_16 * (3.14159 / 180.0) * 1e4);		//Payload Yaw (deg)
 
     aircraft.apMode = 4;		    // AP Mode 4 required for terrain estimate to trigger
     

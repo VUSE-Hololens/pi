@@ -46,7 +46,7 @@
 #define RECV_FOCUS_SCORE 0xD0 // From Payload Focus Score
 #define RECV_PAYLOAD_EXCEPTION 0xFF // From Payload Payload Exception
 
-public class SenteraDouble4k // imolements sensor
+class SenteraDouble4k // implements sensor
 {
 // Variables
 public:
