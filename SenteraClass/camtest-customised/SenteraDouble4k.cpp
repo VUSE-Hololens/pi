@@ -99,7 +99,8 @@ int SenteraDouble4k::startServer(){
 	return 1;
 }
 
-int initializeSession(uint8_t sessionType) 
+
+int initializeSession(uint8_t sessionType)
 {
 	// check if server is set up
 	if (serv_status == -1) {
@@ -111,7 +112,7 @@ int initializeSession(uint8_t sessionType)
 	uint8_t buf[BUFLEN];
 
 	// make packet of data 
-	int packet_length = makeSessionPacket(sessionType, buf);
+	int packet_length = makeSessionPacket(sessionType, &buf);
 	if (packet_length <= 0)
 	{
 		printf("Failed to create packet");
