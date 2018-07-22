@@ -64,95 +64,6 @@ SenteraDouble4k::~SenteraDouble4k()
 {
 }
 
-
-int SenteraDouble4k::startServer(){
-	
-	if (serv_status > -1) {
-		printf("Server already running!");
-		return 0;
-	}
-
-	// If we run locally on the camera, don't bind to the port or we fail
-	bool bind_send_socket = true;
-	if (strcmp(local_ipaddr, server_ipaddr) == 0)
-	{
-		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort);
-		bind_send_socket = false;
-	}
-
-	// Configure Sending Socket
-	// If we try to bind sending socket, and it is multicast, the program breaks
-	s_send = configure_socket(cameraPort, si_other_send, bind_send_socket);
-	if (!s_send)
-	{
-		fprintf(stderr, "!! Unable to configure sending socket. !!");
-		return -1;
-	}
-
-	// Configure Receiving Socket
-	s_rec = configure_receive(localPort, si_other_rec);
-	if (!s_rec)
-	{
-		fprintf(stderr, "!! Unable to configure receiving socket. !!");
-		return -1;
-	}
-	return 1;
-}
-
-int makeSessionPacket(uint8_t sessionType, uint8_t *buf) 
-{
-	int packet_length = -1;
-	switch (sessionType & 0xFF) {
-		case SEND_IMAGER_TRIGGER: {
-			fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
-			packet_length = Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
-			break;
-		}
-		case SEND_STILL_CAPTURE: {
-			fw_imager_session_t imager_session = DataPacketizer::session();
-			packet_length = Bufferizer::session(imager_session, buf); 
-			break;
-		}
-		case SEND_VIDEO_CAPTURE: {
-			fw_video_session_t video_session = DataPacketizer::video();
-			packet_length = Bufferizer::video(video_session, buf);
-			break;
-		}
-		case SEND_STILL_FOCUS: {
-			fw_still_focus_session_t still_focus_session = DataPacketizer::sf();
-			packet_length = Bufferizer::sf(still_focus_session, buf);
-			break;
-		}
-		case SEND_VIDEO_ADJUST: {
-			fw_video_adjust_t video_adjust = DataPacketizer::video_adjust();
-			packet_length = Bufferizer::videoadjust(video_adjust, buf);
-			break;
-		}
-		case SEND_IMAGER_ZOOM: {
-			fw_imager_zoom_t imager_zoom = DataPacketizer::zoom(trigger_mask);
-			packet_length = Bufferizer::zoom(imager_zoom, buf);
-			break;
-		}
-		case SEND_SYSTEM_TIME: {
-			printf("SystemTime option not implemented yet.");
-			//fw_system_time_t system_time = DataPacketizer::system_time();
-			//packet_length = Bufferizer::system_time(system_time, buf);
-			break;
-		}
-		case SEND_EXPOSURE_ADJUST: {
-			fw_exposure_adjust_t exposure_adjust = DataPacketizer::exposureadjust();
-			packet_length = Bufferizer::exposureadjust(exposure_adjust, buf);
-			break;
-		}
-		default: {
-			printf("Cannot initialize session of type ");
-			return -1;
-		}
-	}
-	return packet_length;
-
-}
-
 // Configures a given socket returning a socket ID, -1 indicates failure
 int configure_socket(int myport, sockaddr_in& si_other, bool bind_socket)
 {
@@ -276,6 +187,93 @@ int configure_receive(int myport, sockaddr_in& si_other)
 	return s;
 }
 
+int SenteraDouble4k::startServer() {
+
+	if (serv_status > -1) {
+		printf("Server already running!");
+		return 0;
+	}
+
+	// If we run locally on the camera, don't bind to the port or we fail
+	bool bind_send_socket = true;
+	if (strcmp(local_ipaddr, server_ipaddr) == 0)
+	{
+		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort);
+		bind_send_socket = false;
+	}
+
+	// Configure Sending Socket
+	// If we try to bind sending socket, and it is multicast, the program breaks
+	s_send = configure_socket(cameraPort, si_other_send, bind_send_socket);
+	if (!s_send)
+	{
+		fprintf(stderr, "!! Unable to configure sending socket. !!");
+		return -1;
+	}
+
+	// Configure Receiving Socket
+	s_rec = configure_receive(localPort, si_other_rec);
+	if (!s_rec)
+	{
+		fprintf(stderr, "!! Unable to configure receiving socket. !!");
+		return -1;
+	}
+	return 1;
+}
+
+int makeSessionPacket(uint8_t sessionType, uint8_t *buf)
+{
+	int packet_length = -1;
+	switch (sessionType & 0xFF) {
+	case SEND_IMAGER_TRIGGER: {
+		fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
+		packet_length = Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
+		break;
+	}
+	case SEND_STILL_CAPTURE: {
+		fw_imager_session_t imager_session = DataPacketizer::session();
+		packet_length = Bufferizer::session(imager_session, buf);
+		break;
+	}
+	case SEND_VIDEO_CAPTURE: {
+		fw_video_session_t video_session = DataPacketizer::video();
+		packet_length = Bufferizer::video(video_session, buf);
+		break;
+	}
+	case SEND_STILL_FOCUS: {
+		fw_still_focus_session_t still_focus_session = DataPacketizer::sf();
+		packet_length = Bufferizer::sf(still_focus_session, buf);
+		break;
+	}
+	case SEND_VIDEO_ADJUST: {
+		fw_video_adjust_t video_adjust = DataPacketizer::video_adjust();
+		packet_length = Bufferizer::videoadjust(video_adjust, buf);
+		break;
+	}
+	case SEND_IMAGER_ZOOM: {
+		fw_imager_zoom_t imager_zoom = DataPacketizer::zoom(trigger_mask);
+		packet_length = Bufferizer::zoom(imager_zoom, buf);
+		break;
+	}
+	case SEND_SYSTEM_TIME: {
+		printf("SystemTime option not implemented yet.");
+		//fw_system_time_t system_time = DataPacketizer::system_time();
+		//packet_length = Bufferizer::system_time(system_time, buf);
+		break;
+	}
+	case SEND_EXPOSURE_ADJUST: {
+		fw_exposure_adjust_t exposure_adjust = DataPacketizer::exposureadjust();
+		packet_length = Bufferizer::exposureadjust(exposure_adjust, buf);
+		break;
+	}
+	default: {
+		printf("Cannot initialize session of type ");
+		return -1;
+	}
+	}
+	return packet_length;
+
+}
 
 int query_status_packet()
 {
@@ -484,7 +482,7 @@ int initializeSession(uint8_t sessionType)
 	uint8_t buf[BUFLEN];
 
 	// make packet of data 
-	int packet_length = makeSessionPacket(sessionType, &buf);
+	int packet_length = makeSessionPacket(sessionType, buf);
 	if (packet_length <= 0)
 	{
 		printf("Failed to create packet");
