@@ -25,7 +25,7 @@ fw_imager_session_t DataPacketizer::session()
     if (imager_session.sessionCmd == 0)
     {
 		char name[128] = "SenteraSession1";
-		imager_session.sessionName = (uint8_t)name;
+		imager_session.sessionName = (uint8_t*)name;
 
         // Add UTC time data to the session open packet.
         imager_session.resumeSession = 1 & 0xF;
