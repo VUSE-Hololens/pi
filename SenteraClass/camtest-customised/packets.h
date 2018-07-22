@@ -135,19 +135,19 @@ typedef struct {
 // Imager zoom packet definition. --------------------------------------------
 
 typedef struct {
-    uint8_t_t imgSelect; // Imager  selection bitfield.
-    uint8_t_t zoomMode;
+    uint8_t imgSelect; // Imager  selection bitfield.
+    uint8_t zoomMode;
     int8_t zoomRate;
     int8_t zoomSteps;  // Adjust zoom in discrete steps relative to current zoom position
 } fw_imager_zoom_t;
 
 typedef struct {
-    uint8_t_t imgSelect; // Imager selection bitfield
-    uint8_t_t videoStatus; // Set streaming video status
-    uint32_t_t videoDstIP; // Set streaming video destination IPv4. Ignored when videoStatus is set to disabled.
-    uint16_t_t videoDstPort; // Set streaming video destination port.  Ignored when videoStatus is set to disabled.    
-    uint32_t_t cameraConfig; // Camera configuration 4k = byte 0/1 Camera 0 Position/Options, byte1/2 Camera 2 Position/Options) 
-    uint8_t_t overlayConfig; // OSD overlay configuration
+    uint8_t imgSelect; // Imager selection bitfield
+    uint8_t videoStatus; // Set streaming video status
+    uint32_t videoDstIP; // Set streaming video destination IPv4. Ignored when videoStatus is set to disabled.
+    uint16_t videoDstPort; // Set streaming video destination port.  Ignored when videoStatus is set to disabled.    
+    uint32_t cameraConfig; // Camera configuration 4k = byte 0/1 Camera 0 Position/Options, byte1/2 Camera 2 Position/Options) 
+    uint8_t overlayConfig; // OSD overlay configuration
 } fw_imager_preview_stream_setup_t;
 
 typedef enum {
@@ -270,9 +270,9 @@ typedef enum {
 
 
 typedef struct {
-    uint8_t_t imgSelect;  // Imager  selection bitfield.
-    uint8_t_t evCommand;  // Relative command for exposure
-    uint8_t_t isoCommand; // Relative command for iso
+    uint8_t imgSelect;  // Imager  selection bitfield.
+    uint8_t evCommand;  // Relative command for exposure
+    uint8_t isoCommand; // Relative command for iso
 } fw_video_adjust_relative_t;
 
 // Focus session packet definition. ------------------------------------------
