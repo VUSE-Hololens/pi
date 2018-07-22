@@ -24,12 +24,15 @@ fw_imager_session_t DataPacketizer::session()
 
     if (imager_session.sessionCmd == 0)
     {
-		uint8_t name[128] = "SenteraSession1";
-		imager_session.sessionName = name;
+		char name[] = "SenteraSession1";
+		for (int i = 0; i < sizeof(name); i++) {
+			imager_session.sessionName[i] = (uint8_t)name[i];
+		}
 
-        // Add UTC time data to the session open packet.
         imager_session.resumeSession = 1 & 0xF;
-        time_t raw_time;
+
+		// Add UTC time data to the session open packet.
+		time_t raw_time;
         struct tm *utc_time;
         time(&raw_time);
         utc_time = gmtime(&raw_time);

@@ -196,7 +196,7 @@ typedef struct {
     uint16_t sessionID;      // Session ID.
     uint16_t buildVersion;   // K3 Firmware Build Version
     uint8_t  aircraftType;   // Aircraft Type
-    uint8_t  resumeSession;  // 1 = Resume session for same named sessiosn (Added in ICD Rev S)
+    uint8_t  resumeSession;  // 1 = Resume session for same named session (Added in ICD Rev S)
 } fw_imager_session_t;
 
 typedef struct {
