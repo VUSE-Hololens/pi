@@ -99,7 +99,7 @@ int SenteraDouble4k::startServer(){
 	return 1;
 }
 
-public int initializeSession(uint8_t sessionType) 
+int initializeSession(uint8_t sessionType) 
 {
 	// check if server is set up
 	if (serv_status == -1) {
