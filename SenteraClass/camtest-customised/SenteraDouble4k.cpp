@@ -64,6 +64,41 @@ SenteraDouble4k::~SenteraDouble4k()
 {
 }
 
+// starts server by setting up send and receive sockets
+int SenteraDouble4k::startServer() {
+
+	if (serv_status > -1) {
+		printf("Server already running!");
+		return 0;
+	}
+
+	// If we run locally on the camera, don't bind to the port or we fail
+	bool bind_send_socket = true;
+	if (strcmp(local_ipaddr, server_ipaddr) == 0)
+	{
+		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort);
+		bind_send_socket = false;
+	}
+
+	// Configure Sending Socket
+	// If we try to bind sending socket, and it is multicast, the program breaks
+	s_send = configure_socket(cameraPort, si_other_send, bind_send_socket);
+	if (!s_send)
+	{
+		fprintf(stderr, "!! Unable to configure sending socket. !!");
+		return -1;
+	}
+
+	// Configure Receiving Socket
+	s_rec = configure_receive(localPort, si_other_rec);
+	if (!s_rec)
+	{
+		fprintf(stderr, "!! Unable to configure receiving socket. !!");
+		return -1;
+	}
+	return 1;
+}
+
 // Configures a given socket returning a socket ID, -1 indicates failure
 int SenteraDouble4k::configure_socket(int myport, sockaddr_in& si_other, bool bind_socket)
 {
@@ -185,40 +220,6 @@ int SenteraDouble4k::configure_receive(int myport, sockaddr_in& si_other)
 	// Receiver has to bind
 
 	return s;
-}
-
-int SenteraDouble4k::startServer() {
-
-	if (serv_status > -1) {
-		printf("Server already running!");
-		return 0;
-	}
-
-	// If we run locally on the camera, don't bind to the port or we fail
-	bool bind_send_socket = true;
-	if (strcmp(local_ipaddr, server_ipaddr) == 0)
-	{
-		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort);
-		bind_send_socket = false;
-	}
-
-	// Configure Sending Socket
-	// If we try to bind sending socket, and it is multicast, the program breaks
-	s_send = configure_socket(cameraPort, si_other_send, bind_send_socket);
-	if (!s_send)
-	{
-		fprintf(stderr, "!! Unable to configure sending socket. !!");
-		return -1;
-	}
-
-	// Configure Receiving Socket
-	s_rec = configure_receive(localPort, si_other_rec);
-	if (!s_rec)
-	{
-		fprintf(stderr, "!! Unable to configure receiving socket. !!");
-		return -1;
-	}
-	return 1;
 }
 
 int SenteraDouble4k::makeSessionPacket(uint8_t sessionType, uint8_t *buf)
