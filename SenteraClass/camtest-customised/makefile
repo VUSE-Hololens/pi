@@ -1,13 +1,13 @@
 
 camtest: clean.camtest
-	g++ -o camtest CameraTest.cpp Bufferizer.cpp DataPacketizer.cpp
+	g++ -o camtest main.cpp SenteraDouble4k.cpp Bufferizer.cpp DataPacketizer.cpp
 
 camtest.arm: clean.arm
-	arm-none-linux-gnueabi-g++ -o camtest.arm CameraTest.cpp Bufferizer.cpp DataPacketizer.cpp
+	arm-none-linux-gnueabi-g++ -o camtest.arm main.cpp SenteraDouble4k.cpp Bufferizer.cpp DataPacketizer.cpp
 
 camtest.android: clean.android
 	export ARCH=arm
-	arm-eabi-g++ -o cameratest.android CameraTest.cpp Bufferizer.cpp DataPacketizer.cpp
+	arm-eabi-g++ -o cameratest.android main.cpp SenteraDouble4k.cpp Bufferizer.cpp DataPacketizer.cpp
 
 clean: clean.camtest clean.arm clean.android
 
