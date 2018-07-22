@@ -1,9 +1,6 @@
 
 // includes
-#include "Bufferizer.h"
-#include "Packetizer.h"
 #include "SenteraDouble4k.h"
-#include "packets.h"
 
 // class variables
 struct sockaddr_in si_other_send;										// Socket address of camera
@@ -58,6 +55,9 @@ SenteraDouble4k::SenteraDouble4k()
 
 	// configure send and receive sockets
 	serv_status = startServer();
+	if (serv_status) {
+		printf("Made connection with camera!");
+	}
 
 }
 
