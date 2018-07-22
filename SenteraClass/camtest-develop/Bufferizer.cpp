@@ -8,6 +8,24 @@
 #include <time.h>
 #include <errno.h>
 
+// Define IS_WINDOWS if compiled on a Windows machine
+#if (defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__))
+#define IS_WINDOWS (1==1)
+#endif
+
+// Include additional libraries & declare variables based on operating system
+#if IS_WINDOWS
+// For WinSock 2 & Windows API
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <Windows.h>
+
+// For polling user input
+#include <conio.h>
+
+// Tell linker Ws2_32.lib file is needed
+#pragma comment(lib, "Ws2_32.lib")
+#else
 // UNIX ONLY Libraries
 #include <sys/time.h>
 #include <sys/ioctl.h>
@@ -18,7 +36,7 @@
 
 // UNIX socket library
 #include <sys/socket.h>
-
+#endif
 // *****************************************************************************
 // **************************** User Includes **********************************
 // *****************************************************************************
@@ -30,6 +48,10 @@
 // *****************************************************************************
 // ********************************* Defines ***********************************
 // *****************************************************************************
+#if IS_WINDOWS
+// Define type for preview command
+typedef uint32_t in_addr_t;
+#endif
 
 // *****************************************************************************
 // ************************** Namespace Directives *****************************

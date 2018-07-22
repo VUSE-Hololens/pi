@@ -75,8 +75,7 @@ fw_system_time_ack_t recent_time_ack;						// The most recent system time acknow
 fw_payload_metadata_t camera_metadata[8];                   // Store up to 8 IDs worth of camera info
 bool camera_metadata_valid[8];                              // Indicates whether each ID was valid 
 unsigned long long camera_metadata_last_update_us[8];       // Timestamp of last update 
-
-															// Hex mask to determine which cameras to send triggers to
+uint8 trigger_mask = 0x03;                                  // Hex mask to determine which cameras to send triggers to
 
 #if IS_WINDOWS
 typedef uint32_t in_addr_t;                                 // unit32_t not defined
