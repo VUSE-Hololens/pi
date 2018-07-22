@@ -52,14 +52,12 @@ class SenteraDouble4k // implements sensor
 public:
 
 private:
-	const int num_cameras;
-	const int FILE_HISTORY_SIZE;
 
 // methods
 public:
 	SenteraDouble4k();
 	~SenteraDouble4k();
-	int startServer(uint8_t sessionType);
+	int startServer();
 	int initialize_session(uint8_t sessionType);
 
 private:

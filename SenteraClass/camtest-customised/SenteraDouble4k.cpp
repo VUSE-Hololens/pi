@@ -11,8 +11,8 @@ int s_send, s_rec;														// Sending and Receiving Sockets
 
 char server_ipaddr[80] = "192.168.143.141";								// Default IP of camera
 char local_ipaddr[80] = "192.168.143.130";								// Default local IP
-uint16 cameraPort = 60530;												// Default port of camera
-uint16 localPort = 60531;												// Default local port for receiving
+uint16_t cameraPort = 60530;												// Default port of camera
+uint16_t localPort = 60531;												// Default local port for receiving
 
 // for receiving
 const int num_cameras = 2;												// Double camera
@@ -66,7 +66,7 @@ SenteraDouble4k::~SenteraDouble4k()
 }
 
 
-public int SenteraDouble4k::startServer(){
+int SenteraDouble4k::startServer(){
 	
 	if (serv_status > -1) {
 		printf("Server already running!")
@@ -437,8 +437,8 @@ int query_status_packet()
 		// Handle new image avilable packets
 		else if (rec_buf[2] == RECV_IMAGE_DATA_READY)
 		{
-
-			printf("Received Image Data Ready Packet);
+			
+			printf("Received Image Data Ready Packet");
 
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x21 && rec_buf[4] == 0x00)) return 0;
