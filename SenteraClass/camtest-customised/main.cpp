@@ -1,4 +1,6 @@
 #include "SenteraDouble4k.h"
+#include "Sensor.h"
+
 #include <unistd.h>
 
 int main() {
