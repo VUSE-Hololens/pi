@@ -420,6 +420,8 @@ int SenteraDouble4k::query_status_packet()
 		// Handle new image avilable packets
 		else if (rec_buf[2] == RECV_IMAGE_DATA_READY)
 		{
+			printf("Receeive Data Ready\n");
+
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x21 && rec_buf[4] == 0x00)) return 0;
 
@@ -428,11 +430,14 @@ int SenteraDouble4k::query_status_packet()
 			fw_imager_data_ready_t new_image;
 			new_image.imagerID = rec_buf[n++];
 
+			printf("Filename: ");
 			for (int i = 0; i < 48; ++i)
 			{
 				new_image.fileName[i] = rec_buf[n];
+				printf("%c", new_image.fileName[i]);
 				n++;
 			}
+			printf("\n");
 
 			// Store the packet in the appropriate location of the circular buffer
 			for (int i = 0; i < num_cameras; i++)
@@ -448,7 +453,6 @@ int SenteraDouble4k::query_status_packet()
 						recent_images_start[i]++;
 						recent_images_start[i] = recent_images_start[i] % FILE_HISTORY_SIZE;
 					}
-
 
 					int cur_idx = (recent_images_start[i] + recent_images_length[i] - 1) % FILE_HISTORY_SIZE;
 					recent_images[i][cur_idx] = new_image;
