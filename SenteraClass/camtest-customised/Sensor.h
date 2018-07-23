@@ -75,7 +75,9 @@ struct Frame {
 
 // abstract class for all sensor inputs
 class Sensor {
-	const std::string PI_IP = "0.0.0.0";
+protected:
+	const static std::string PI_IP = "192.168.143.130";
+
 public:
 	// constructor
 	Sensor(Transform _offset)
@@ -86,7 +88,7 @@ public:
 	}
 
 	// copy constructor
-	Sensor(const Sensor &rhs) 
+	Sensor(const Sensor &rhs)
 		: offset(rhs.offset)
 	{
 		updated = false;
@@ -121,6 +123,7 @@ protected:
 
 	// sensor's most current data
 	Frame *data;
+
 };
 
 #endif // SENSOR_H
