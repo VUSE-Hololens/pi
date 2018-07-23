@@ -34,7 +34,10 @@ SenteraDouble4k::~SenteraDouble4k()
 }
 
 void SenteraDouble4k::Start() {
-	initializeSession(SEND_IMAGER_TRIGGER);
+	int test = initializeSession(SEND_IMAGER_TRIGGER);
+	if (test != 1) {
+
+	}
 }
 
 // starts server by setting up send and receive sockets
@@ -92,7 +95,7 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 	}
 
 	//DEBUG
-	printf("Packet Created. Length: %d, sample: %X\n", packet_length, buf[2]);
+	printf("Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]);
 
 	//send packet of data
 	if (packet_length > 0 && sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1)
@@ -332,7 +335,7 @@ int SenteraDouble4k::query_status_packet()
 		}
 		else if (rec_buf[2] == RECV_PAYLOAD_METADATA) 
 		{
-			//printf("Received Payload Metadata"); //DEBUG
+			printf("Received Payload Metadata"); //DEBUG
 
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x19 && rec_buf[4] == 0x00)) return 0;
@@ -531,7 +534,9 @@ std::string makeUrlString(uint8_t *filename) {
 	urlStr += ":";
 	urlStr += "8080";
 	urlStr += "/cur_session?path=/";
-	urlStr += std::string((const char*)filename);
+	for (int i = 0; i < filename.Length; i++){
+		urlStr += (const char*)filename[i];
+	}
 	return urlStr;
 }*/
 
