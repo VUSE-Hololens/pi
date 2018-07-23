@@ -547,7 +547,7 @@ int retrieveCurrentData() {
 }
 
 Frame SenteraDouble4k::Data() {
-	return data;
+	return *data;
 }
 
 /*
