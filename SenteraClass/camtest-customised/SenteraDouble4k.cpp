@@ -55,7 +55,7 @@ SenteraDouble4k::SenteraDouble4k()
 	// configure send and receive sockets
 	serv_status = startServer();
 	if (serv_status) {
-		printf("Made connection with camera!\n");
+		printf("Made connection with camera!\n"); //DEBUG
 	}
 
 }
@@ -127,17 +127,16 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 	}
 
 	// listen for updates
-	int new_packet = 0;
+	bool new_packet = false;
 	live_session = true;
 	while (live_session)
 	{
-		bool receivedData = false;
+		bool new_packet = false;
 		while (!receivedData)
 		{
 			new_packet = (query_status_packet() == 1);
-			receivedData = true;
-			printf("new data received!\n");
 		}
+		printf("new data received: "); //DEBUG
 	}
 	return 0;
 }
@@ -458,6 +457,7 @@ int SenteraDouble4k::query_status_packet()
 			for (int i = 0; i < 48; ++i)
 			{
 				new_image.fileName[i] = rec_buf[n++];
+				fprintf("Filename: %s", new_image.fileName[i]); //DEBUG
 			}
 
 			// Store the packet in the appropriate location of the circular buffer
