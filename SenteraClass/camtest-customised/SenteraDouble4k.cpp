@@ -444,7 +444,7 @@ int SenteraDouble4k::query_status_packet()
 			else {
 				fprintf("Imager ID not 1 or 2: Failed to store new image data\n");
 			}
-			fprintf("Stored new image\n");
+			printf("Stored new image\n");
 
 			// Store the packet in the appropriate location of the circular buffer
 			/*for (int i = 0; i < num_cameras; i++)
