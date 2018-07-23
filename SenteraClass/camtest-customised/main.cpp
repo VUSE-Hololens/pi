@@ -3,7 +3,7 @@
 int main() {
 	SenteraDouble4k sentera;
 
-	//sentera.initializeSession(SEND_STILL_CAPTURE);
+	sentera.initializeSession(SEND_STILL_CAPTURE);
 
 	return 0;
 }

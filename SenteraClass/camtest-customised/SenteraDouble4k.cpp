@@ -55,7 +55,7 @@ SenteraDouble4k::SenteraDouble4k()
 	// configure send and receive sockets
 	serv_status = startServer();
 	if (serv_status) {
-		printf("Made connection with camera!");
+		printf("Made connection with camera!\n");
 	}
 
 }
@@ -97,6 +97,56 @@ int SenteraDouble4k::startServer() {
 		return -1;
 	}
 	return 1;
+}
+
+int SenteraDouble4k::initializeSession(uint8_t sessionType)
+{
+	// check if server is set up
+	if (serv_status == -1) {
+		printf("Server not initialized! Cannot start session.");
+		return -1;
+	}
+
+	// initialize packet to fill and send
+	uint8_t buf[BUFLEN];
+
+	// make packet of data 
+	int packet_length = makeSessionPacket(sessionType, buf);
+	if (packet_length <= 0)
+	{
+		printf("Failed to create packet");
+		return -1;
+	}
+
+	//send packet of data
+	int status = sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, sizeof(si_other_send));
+	if (packet_length > 0 && status == -1)
+	{
+		printf("Failed to send packet: %d", errno);
+		return -1;
+	}
+
+	// listen for updates
+	int new_packet = 0;
+	live_session = true;
+	while (live_session)
+	{
+		bool receivedData = false;
+		while (!receivedData)
+		{
+			new_packet = (query_status_packet() == 1);
+			receivedData = true;
+			printf("new data received!\n");
+		}
+	}
+	return 0;
+}
+
+int SenteraDouble4k::endSession() {
+	live_session = false;
+	close(s_send);
+	close(s_rec);
+	return 0;
 }
 
 // Configures a given socket returning a socket ID, -1 indicates failure
@@ -469,53 +519,4 @@ int SenteraDouble4k::query_status_packet()
 	} while (current_packet > 0);
 
 	return newdata_received;
-}
-
-int SenteraDouble4k::initializeSession(uint8_t sessionType)
-{
-	// check if server is set up
-	if (serv_status == -1) {
-		printf("Server not initialized! Cannot start session.");
-		return -1;
-	}
-
-	// initialize packet to fill and send
-	uint8_t buf[BUFLEN];
-
-	// make packet of data 
-	int packet_length = makeSessionPacket(sessionType, buf);
-	if (packet_length <= 0)
-	{
-		printf("Failed to create packet");
-		return -1;
-	}
-
-	//send packet of data
-	int status = sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, sizeof(si_other_send));
-	if (packet_length > 0 && status == -1)
-	{
-		printf("Failed to send packet: %d", errno);
-		return -1;
-	}
-
-	// listen for updates
-	int new_packet = 0;
-	live_session = true;
-	while (live_session)
-	{
-		bool receivedData = false;
-		while (!receivedData)
-		{
-			new_packet = (query_status_packet() == 1);
-			receivedData = true;
-		}
-	}
-	return 0;
-}
-
-int SenteraDouble4k::endSession() {
-	live_session = false;
-	close(s_send);
-	close(s_rec);
-	return 0;
 }
