@@ -71,7 +71,7 @@ fw_imager_trigger_t DataPacketizer::trigger(uint8_t trigger_mask)
 
     if (imager_trigger.trigMode == 2)
     {
-		uint32_t interval = 1000; // milliseconds
+		uint32_t interval(1000); // milliseconds
         imager_trigger.trigPeriod = interval & 0xFFFF; //Interval (ms)
     }
 
@@ -90,7 +90,7 @@ fw_imager_zoom_t DataPacketizer::zoom(uint8_t trigger_mask)
     // Initialize packet and clear the needed memory
     fw_imager_zoom_t imager_zoom;
     memset(&imager_zoom, 0, sizeof(imager_zoom));
-    
+   
     imager_zoom.zoomMode = 0x02 & 0xFF; //Mode - Rate (1), Steps (2). --- should stay Steps 
 
     // Initialize value for rate or steps from user input as applicable

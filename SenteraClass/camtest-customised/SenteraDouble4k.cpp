@@ -18,10 +18,11 @@ uint16_t localPort = 60531;												// Default local port for receiving
 
 // for receiving
 const int num_cameras = 2;												// Double camera
-const int FILE_HISTORY_SIZE = 2;										// The number of saved files to store
-fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last num_cameras images recorded in a circular buffer of FILE_HISTORY_SIZE
-int recent_images_length[num_cameras];									// The number of recent images stored in the buffer
-int recent_images_start[num_cameras];									// The current index of the circular buffer
+//const int FILE_HISTORY_SIZE = 2;										// The number of saved files to store
+//fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last num_cameras images recorded in a circular buffer of FILE_HISTORY_SIZE
+//int recent_images_length[num_cameras];									// The number of recent images stored in the buffer
+//int recent_images_start[num_cameras];									// The current index of the circular buffer
+fw_imager_data_ready_t recent_images[num_cameras];						// Store individual history of the last num_cameras images - no circular buffer
 
 fw_payload_metadata_t camera_metadata[num_cameras];						// Store up to num_cameras worth of camera info
 bool camera_metadata_valid[num_cameras];								// Indicates whether each ID was valid 
@@ -32,9 +33,7 @@ uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 int serv_status = -1;
 bool live_session = false;
 
-Frame imgData;															// Frame that holds most recent image data
-
-SenteraDouble4k::SenteraDouble4k()
+SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
 {
 	struct timeval currTime;
 
@@ -46,10 +45,10 @@ SenteraDouble4k::SenteraDouble4k()
 	}
 
 	// Reset our circular buffer
-	for (int i = 0; i< num_cameras; i++) {
+	/* for (int i = 0; i< num_cameras; i++) {
 		recent_images_length[i] = 0;
 		recent_images_start[i] = 0;
-	}
+	}*/
 
 	// configure send and receive sockets
 	serv_status = startServer();
@@ -280,51 +279,51 @@ int SenteraDouble4k::makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 {
 	int packet_length = -1;
 	switch (sessionType & 0xFF) {
-	case SEND_IMAGER_TRIGGER: {
-		fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
-		packet_length = Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
-		break;
-	}
-	case SEND_STILL_CAPTURE: {
-		fw_imager_session_t imager_session = DataPacketizer::session();
-		packet_length = Bufferizer::session(imager_session, buf);
-		break;
-	}
-	case SEND_VIDEO_CAPTURE: {
-		fw_video_session_t video_session = DataPacketizer::video();
-		packet_length = Bufferizer::video(video_session, buf);
-		break;
-	}
-	case SEND_STILL_FOCUS: {
-		fw_still_focus_session_t still_focus_session = DataPacketizer::sf();
-		packet_length = Bufferizer::sf(still_focus_session, buf);
-		break;
-	}
-	case SEND_VIDEO_ADJUST: {
-		fw_video_adjust_t video_adjust = DataPacketizer::video_adjust();
-		packet_length = Bufferizer::videoadjust(video_adjust, buf);
-		break;
-	}
-	case SEND_IMAGER_ZOOM: {
-		fw_imager_zoom_t imager_zoom = DataPacketizer::zoom(trigger_mask);
-		packet_length = Bufferizer::zoom(imager_zoom, buf);
-		break;
-	}
-	case SEND_SYSTEM_TIME: {
-		printf("SystemTime option not implemented yet.");
-		//fw_system_time_t system_time = DataPacketizer::system_time();
-		//packet_length = Bufferizer::system_time(system_time, buf);
-		break;
-	}
-	case SEND_EXPOSURE_ADJUST: {
-		fw_exposure_adjust_t exposure_adjust = DataPacketizer::exposureadjust();
-		packet_length = Bufferizer::exposureadjust(exposure_adjust, buf);
-		break;
-	}
-	default: {
-		printf("Cannot initialize session of type ");
-		return -1;
-	}
+		case SEND_IMAGER_TRIGGER: {
+			fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
+			packet_length = Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
+			break;
+		}
+		case SEND_STILL_CAPTURE: {
+			fw_imager_session_t imager_session = DataPacketizer::session();
+			packet_length = Bufferizer::session(imager_session, buf);
+			break;
+		}
+		case SEND_VIDEO_CAPTURE: {
+			fw_video_session_t video_session = DataPacketizer::video();
+			packet_length = Bufferizer::video(video_session, buf);
+			break;
+		}
+		case SEND_STILL_FOCUS: {
+			fw_still_focus_session_t still_focus_session = DataPacketizer::sf();
+			packet_length = Bufferizer::sf(still_focus_session, buf);
+			break;
+		}
+		case SEND_VIDEO_ADJUST: {
+			fw_video_adjust_t video_adjust = DataPacketizer::video_adjust();
+			packet_length = Bufferizer::videoadjust(video_adjust, buf);
+			break;
+		}
+		case SEND_IMAGER_ZOOM: {
+			fw_imager_zoom_t imager_zoom = DataPacketizer::zoom(trigger_mask);
+			packet_length = Bufferizer::zoom(imager_zoom, buf);
+			break;
+		}
+		case SEND_SYSTEM_TIME: {
+			printf("SystemTime option not implemented yet.");
+			//fw_system_time_t system_time = DataPacketizer::system_time();
+			//packet_length = Bufferizer::system_time(system_time, buf);
+			break;
+		}
+		case SEND_EXPOSURE_ADJUST: {
+			fw_exposure_adjust_t exposure_adjust = DataPacketizer::exposureadjust();
+			packet_length = Bufferizer::exposureadjust(exposure_adjust, buf);
+			break;
+		}
+		default: {
+			printf("Cannot initialize session of type ");
+			return -1;
+		}
 	}
 	return packet_length;
 
@@ -469,7 +468,8 @@ int SenteraDouble4k::query_status_packet()
 			// Store the packet in the appropriate location of the circular buffer
 			for (int i = 0; i < num_cameras; i++)
 			{
-				if (new_image.imagerID & (0x01 << i))
+				recent_images[i] = new_image;
+				/*if (new_image.imagerID & (0x01 << i)) // all for circular buffer
 				{
 					// Handle circular buffer wraparound
 					recent_images_length[i]++;
@@ -483,7 +483,7 @@ int SenteraDouble4k::query_status_packet()
 
 					int cur_idx = (recent_images_start[i] + recent_images_length[i] - 1) % FILE_HISTORY_SIZE;
 					recent_images[i][cur_idx] = new_image;
-				}
+				}*/
 			}
 
 			newdata_received = 1;

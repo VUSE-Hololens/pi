@@ -2,7 +2,9 @@
 #include <unistd.h>
 
 int main() {
-	SenteraDouble4k sentera;
+
+	Transform t1;
+	SenteraDouble4k sentera(t1);
 
 	usleep(5000);
 
