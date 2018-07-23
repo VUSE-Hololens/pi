@@ -456,15 +456,14 @@ int SenteraDouble4k::query_status_packet()
 			fw_imager_data_ready_t new_image;
 			new_image.imagerID = rec_buf[n++];
 
+			printf("Filename: "); //DEBUG
 			for (int i = 0; i < 48; ++i)
 			{
 				new_image.fileName[i] = rec_buf[n];
+				printf("%c", new_image.fileName[i]); //DEBUG
 				n++;
 			}
-
-			std::string s; //DEBUG
-			s.assign(new_image.fileName, sizeof(new_image.fileName)); //DEBUG
-			printf("Filename: %s\n", s); //DEBUG
+			printf("\n"); //DEBUG
 
 			// Store the packet in the appropriate location of the circular buffer
 			for (int i = 0; i < num_cameras; i++)
