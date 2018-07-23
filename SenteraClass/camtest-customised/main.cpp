@@ -2,7 +2,7 @@
 #include <unistd.h>
 
 int main() {
-	SenteraDouble4k sentera = new SenteraDouble4k();
+	SenteraDouble4k sentera;
 
 	usleep(5000);
 
