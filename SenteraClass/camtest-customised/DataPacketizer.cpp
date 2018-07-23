@@ -71,7 +71,7 @@ fw_imager_trigger_t DataPacketizer::trigger(uint8_t trigger_mask)
 
     if (imager_trigger.trigMode == 2)
     {
-		uint32_t interval(1000); // milliseconds
+		uint32_t interval = 1000; // milliseconds
         imager_trigger.trigPeriod = interval & 0xFFFF; //Interval (ms)
     }
 

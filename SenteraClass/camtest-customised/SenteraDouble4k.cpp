@@ -4,9 +4,6 @@
 
 SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
 {
-	slen_send = sizeof(si_other_send);
-	slen_rec = sizeof(si_other_rec);
-
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
 		camera_metadata_valid[i] = false;
@@ -88,18 +85,14 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 
 	// make packet of data 
 	int packet_length = makeSessionPacket(sessionType, buf);
-	if (packet_length <= 0)
-	{
+	if (packet_length <= 0) {
 		printf("Failed to create packet");
 		return -1;
 	}
-
-	//DEBUG
-	printf("Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]);
+	printf("Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
 
 	//send packet of data
-	if (packet_length > 0 && sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1)
-	{
+	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
 		printf("Failed to send packet: %d", errno); //DEBUG
 		return -1;
 	}
@@ -442,11 +435,22 @@ int SenteraDouble4k::query_status_packet()
 			}
 			printf("\n");
 
+			if (new_image.imagerID == (uint8_t)1) {
+				recent_images[0] = new_image;
+			}
+			else if (new_image.imagerID == (uint8_t)2) {
+				recent_images[1] = new_image;
+			}
+			else {
+				fprintf("Imager ID not 1 or 2: Failed to store new image data\n");
+			}
+			fprintf("Stored new image\n");
+
 			// Store the packet in the appropriate location of the circular buffer
-			for (int i = 0; i < num_cameras; i++)
+			/*for (int i = 0; i < num_cameras; i++)
 			{
 				recent_images[i] = new_image;
-				/*if (new_image.imagerID & (0x01 << i)) // all for circular buffer
+				if (new_image.imagerID & (0x01 << i)) 
 				{
 					// Handle circular buffer wraparound
 					recent_images_length[i]++;
@@ -459,8 +463,8 @@ int SenteraDouble4k::query_status_packet()
 
 					int cur_idx = (recent_images_start[i] + recent_images_length[i] - 1) % FILE_HISTORY_SIZE;
 					recent_images[i][cur_idx] = new_image;
-				}*/
-			}
+				}
+			}*/
 
 			newdata_received = 1;
 

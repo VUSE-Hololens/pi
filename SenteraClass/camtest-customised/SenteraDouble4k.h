@@ -56,7 +56,8 @@ private:
 	// class variables
 	struct sockaddr_in si_other_send;										// Socket address of camera
 	struct sockaddr_in si_other_rec;										// Socket address receiving
-	int slen_rec, slen_send;
+	int slen_send = sizeof(si_other_send);
+	int slen_rec = sizeof(si_other_rec);
 
 	int s_send, s_rec;														// Sending and Receiving Sockets
 
