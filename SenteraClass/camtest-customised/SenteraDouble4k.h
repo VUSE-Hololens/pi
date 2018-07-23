@@ -63,5 +63,6 @@ public:
 	SenteraDouble4k();
 	~SenteraDouble4k();
 	int startServer();
-	int initialize_session(uint8_t sessionType);
+	int initializeSession(uint8_t sessionType);
+	int endSession();
 };

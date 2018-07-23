@@ -513,7 +513,7 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 	return 0;
 }
 
-int SenteraDouble4k::end_session() {
+int SenteraDouble4k::endSession() {
 	live_session = false;
 	close(s_send);
 	close(s_rec);
