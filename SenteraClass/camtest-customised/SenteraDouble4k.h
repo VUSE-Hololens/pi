@@ -62,6 +62,7 @@ private:
 	int query_status_packet();
 	int startServer();
 	int initializeSession(uint8_t sessionType);
+	std::string makeUrlString(uint8_t *filename);
 
 public:
 	SenteraDouble4k();

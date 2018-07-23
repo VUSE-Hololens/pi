@@ -532,11 +532,11 @@ int SenteraDouble4k::query_status_packet()
 
 int retrieveCurrentData() {
 	
-	std::string rgbStr = makeUrlStr(std::string(recent_images[0][recent_images_start[0]].fileName));
-	std::string nirStr = makeUrlStr(std::string(recent_images[1][recent_images_start[1]].fileName));
+	std::string rgbStr = makeUrlStr(recent_images[0][recent_images_start[0]].fileName);
+	std::string nirStr = makeUrlStr(recent_images[1][recent_images_start[1]].fileName);
 	delete urlStr;
-	printf(rgbStr + "\n");
-	printf(nirStr + "\n");
+	printf((const char*)rgbStr + "\n");
+	printf((const char*)nirStr + "\n");
 	//http_client client(rgbStr);
 	//http_response response;
 	//response = client.request(methods::GET).get(); // unsure of arguments to this request method
@@ -544,14 +544,14 @@ int retrieveCurrentData() {
 
 }
 
-std::string makeUrlString(std::string filename) {
+std::string makeUrlString(uint8_t *filename) {
 	//http://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
 	std::string urlStr("http://");
 	urlStr += server_ipaddr;
 	urlStr += ":";
 	urlStr += "8080";
 	urlStr += "/cur_session?path=/";
-	urlStr += filename;
+	urlStr += std::string((const char*)filename);
 	return urlStr;
 }
 
