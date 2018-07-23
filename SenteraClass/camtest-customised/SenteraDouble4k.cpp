@@ -151,7 +151,7 @@ void SenteraDouble4k::Stop() {
 	live_session = false;
 	close(s_send);
 	close(s_rec);
-	return 0;
+	return;
 }
 
 // Configures a given socket returning a socket ID, -1 indicates failure
@@ -246,7 +246,7 @@ int SenteraDouble4k::configure_receive(int myport, sockaddr_in& si_other)
 	// Refer IP address and port to the socket
 	si_other.sin_family = AF_INET;
 	si_other.sin_port = htons(myport);
-	if (inet_aton(server_ipaddr, &si_other.sin_addr) == 0)
+	if (inet_aton(server_ipaddr.c_str(), &si_other.sin_addr) == 0)
 	{
 		fprintf(stderr, "!! inet_aton() failed !!\n");
 		return -1;
