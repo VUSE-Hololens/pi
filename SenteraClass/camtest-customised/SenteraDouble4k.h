@@ -67,6 +67,7 @@ private:
 public:
 	SenteraDouble4k();
 	~SenteraDouble4k();
-	void SenteraDouble4k::Start();
-	void SenteraDouble4k::Stop();
+	void Start();
+	void Stop();
+	Frame Data();
 };

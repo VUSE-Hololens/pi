@@ -32,10 +32,13 @@ uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 int serv_status = -1;
 bool live_session = false;
 
+Frame imgData;															// Frame that holds most recent image data
+
 SenteraDouble4k::SenteraDouble4k()
 {
 	struct timeval currTime;
-	
+	imgData = new Frame();
+
 	fw_payload_metadata_t status;
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
@@ -532,11 +535,11 @@ int SenteraDouble4k::query_status_packet()
 
 int retrieveCurrentData() {
 	
-	std::string rgbStr = makeUrlStr(recent_images[0][recent_images_start[0]].fileName);
-	std::string nirStr = makeUrlStr(recent_images[1][recent_images_start[1]].fileName);
-	delete urlStr;
-	printf((const char*)rgbStr + "\n");
-	printf((const char*)nirStr + "\n");
+	//std::string rgbStr = makeUrlStr(recent_images[0][recent_images_start[0]].fileName);
+	//std::string nirStr = makeUrlStr(recent_images[1][recent_images_start[1]].fileName);
+	//printf((const char*)rgbStr + "\n");
+	//printf((const char*)nirStr + "\n");
+
 	//http_client client(rgbStr);
 	//http_response response;
 	//response = client.request(methods::GET).get(); // unsure of arguments to this request method
@@ -544,6 +547,13 @@ int retrieveCurrentData() {
 
 }
 
+Frame SenteraDouble4k::Data() {
+
+	return imgData;
+
+}
+
+/*
 std::string makeUrlString(uint8_t *filename) {
 	//http://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
 	std::string urlStr("http://");
@@ -553,5 +563,5 @@ std::string makeUrlString(uint8_t *filename) {
 	urlStr += "/cur_session?path=/";
 	urlStr += std::string((const char*)filename);
 	return urlStr;
-}
+}*/
 
