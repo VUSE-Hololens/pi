@@ -4,9 +4,14 @@
 
 SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
 {
-	struct timeval currTime;
+	cameraPort = 60530;
+	localPort = 60531;
+	slen_send = sizeof(si_other_send);
+	slen_rec = sizeof(si_other_rec);
+	trigger_mask = 0x03;
+	live_session = false;
+	serv_status = -1;
 
-	fw_payload_metadata_t status;
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
 		camera_metadata_valid[i] = false;

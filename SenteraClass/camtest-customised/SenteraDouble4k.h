@@ -56,18 +56,17 @@ private:
 	// class variables
 	struct sockaddr_in si_other_send;										// Socket address of camera
 	struct sockaddr_in si_other_rec;										// Socket address receiving
-	int slen_rec = sizeof(si_other_rec);
-	int slen_send = sizeof(si_other_send);
+	int slen_rec. slen_send;
 
 	int s_send, s_rec;														// Sending and Receiving Sockets
 
-	std::string server_ipaddr("192.168.143.141");							// Default IP of camera - was: char server_ipaddr[80]
-	std::string local_ipaddr(Sensor::PI_IP);								// Default local IP
-	uint16_t cameraPort = 60530;											// Default port of camera
-	uint16_t localPort = 60531;												// Default local port for receiving
+	static std::string server_ipaddr("192.168.143.141");					// Default IP of camera - was: char server_ipaddr[80]
+	static td::string local_ipaddr(Sensor::PI_IP);							// Default local IP
+	uint16_t cameraPort;													// Default port of camera
+	uint16_t localPort;														// Default local port for receiving
 
 	// for receiving
-	const static int num_cameras = 2;												// Double camera
+	const static int num_cameras = 2;										// Double camera
 	//const int FILE_HISTORY_SIZE = 2;										// The number of saved files to store
 	//fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last num_cameras images recorded in a circular buffer of FILE_HISTORY_SIZE
 	//int recent_images_length[num_cameras];								// The number of recent images stored in the buffer
@@ -79,7 +78,7 @@ private:
 	unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 
-	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
+	uint8_t trigger_mask;													// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;
 
