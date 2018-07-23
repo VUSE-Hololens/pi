@@ -60,8 +60,8 @@ private:
 
 	int s_send, s_rec;														// Sending and Receiving Sockets
 
-	static std::string server_ipaddr;										// Default IP of camera - was: char server_ipaddr[80]
-	static std::string local_ipaddr;										// Default local IP
+	static const std::string server_ipaddr;									// Default IP of camera - was: char server_ipaddr[80]
+	static const std::string local_ipaddr;									// Default local IP
 	uint16_t cameraPort;													// Default port of camera
 	uint16_t localPort;														// Default local port for receiving
 
