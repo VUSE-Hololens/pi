@@ -76,14 +76,13 @@ struct Frame {
 // abstract class for all sensor inputs
 class Sensor {
 protected:
-	static const std::string PI_IP;
+	const std::string PI_IP = "192.168.143.130";
 
 public:
 	// constructor
 	Sensor(Transform _offset)
 		: offset(_offset)
 	{
-		const std::string Sensor::PI_IP = "192.168.143.130";
 		updated = false;
 		data = new Frame();
 	}
@@ -92,7 +91,6 @@ public:
 	Sensor(const Sensor &rhs)
 		: offset(rhs.offset)
 	{
-		const std::string Sensor::PI_IP = "192.168.143.130";
 		updated = false;
 		data = new Frame();
 	}

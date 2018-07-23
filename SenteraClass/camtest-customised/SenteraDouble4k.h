@@ -60,10 +60,10 @@ private:
 
 	int s_send, s_rec;														// Sending and Receiving Sockets
 
-	static const std::string server_ipaddr;									// Default IP of camera - was: char server_ipaddr[80]
-	static const std::string local_ipaddr;									// Default local IP
-	uint16_t cameraPort;													// Default port of camera
-	uint16_t localPort;														// Default local port for receiving
+	const std::string server_ipaddr = "192.168.143.141";					// Default IP of camera - was: char server_ipaddr[80]
+	const std::string local_ipaddr = PI_IP;									// Default local IP
+	uint16_t cameraPort = 60530;											// Default port of camera
+	uint16_t localPort = 60531;												// Default local port for receiving
 
 	// for receiving
 	const static int num_cameras = 2;										// Double camera
@@ -78,7 +78,7 @@ private:
 	unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 
-	uint8_t trigger_mask;													// Default Trigger Mask
+	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;
 
