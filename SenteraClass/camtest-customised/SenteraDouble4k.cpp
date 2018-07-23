@@ -12,13 +12,13 @@ int slen_send = sizeof(si_other_send);
 int s_send, s_rec;														// Sending and Receiving Sockets
 
 std::string server_ipaddr("192.168.143.141");							// Default IP of camera - was: char server_ipaddr[80]
-std::string local_ipaddr(PI_IP);										// Default local IP
+std::string local_ipaddr(Sensor::PI_IP);								// Default local IP
 uint16_t cameraPort = 60530;											// Default port of camera
 uint16_t localPort = 60531;												// Default local port for receiving
 
 // for receiving
 const int num_cameras = 2;												// Double camera
-const int FILE_HISTORY_SIZE = 10;										// The number of saved files to store
+const int FILE_HISTORY_SIZE = 2;										// The number of saved files to store
 fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last num_cameras images recorded in a circular buffer of FILE_HISTORY_SIZE
 int recent_images_length[num_cameras];									// The number of recent images stored in the buffer
 int recent_images_start[num_cameras];									// The current index of the circular buffer
