@@ -131,10 +131,10 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 	live_session = true;
 	while (live_session)
 	{
-		bool new_packet = false;
-		while (!receivedData)
+		bool received_data = false;
+		while (!received_data)
 		{
-			new_packet = (query_status_packet() == 1);
+			received_data = (query_status_packet() == 1);
 		}
 		printf("new data received: "); //DEBUG
 	}
@@ -454,11 +454,16 @@ int SenteraDouble4k::query_status_packet()
 			int n = 5;
 			fw_imager_data_ready_t new_image;
 			new_image.imagerID = rec_buf[n++];
+
 			for (int i = 0; i < 48; ++i)
 			{
-				new_image.fileName[i] = rec_buf[n++];
-				fprintf("Filename: %s", new_image.fileName[i]); //DEBUG
+				new_image.fileName[i] = rec_buf[n];
+				n++;
 			}
+
+			std::string s; //DEBUG
+			s.assign(new_image.fileName, sizeOf(new_image.fileName)); //DEBUG
+			fprintf("Filename: %s\n", s); //DEBUG
 
 			// Store the packet in the appropriate location of the circular buffer
 			for (int i = 0; i < num_cameras; i++)
