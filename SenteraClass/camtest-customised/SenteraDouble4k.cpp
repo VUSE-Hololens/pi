@@ -517,6 +517,10 @@ int SenteraDouble4k::query_status_packet()
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 48;
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 56;
 		}
+		else if (rec_buf[2] = RECV_IMAGER_TRIGGER_ACK)
+		{
+			printf("Received Imager Trigger Acknowledgement\n");
+		}
 		else
 		{
 			printf("INCOMPLETE PACKET of Length: %d", current_packet);
