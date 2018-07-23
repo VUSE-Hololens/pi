@@ -65,7 +65,7 @@ private:
 	std::string makeUrlString(uint8_t *filename);
 
 public:
-	SenteraDouble4k();
+	SenteraDouble4k(Transform offset);
 	~SenteraDouble4k();
 	void Start();
 	void Stop();
