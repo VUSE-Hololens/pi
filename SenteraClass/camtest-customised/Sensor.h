@@ -76,7 +76,7 @@ struct Frame {
 // abstract class for all sensor inputs
 class Sensor {
 protected:
-	const static std::string PI_IP = "192.168.143.130";
+	const std::string PI_IP = "192.168.143.130";
 
 public:
 	// constructor
