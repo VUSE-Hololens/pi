@@ -37,7 +37,6 @@ Frame imgData;															// Frame that holds most recent image data
 SenteraDouble4k::SenteraDouble4k()
 {
 	struct timeval currTime;
-	imgData = new Frame();
 
 	fw_payload_metadata_t status;
 	// Assume we start without a connection
@@ -548,9 +547,7 @@ int retrieveCurrentData() {
 }
 
 Frame SenteraDouble4k::Data() {
-
-	return imgData;
-
+	return data;
 }
 
 /*
