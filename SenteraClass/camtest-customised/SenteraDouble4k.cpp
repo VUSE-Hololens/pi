@@ -1,6 +1,7 @@
 
 // includes
 #include "SenteraDouble4k.h"
+#include <string> //DEBUG
 
 // class variables
 struct sockaddr_in si_other_send;										// Socket address of camera
@@ -462,7 +463,7 @@ int SenteraDouble4k::query_status_packet()
 			}
 
 			std::string s; //DEBUG
-			s.assign(new_image.fileName, sizeOf(new_image.fileName)); //DEBUG
+			s.assign(new_image.fileName, sizeof(new_image.fileName)); //DEBUG
 			fprintf("Filename: %s\n", s); //DEBUG
 
 			// Store the packet in the appropriate location of the circular buffer
