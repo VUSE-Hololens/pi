@@ -4,8 +4,8 @@
 
 SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
 {
-	const SenteraDouble4k::server_ipaddr = "192.168.143.141";
-	const SenteraDouble4k::local_ipaddr = PI_IP;
+	const std::string SenteraDouble4k::server_ipaddr = "192.168.143.141";
+	const std::string SenteraDouble4k::local_ipaddr = PI_IP;
 	cameraPort = 60530;
 	localPort = 60531;
 	slen_send = sizeof(si_other_send);
