@@ -442,7 +442,7 @@ int SenteraDouble4k::query_status_packet()
 				recent_images[1] = new_image;
 			}
 			else {
-				fprintf("Imager ID not 1 or 2: Failed to store new image data\n");
+				fprintf(stderr, "Imager ID not 1 or 2: Failed to store new image data\n");
 			}
 			printf("Stored new image\n");
 
