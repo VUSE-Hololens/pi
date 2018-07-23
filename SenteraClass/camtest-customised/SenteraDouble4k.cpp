@@ -9,7 +9,6 @@ struct sockaddr_in si_other_rec;										// Socket address receiving
 int slen_rec = sizeof(si_other_rec);
 int slen_send = sizeof(si_other_send);
 
-
 int s_send, s_rec;														// Sending and Receiving Sockets
 
 char server_ipaddr[80] = "192.168.143.141";								// Default IP of camera
@@ -35,11 +34,7 @@ bool live_session = false;
 
 SenteraDouble4k::SenteraDouble4k()
 {
-	char user_input[80];
 	struct timeval currTime;
-	char mainSessionName[64];
-	char fpfName[96];
-	bool new_packet;
 	
 	fw_payload_metadata_t status;
 	// Assume we start without a connection
@@ -133,7 +128,6 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 	}
 
 	// listen for updates
-	bool new_packet = false;
 	live_session = true;
 	while (live_session)
 	{
@@ -364,7 +358,7 @@ int SenteraDouble4k::query_status_packet()
 		}
 		else if (rec_buf[2] == RECV_PAYLOAD_METADATA) 
 		{
-			printf("Received Payload Metadata"); //DEBUG
+			//printf("Received Payload Metadata"); //DEBUG
 
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x19 && rec_buf[4] == 0x00)) return 0;
@@ -452,7 +446,7 @@ int SenteraDouble4k::query_status_packet()
 		// Handle new image avilable packets
 		else if (rec_buf[2] == RECV_IMAGE_DATA_READY)
 		{
-			printf("Received Image Data Ready Packet"); //DEBUG
+			printf("Received Image Data Ready Packet\n"); //DEBUG
 
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x21 && rec_buf[4] == 0x00)) return 0;

@@ -6,7 +6,7 @@ int main() {
 
 	usleep(5000);
 
-	sentera.initializeSession(SEND_STILL_CAPTURE);
+	sentera.initializeSession(SEND_IMAGER_TRIGGER);
 
 	return 0;
 }

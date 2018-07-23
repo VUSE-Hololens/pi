@@ -24,12 +24,15 @@ fw_imager_session_t DataPacketizer::session()
 
     if (imager_session.sessionCmd == 0)
     {
-		char name[] = "SenteraSession1";
+		char name[] = "SenteraImagerSession1";
+		printf("Session Name: "); //DEBUG
 		for (int i = 0; i < sizeof(name); i++) {
 			imager_session.sessionName[i] = (uint8_t)name[i];
+			printf("%c", (char)imager_session.sessionName[i]); //DEBUG
 		}
+		printf("\n"); //DEBUG
 
-        imager_session.resumeSession = 1 & 0xF;
+        imager_session.resumeSession = 0x1 & 0xF;
 
 		// Add UTC time data to the session open packet.
 		time_t raw_time;
@@ -66,10 +69,9 @@ fw_imager_trigger_t DataPacketizer::trigger(uint8_t trigger_mask)
     // Initialize trigger mode from user input
     imager_trigger.trigMode = 0x02 & 0xFF; //Disable (0), Single (1), or Continuous (2)
 
-    // Prompt user for trigger interval if applicable
     if (imager_trigger.trigMode == 2)
     {
-		uint32_t interval = 1000;
+		uint32_t interval = 1000; // milliseconds
         imager_trigger.trigPeriod = interval & 0xFFFF; //Interval (ms)
     }
 

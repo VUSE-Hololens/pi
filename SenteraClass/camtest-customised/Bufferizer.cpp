@@ -68,31 +68,31 @@ int Bufferizer::session(fw_imager_session_t& session, uint8_t *buf)
     int k = 0;
     int length = 142;
 
-    buf[n] = 'F';                    n++;
-    buf[n] = 'W';                    n++;
-    buf[n] = IMAGER_SESSION;         n++;
-    buf[n] = length >> 0;    n++;
-    buf[n] = length >> 8;    n++;
+    buf[n] = 'F';                   n++;
+    buf[n] = 'W';                   n++;
+    buf[n] = IMAGER_SESSION;        n++;
+    buf[n] = length >> 0;			n++;
+    buf[n] = length >> 8;			n++;
 
-    buf[n] = session.sessionCmd;     n++;
+    buf[n] = session.sessionCmd;    n++;
     for (i = 0; i < 128; i++)
     {
-        buf[n] = session.sessionName[i]; n++;
+        buf[n] = session.sessionName[i];	n++;
     }
 
-    buf[n] = session.utcYear >> 0;    n++;
-    buf[n] = session.utcMonth >> 0;    n++;
-    buf[n] = session.utcDay >> 0;    n++;
-    buf[n] = session.utcHour >> 0;    n++;
-    buf[n] = session.utcMinute >> 0;    n++;
-    buf[n] = session.utcMillisecond & 0xFF;    n++;
-    buf[n] = session.utcMillisecond >> 8;    n++;
-    buf[n] = session.sessionID & 0xFF;    n++;
-    buf[n] = session.sessionID >> 8;    n++;
-    buf[n] = session.buildVersion & 0xFF;    n++;
-    buf[n] = session.buildVersion >> 8;    n++;
-    buf[n] = session.aircraftType >> 0;    n++;
-    buf[n] = session.resumeSession >> 0;    n++;
+    buf[n] = session.utcYear >> 0;				n++;
+    buf[n] = session.utcMonth >> 0;				n++;
+    buf[n] = session.utcDay >> 0;				n++;
+    buf[n] = session.utcHour >> 0;				n++;
+    buf[n] = session.utcMinute >> 0;			n++;
+    buf[n] = session.utcMillisecond & 0xFF;		n++;
+    buf[n] = session.utcMillisecond >> 8;		n++;
+    buf[n] = session.sessionID & 0xFF;			n++;
+    buf[n] = session.sessionID >> 8;			n++;
+    buf[n] = session.buildVersion & 0xFF;		n++;
+    buf[n] = session.buildVersion >> 8;			n++;
+    buf[n] = session.aircraftType >> 0;			n++;
+    buf[n] = session.resumeSession >> 0;		n++;
     buf[n] = Bufferizer::CRC8_7(0, &buf[2], n - 2); n++;
     return n;
 }
