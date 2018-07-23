@@ -137,7 +137,6 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 		{
 			received_data = (query_status_packet() == 1);
 		}
-		printf("new data received: "); //DEBUG
 	}
 	return 0;
 }
@@ -355,10 +354,13 @@ int SenteraDouble4k::query_status_packet()
 		// As well as FW Header check
 		else if (current_packet < 24 || !(rec_buf[0] == 0x46 && rec_buf[1] == 0x57))
 		{
+			printf("Header Failure");
 			return 0;
 		}
 		else if (rec_buf[2] == RECV_PAYLOAD_METADATA) 
 		{
+			printf("Received Payload Metadata"); //DEBUG
+
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x19 && rec_buf[4] == 0x00)) return 0;
 
@@ -445,8 +447,7 @@ int SenteraDouble4k::query_status_packet()
 		// Handle new image avilable packets
 		else if (rec_buf[2] == RECV_IMAGE_DATA_READY)
 		{
-			
-			printf("Received Image Data Ready Packet");
+			printf("Received Image Data Ready Packet"); //DEBUG
 
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x21 && rec_buf[4] == 0x00)) return 0;
@@ -491,6 +492,8 @@ int SenteraDouble4k::query_status_packet()
 		// Handle Time Ack Packets
 		else if (rec_buf[2] == RECV_SYSTEM_TIME_ACK)
 		{
+			printf("Receive System Time Ack"); //DEBUG
+
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x12 && rec_buf[4] == 0x00)) return 0;
 
@@ -518,7 +521,6 @@ int SenteraDouble4k::query_status_packet()
 		else
 		{
 			printf("INCOMPLETE PACKET of Length: %d", current_packet);
-
 		}
 
 	} while (current_packet > 0);
