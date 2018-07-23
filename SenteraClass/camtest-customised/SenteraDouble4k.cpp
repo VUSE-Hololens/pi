@@ -1,7 +1,7 @@
 
 // includes
 #include "SenteraDouble4k.h"
-#include <string> //DEBUG
+#include <string>
 
 // class variables
 struct sockaddr_in si_other_send;										// Socket address of camera
@@ -11,8 +11,8 @@ int slen_send = sizeof(si_other_send);
 
 int s_send, s_rec;														// Sending and Receiving Sockets
 
-char server_ipaddr[80] = "192.168.143.141";								// Default IP of camera
-char local_ipaddr[80] = "192.168.143.130";								// Default local IP
+std::string server_ipaddr("192.168.143.141");							// Default IP of camera - was: char server_ipaddr[80]
+std::string local_ipaddr(Sensor::PI_IP);								// Default local IP
 uint16_t cameraPort = 60530;											// Default port of camera
 uint16_t localPort = 60531;												// Default local port for receiving
 
@@ -22,11 +22,11 @@ const int FILE_HISTORY_SIZE = 10;										// The number of saved files to store
 fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last num_cameras images recorded in a circular buffer of FILE_HISTORY_SIZE
 int recent_images_length[num_cameras];									// The number of recent images stored in the buffer
 int recent_images_start[num_cameras];									// The current index of the circular buffer
+
 fw_payload_metadata_t camera_metadata[num_cameras];						// Store up to num_cameras worth of camera info
 bool camera_metadata_valid[num_cameras];								// Indicates whether each ID was valid 
 unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
 fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
-
 
 uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 int serv_status = -1;
@@ -63,6 +63,10 @@ SenteraDouble4k::~SenteraDouble4k()
 	close(s_rec);
 }
 
+SenteraDouble4k::Start() {
+	initializeSession(SEND_IMAGER_TRIGGER);
+}
+
 // starts server by setting up send and receive sockets
 int SenteraDouble4k::startServer() {
 
@@ -73,7 +77,7 @@ int SenteraDouble4k::startServer() {
 
 	// If we run locally on the camera, don't bind to the port or we fail
 	bool bind_send_socket = true;
-	if (strcmp(local_ipaddr, server_ipaddr) == 0)
+	if (local_ipaddr.compare(server_ipaddr) == 0)
 	{
 		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort); //DEBUG
 		bind_send_socket = false;
@@ -140,7 +144,7 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 	return 0;
 }
 
-int SenteraDouble4k::endSession() {
+int SenteraDouble4k::Stop() {
 	live_session = false;
 	close(s_send);
 	close(s_rec);
@@ -180,7 +184,7 @@ int SenteraDouble4k::configure_socket(int myport, sockaddr_in& si_other, bool bi
 	// Refer IP address and port to the socket
 	si_other.sin_family = AF_INET;
 	si_other.sin_port = htons(myport);
-	if (inet_aton(server_ipaddr, &si_other.sin_addr) == 0)
+	if (inet_aton(server_ipaddr.c_str(), &si_other.sin_addr) == 0)
 	{
 		fprintf(stderr, "!! inet_aton() failed !!\n");
 		return -1;
@@ -527,7 +531,27 @@ int SenteraDouble4k::query_status_packet()
 }
 
 int retrieveCurrentData() {
-	//http://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
 	
+	std::string rgbStr = makeUrlStr(std::string(recent_images[0][recent_images_start[0]].fileName));
+	std::string nirStr = makeUrlStr(std::string(recent_images[1][recent_images_start[1]].fileName));
+	delete urlStr;
+	printf(rgbStr + "\n");
+	printf(nirStr + "\n");
+	//http_client client(rgbStr);
+	//http_response response;
+	//response = client.request(methods::GET).get(); // unsure of arguments to this request method
+	
+
+}
+
+std::string makeUrlString(std::string filename) {
+	//http://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
+	std::string urlStr("http://");
+	urlStr += server_ipaddr;
+	urlStr += ":";
+	urlStr += "8080";
+	urlStr += "/cur_session?path=/";
+	urlStr += filename;
+	return urlStr;
 }
 

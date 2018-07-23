@@ -12,6 +12,7 @@
 // user includes
 #include "Bufferizer.h"
 #include "DataPacketizer.h"
+#include "Sensor.h" // extends
 #include "packets.h"
 
 // defines
@@ -46,7 +47,7 @@
 #define RECV_FOCUS_SCORE 0xD0 // From Payload Focus Score
 #define RECV_PAYLOAD_EXCEPTION 0xFF // From Payload Payload Exception
 
-class SenteraDouble4k // implements sensor
+class SenteraDouble4k : public Sensor // implements sensor
 {
 // Variables
 public:
@@ -59,11 +60,10 @@ private:
 	int configure_receive(int myport, sockaddr_in& si_other);
 	int makeSessionPacket(uint8_t sessionType, uint8_t *buf);
 	int query_status_packet();
+	int startServer();
+	int initializeSession(uint8_t sessionType);
 
 public:
 	SenteraDouble4k();
 	~SenteraDouble4k();
-	int startServer();
-	int initializeSession(uint8_t sessionType);
-	int endSession();
 };
