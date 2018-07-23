@@ -7,12 +7,14 @@
 struct sockaddr_in si_other_send;										// Socket address of camera
 struct sockaddr_in si_other_rec;										// Socket address receiving
 int slen_rec = sizeof(si_other_rec);
+int slen_send = sizeof(si_other_send);
+
 
 int s_send, s_rec;														// Sending and Receiving Sockets
 
 char server_ipaddr[80] = "192.168.143.141";								// Default IP of camera
 char local_ipaddr[80] = "192.168.143.130";								// Default local IP
-uint16_t cameraPort = 60530;												// Default port of camera
+uint16_t cameraPort = 60530;											// Default port of camera
 uint16_t localPort = 60531;												// Default local port for receiving
 
 // for receiving
@@ -29,12 +31,11 @@ fw_system_time_ack_t recent_time_ack;									// The most recent system time ack
 
 uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 int serv_status = -1;
-bool live_session;
+bool live_session = false;
 
 SenteraDouble4k::SenteraDouble4k()
 {
 	char user_input[80];
-	int packet_length = 0;
 	struct timeval currTime;
 	char mainSessionName[64];
 	char fpfName[96];
@@ -63,13 +64,15 @@ SenteraDouble4k::SenteraDouble4k()
 
 SenteraDouble4k::~SenteraDouble4k()
 {
+	close(s_send);
+	close(s_rec);
 }
 
 // starts server by setting up send and receive sockets
 int SenteraDouble4k::startServer() {
 
 	if (serv_status > -1) {
-		printf("Server already running!");
+		printf("Server already running!\n"); //DEBUG
 		return 0;
 	}
 
@@ -77,7 +80,7 @@ int SenteraDouble4k::startServer() {
 	bool bind_send_socket = true;
 	if (strcmp(local_ipaddr, server_ipaddr) == 0)
 	{
-		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort);
+		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort); //DEBUG
 		bind_send_socket = false;
 	}
 
@@ -86,7 +89,7 @@ int SenteraDouble4k::startServer() {
 	s_send = configure_socket(cameraPort, si_other_send, bind_send_socket);
 	if (!s_send)
 	{
-		fprintf(stderr, "!! Unable to configure sending socket. !!");
+		fprintf(stderr, "!! Unable to configure sending socket. !!"); //DEBUG
 		return -1;
 	}
 
@@ -94,7 +97,7 @@ int SenteraDouble4k::startServer() {
 	s_rec = configure_receive(localPort, si_other_rec);
 	if (!s_rec)
 	{
-		fprintf(stderr, "!! Unable to configure receiving socket. !!");
+		fprintf(stderr, "!! Unable to configure receiving socket. !!"); //DEBUG
 		return -1;
 	}
 	return 1;
@@ -119,11 +122,13 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 		return -1;
 	}
 
+	//DEBUG
+	printf("Packet Created. Length: %d, sample: %X\n", packet_length, buf[2]);
+
 	//send packet of data
-	int status = sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, sizeof(si_other_send));
-	if (packet_length > 0 && status == -1)
+	if (packet_length > 0 && sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1)
 	{
-		printf("Failed to send packet: %d", errno);
+		printf("Failed to send packet: %d", errno); //DEBUG
 		return -1;
 	}
 
@@ -354,7 +359,7 @@ int SenteraDouble4k::query_status_packet()
 		// As well as FW Header check
 		else if (current_packet < 24 || !(rec_buf[0] == 0x46 && rec_buf[1] == 0x57))
 		{
-			printf("Header Failure");
+			printf("Recv Packet Header Failure");
 			return 0;
 		}
 		else if (rec_buf[2] == RECV_PAYLOAD_METADATA) 
