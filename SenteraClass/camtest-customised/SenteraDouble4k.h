@@ -67,7 +67,7 @@ private:
 	uint16_t localPort = 60531;												// Default local port for receiving
 
 	// for receiving
-	const int num_cameras = 2;												// Double camera
+	const static int num_cameras = 2;												// Double camera
 	//const int FILE_HISTORY_SIZE = 2;										// The number of saved files to store
 	//fw_imager_data_ready_t recent_images[num_cameras][FILE_HISTORY_SIZE];	// Store individual history of the last num_cameras images recorded in a circular buffer of FILE_HISTORY_SIZE
 	//int recent_images_length[num_cameras];								// The number of recent images stored in the buffer
