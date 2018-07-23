@@ -56,12 +56,12 @@ private:
 	// class variables
 	struct sockaddr_in si_other_send;										// Socket address of camera
 	struct sockaddr_in si_other_rec;										// Socket address receiving
-	int slen_rec. slen_send;
+	int slen_rec, slen_send;
 
 	int s_send, s_rec;														// Sending and Receiving Sockets
 
 	static std::string server_ipaddr("192.168.143.141");					// Default IP of camera - was: char server_ipaddr[80]
-	static td::string local_ipaddr(Sensor::PI_IP);							// Default local IP
+	static std::string local_ipaddr(Sensor::PI_IP);							// Default local IP
 	uint16_t cameraPort;													// Default port of camera
 	uint16_t localPort;														// Default local port for receiving
 
