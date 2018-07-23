@@ -83,7 +83,7 @@ public:
 	Sensor(Transform _offset)
 		: offset(_offset)
 	{
-		PI_IP = "192.168.143.130"
+		PI_IP = "192.168.143.130";
 		updated = false;
 		data = new Frame();
 	}
@@ -92,7 +92,7 @@ public:
 	Sensor(const Sensor &rhs)
 		: offset(rhs.offset)
 	{
-		PI_IP = "192.168.143.130"
+		PI_IP = "192.168.143.130";
 		updated = false;
 		data = new Frame();
 	}
