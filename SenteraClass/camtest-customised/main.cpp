@@ -6,7 +6,7 @@ int main() {
 
 	usleep(5000);
 
-	sentera.initializeSession(SEND_IMAGER_TRIGGER);
+	sentera.Start();
 
 	return 0;
 }

@@ -12,7 +12,7 @@ int slen_send = sizeof(si_other_send);
 int s_send, s_rec;														// Sending and Receiving Sockets
 
 std::string server_ipaddr("192.168.143.141");							// Default IP of camera - was: char server_ipaddr[80]
-std::string local_ipaddr(Sensor::PI_IP);								// Default local IP
+std::string local_ipaddr(PI_IP);										// Default local IP
 uint16_t cameraPort = 60530;											// Default port of camera
 uint16_t localPort = 60531;												// Default local port for receiving
 
@@ -63,7 +63,7 @@ SenteraDouble4k::~SenteraDouble4k()
 	close(s_rec);
 }
 
-SenteraDouble4k::Start() {
+void SenteraDouble4k::Start() {
 	initializeSession(SEND_IMAGER_TRIGGER);
 }
 
@@ -144,7 +144,7 @@ int SenteraDouble4k::initializeSession(uint8_t sessionType)
 	return 0;
 }
 
-int SenteraDouble4k::Stop() {
+void SenteraDouble4k::Stop() {
 	live_session = false;
 	close(s_send);
 	close(s_rec);
