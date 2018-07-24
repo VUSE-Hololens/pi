@@ -33,7 +33,7 @@ private:
 	void sendFrame() {
 		if (sensor.getUpdated()) {
 			Frame sensorData = sensor.Data();
-			sender.transmit(sensorData.pixels, sensorData.height * sensorData.width * sensorData.bands);
+			sender.transmit(sensorData.toBuffer(), sensorData.bufferSize());
 		}
 	}
 };
