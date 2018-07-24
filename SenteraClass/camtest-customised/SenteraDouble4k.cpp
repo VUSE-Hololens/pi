@@ -24,7 +24,7 @@ SenteraDouble4k::~SenteraDouble4k()
 }
 
 int SenteraDouble4k::Start() {
-	const char[80] currentSessionName = "TestingName1";
+	const char currentSessionName[128] = "TestingName1";
 	if (serv_status == -1) {
 		printf("Server not initialized! Cannot start session.");
 		return -1;

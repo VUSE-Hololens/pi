@@ -24,7 +24,7 @@ fw_imager_session_t DataPacketizer::session(uint8_t command, const char *name)
 
     if (imager_session.sessionCmd == 0)
     {
-		for (int i = 0; i < 80; i++) {
+		for (int i = 0; i < 128; i++) {
 			imager_session.sessionName[i] = (uint8_t)name[i];
 		}
 
