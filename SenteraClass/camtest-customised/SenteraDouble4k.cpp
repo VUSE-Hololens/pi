@@ -56,6 +56,7 @@ int SenteraDouble4k::Start() {
 		while (!received_data)
 		{
 			received_data = (query_status_packet() == 1);
+			//TODO: processImages();
 		}
 	}
 	return 0;
@@ -385,8 +386,6 @@ int SenteraDouble4k::query_status_packet()
 		// Handle new image avilable packets
 		else if (rec_buf[2] == fw_packet_type_e::IMAGER_DATA_READY)
 		{
-			printf("Receive Data Ready\n");
-
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x21 && rec_buf[4] == 0x00)) return 0;
 
@@ -416,8 +415,6 @@ int SenteraDouble4k::query_status_packet()
 			printf("Stored new image for camera %d\n", new_image.imagerID);
 
 			newdata_received = 1;
-
-
 
 		}
 		// Handle Time Ack Packets
@@ -465,6 +462,10 @@ int SenteraDouble4k::query_status_packet()
 
 Frame SenteraDouble4k::Data() {
 	return *data;
+}
+
+int SenteraDouble4k::processImages() {
+	retrieveCurrentData();
 }
 
 int SenteraDouble4k::retrieveCurrentData() {

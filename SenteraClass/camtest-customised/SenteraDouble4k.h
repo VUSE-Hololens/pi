@@ -62,8 +62,11 @@ private:
 	int makeImagerTriggerPacket(uint8_t mode, uint32_t period, uint8_t *buf);
 	int makeStillCapturePacket(uint8_t option, std::string sessionName, uint8_t *buf);
 
-	//retreiving data
+	//receiving data
 	int query_status_packet();
+
+	//processing data
+	int processImages();
 	int retrieveCurrentData();
 	std::string makeFilePath(uint8_t *filename, bool url);
 
