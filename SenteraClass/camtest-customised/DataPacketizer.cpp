@@ -13,7 +13,7 @@
 // @brief Builds session packet
 // @param none
 // @return Imager session packet
-fw_imager_session_t DataPacketizer::session(uint8_t command, char *name[])
+fw_imager_session_t DataPacketizer::session(uint8_t command, const char *name[])
 {
     // Initialize packet and clear the needed memory
     fw_imager_session_t imager_session;

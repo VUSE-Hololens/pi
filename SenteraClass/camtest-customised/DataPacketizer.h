@@ -28,7 +28,7 @@ class DataPacketizer
 {
 
 public:
-    static fw_imager_session_t session(uint8_t command, char name[]);
+    static fw_imager_session_t session(uint8_t command, const char *name[]);
     static fw_imager_trigger_t trigger(uint8_t trigger_mask);
     static fw_imager_zoom_t zoom(uint8_t trigger_mask);
     static fw_imager_preview_stream_setup_t preview_stream_setup(uint8_t trigger_mask);
