@@ -520,8 +520,10 @@ int SenteraDouble4k::retrieveCurrentData() {
 	
 	std::string rgbStr = makeFilePath(recent_images[0].fileName);
 	std::string nirStr = makeFilePath(recent_images[1].fileName);
-	printf(rgbStr.c_str() + "\n");
-	printf(nirStr.c_str() + "\n");
+	printf(rgbStr.c_str());
+	printf("\n");
+	printf(nirStr.c_str());
+	printf("\n");
 
 	//http_client client(rgbStr);
 	//http_response response;

@@ -92,7 +92,7 @@ private:
 	int startServer();
 	int initializeSession(uint8_t sessionType);
 	int retrieveCurrentData();
-	std::string makeFilePath(uint8_t *filename);
+	std::string makeFilePath(uint8_t *filename, bool url = false);
 
 public:
 	SenteraDouble4k(Transform offset);
