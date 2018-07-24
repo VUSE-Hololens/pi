@@ -11,7 +11,8 @@ SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
 	}
 
 	// configure send and receive sockets
-	if (startServer()) {
+	serv_status = startServer();
+	if (serv_status) {
 		printf("Successfully Setup Sockets!\n"); //DEBUG
 	}
 }
