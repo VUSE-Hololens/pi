@@ -250,7 +250,7 @@ int SenteraDouble4k::makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 			break;
 		}
 		case SEND_STILL_CAPTURE: {
-			fw_imager_session_t imager_session = DataPacketizer::session(0x00, currentSessionName.c_str()); // 0x00 to Open, 0x01 to close
+			fw_imager_session_t imager_session = DataPacketizer::session((uint8_t)0, currentSessionName.c_str()); // 0x00 to Open, 0x01 to close
 			packet_length = Bufferizer::session(imager_session, buf);
 			break;
 		}
