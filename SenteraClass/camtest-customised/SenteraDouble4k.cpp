@@ -31,6 +31,7 @@ SenteraDouble4k::~SenteraDouble4k()
 }
 
 void SenteraDouble4k::Start() {
+	currentSessionName = "TestingName1";
 	if (initializeSession(SEND_STILL_CAPTURE) != 1) {
 		printf("Session %X unable to initialize", SEND_STILL_CAPTURE);
 	}
@@ -249,8 +250,7 @@ int SenteraDouble4k::makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 			break;
 		}
 		case SEND_STILL_CAPTURE: {
-			char name[80] = "TestingName1";
-			fw_imager_session_t imager_session = DataPacketizer::session(0x00, name); // 0x00 to Open, 0x01 to close
+			fw_imager_session_t imager_session = DataPacketizer::session(0x00, currentSessionName); // 0x00 to Open, 0x01 to close
 			packet_length = Bufferizer::session(imager_session, buf);
 			break;
 		}
@@ -534,21 +534,22 @@ int SenteraDouble4k::retrieveCurrentData() {
 
 std::string SenteraDouble4k::makeFilePath(uint8_t *filename, bool url = false) {
 	//// http ://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
+	std::string outStr;
 	if (url) { // url path
-		std::string outStr = "http://";
+		outStr = "http://";
 		outStr += server_ipaddr;
 		outStr += ":";
 		outStr += "8080";
 		outStr += "/cur_session?path=/";
 	}
+	//// /sdcard?path=/snapshots/*currentSessionName/filename
 	else { // file path
-		std::string outStr = "/sdcard?path=/snapshots/";
-		for (int i = 0; i < sizeof(filename); i++) {
-			outStr += (const char*)imager_session.sessionName[i];
-		}
+		outStr = "/sdcard?path=/snapshots/";
+		outStr += currentSessionName;
+		outStr += "/"
 	}
-	for (int i = 0; i < filename.Length; i++){
-		outStr += (const char*)filename[i];
+	for (int i = 0; i < sizeof(filename); i++){
+		outStr += (const char)filename[i];
 	}
 	return outStr;
 }
