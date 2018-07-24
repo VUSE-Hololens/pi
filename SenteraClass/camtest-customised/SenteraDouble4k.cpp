@@ -24,7 +24,7 @@ SenteraDouble4k::~SenteraDouble4k()
 }
 
 int SenteraDouble4k::Start() {
-	const char[80] = "TestingName1";
+	const char[80] currentSessionName = "TestingName1";
 	if (serv_status == -1) {
 		printf("Server not initialized! Cannot start session.");
 		return -1;
@@ -479,8 +479,8 @@ int SenteraDouble4k::processImages() {
 
 int SenteraDouble4k::retrieveCurrentData() {
 	
-	std::string rgbStr = makeFilePath(recent_images[0].fileName, true);
-	std::string nirStr = makeFilePath(recent_images[1].fileName, true);
+	std::string rgbStr = makeUrlPath(recent_images[0].fileName, true);
+	std::string nirStr = makeUrlPath(recent_images[1].fileName, true);
 	printf(rgbStr.c_str());
 	printf("\n");
 	printf(nirStr.c_str());

@@ -59,7 +59,7 @@ private:
 	int startServer();
 	// initializing session
 	int makeImagerTriggerPacket(uint8_t mode, uint32_t period, uint8_t *buf);
-	int makeStillCapturePacket(uint8_t option, std::string sessionName, uint8_t *buf);
+	int makeStillCapturePacket(uint8_t option, const char *sessionName, uint8_t *buf);
 
 	//receiving data
 	int query_status_packet();
