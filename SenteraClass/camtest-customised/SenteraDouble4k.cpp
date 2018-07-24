@@ -512,22 +512,22 @@ int SenteraDouble4k::query_status_packet()
 	return newdata_received;
 }
 
-int retrieveCurrentData() {
+Frame SenteraDouble4k::Data() {
+	return *data;
+}
+
+int SenteraDouble4k::retrieveCurrentData() {
 	
 	std::string rgbStr = makeFilePath(recent_images[0].fileName);
 	std::string nirStr = makeFilePath(recent_images[1].fileName);
-	printf(rgbStr + "\n");
-	printf(nirStr + "\n");
+	printf(rgbStr.c_str() + "\n");
+	printf(nirStr.c_str() + "\n");
 
 	//http_client client(rgbStr);
 	//http_response response;
 	//response = client.request(methods::GET).get(); // unsure of arguments to this request method
 	
 
-}
-
-Frame SenteraDouble4k::Data() {
-	return *data;
 }
 
 std::string SenteraDouble4k::makeFilePath(uint8_t *filename, bool url = false) {
@@ -541,7 +541,7 @@ std::string SenteraDouble4k::makeFilePath(uint8_t *filename, bool url = false) {
 	}
 	else { // file path
 		std::string outStr = "/sdcard?path=/snapshots/";
-		for (int i = 0; i < sizeof(name); i++) {
+		for (int i = 0; i < sizeof(filename); i++) {
 			outStr += (const char*)imager_session.sessionName[i];
 		}
 	}
