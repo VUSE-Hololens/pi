@@ -13,7 +13,7 @@
 // @brief Builds session packet
 // @param none
 // @return Imager session packet
-fw_imager_session_t DataPacketizer::session(uint8_t command, const char *name[])
+fw_imager_session_t DataPacketizer::session(uint8_t command, const char name[])
 {
     // Initialize packet and clear the needed memory
     fw_imager_session_t imager_session;
@@ -26,7 +26,7 @@ fw_imager_session_t DataPacketizer::session(uint8_t command, const char *name[])
     {
 		//char name[] = "SenteraImagerSession1";
 		printf("Session Name: "); //DEBUG
-		for (int i = 0; i < sizeof(**name); i++) {
+		for (int i = 0; i < sizeof(*name); i++) {
 			imager_session.sessionName[i] = (uint8_t)name[i];
 			printf("%c", (char)imager_session.sessionName[i]); //DEBUG
 		}
