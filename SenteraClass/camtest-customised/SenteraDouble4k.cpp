@@ -249,7 +249,8 @@ int SenteraDouble4k::makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 			break;
 		}
 		case SEND_STILL_CAPTURE: {
-			fw_imager_session_t imager_session = DataPacketizer::session(0x00, "TestingName1"); // 0x00 to Open, 0x01 to close
+			char name[80] = "TestingName1";
+			fw_imager_session_t imager_session = DataPacketizer::session(0x00, name); // 0x00 to Open, 0x01 to close
 			packet_length = Bufferizer::session(imager_session, buf);
 			break;
 		}
@@ -513,10 +514,10 @@ int SenteraDouble4k::query_status_packet()
 
 int retrieveCurrentData() {
 	
-	std::string rgbStr = makeUrlStr(recent_images[0][recent_images_start[0]].fileName);
-	std::string nirStr = makeUrlStr(recent_images[1][recent_images_start[1]].fileName);
-	printf((const char*)rgbStr + "\n");
-	printf((const char*)nirStr + "\n");
+	std::string rgbStr = makeFilePath(recent_images[0].fileName);
+	std::string nirStr = makeFilePath(recent_images[1].fileName);
+	printf(rgbStr + "\n");
+	printf(nirStr + "\n");
 
 	//http_client client(rgbStr);
 	//http_response response;
@@ -529,7 +530,7 @@ Frame SenteraDouble4k::Data() {
 	return *data;
 }
 
-std::string makeFilePath(uint8_t *filename, bool url = false) {
+std::string SenteraDouble4k::makeFilePath(uint8_t *filename, bool url = false) {
 	//// http ://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
 	if (url) { // url path
 		std::string outStr = "http://";
