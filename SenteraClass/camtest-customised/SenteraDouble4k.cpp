@@ -50,6 +50,7 @@ int SenteraDouble4k::Start() {
 	// reset buffer
 	memset(&buf, 0, sizeof(buf));
 	packet_length = 0;
+	usleep(1000);
 	
 	// make packet of still capture session data 
 	packet_length = makeStillCapturePacket((uint8_t)0, currentSessionName, buf);
