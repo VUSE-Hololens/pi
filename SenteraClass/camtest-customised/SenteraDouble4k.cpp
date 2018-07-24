@@ -46,6 +46,7 @@ int SenteraDouble4k::Start() {
 		printf("Failed to send packet: %d", errno); //DEBUG
 		return -1;
 	}
+	printf("Sent still capture packet");
 
 	// listen for updates
 	live_session = true;
@@ -298,6 +299,8 @@ int SenteraDouble4k::query_status_packet()
 		}
 		else if (rec_buf[2] == fw_packet_type_e::PAYLOAD_METADATA)
 		{
+			printf("Payload Metadata\n");
+
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x19 && rec_buf[4] == 0x00)) return 0;
 
