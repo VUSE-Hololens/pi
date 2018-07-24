@@ -61,6 +61,7 @@ typedef enum {
     PAYLOAD_METADATA            = 0x81,  // From payload.
     IMAGER_TRIGGER_ACK          = 0x82,  // From payload.
     IMAGER_SESSION_ACK          = 0x83,  // From payload.
+	IMAGER_DATA_READY			= 0x85,  // From payload.
     SYSTEM_TIME_ACK             = 0x8F,  // From payload.
     FOCUS_SESSION_INFO          = 0xD0,  // From payload to laptop (not autopilot)
     PAYLOAD_EXCEPTION           = 0xFF,  // From payload.

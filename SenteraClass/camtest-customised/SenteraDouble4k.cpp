@@ -299,8 +299,6 @@ int SenteraDouble4k::query_status_packet()
 		}
 		else if (rec_buf[2] == fw_packet_type_e::PAYLOAD_METADATA)
 		{
-			printf("Payload Metadata\n");
-
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x19 && rec_buf[4] == 0x00)) return 0;
 
@@ -385,7 +383,7 @@ int SenteraDouble4k::query_status_packet()
 			newdata_received = 1;
 		}
 		// Handle new image avilable packets
-		else if (rec_buf[2] == fw_packet_type_e::IMAGER_SESSION_ACK)
+		else if (rec_buf[2] == fw_packet_type_e::IMAGER_DATA_READY)
 		{
 			printf("Receive Data Ready\n");
 
