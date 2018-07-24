@@ -56,7 +56,9 @@ int SenteraDouble4k::Start() {
 		while (!received_data)
 		{
 			received_data = (query_status_packet() == 1);
-			//TODO: processImages();
+			if (received_data) {
+				processImages();
+			}
 		}
 	}
 	return 0;
