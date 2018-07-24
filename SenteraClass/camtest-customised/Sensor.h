@@ -111,8 +111,8 @@ public:
 	virtual Frame Data() = 0;
 
 	// start/stop sensor recording
-	virtual void Start() = 0;
-	virtual void Stop() = 0;
+	virtual int Start() = 0;
+	virtual int Stop() = 0;
 
 protected:
 	// positional offset of sensor in hololens local coordinates

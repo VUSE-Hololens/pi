@@ -22,7 +22,7 @@ SenteraDouble4k::~SenteraDouble4k()
 	close(s_rec);
 }
 
-void SenteraDouble4k::Start() {
+int SenteraDouble4k::Start() {
 	currentSessionName = "TestingName1";
 	if (serv_status == -1) {
 		printf("Server not initialized! Cannot start session.");
@@ -33,7 +33,7 @@ void SenteraDouble4k::Start() {
 	uint8_t buf[BUFLEN];
 
 	// make packet of trigger data 
-	int packet_length = makeImagerTriggerPacket(buf);
+	int packet_length = makeImagerTriggerPacket((uint8_t)2, (uint32_t)1000, buf);
 	if (packet_length <= 0) {
 		printf("Failed to create packet");
 		return -1;
@@ -48,9 +48,10 @@ void SenteraDouble4k::Start() {
 
 	// reset buffer
 	memset(&buf, 0, sizeof(buf));
-
+	packet_length = 0;
+	
 	// make packet of still capture session data 
-	int packet_length = makeStillCapturePacket((uint8_t)0, currentSessionName, buf);
+	packet_length = makeStillCapturePacket((uint8_t)0, currentSessionName, buf);
 	if (packet_length <= 0) {
 		printf("Failed to create packet");
 		return -1;
@@ -76,7 +77,7 @@ void SenteraDouble4k::Start() {
 	return 0;
 }
 
-void SenteraDouble4k::Stop() {
+int SenteraDouble4k::Stop() {
 	// make packet of still capture session data
 	uint8_t buf[BUFLEN];
 	int packet_length = makeStillCapturePacket((uint8_t)1, "Stop", buf); // 1 to close session
@@ -250,8 +251,8 @@ int SenteraDouble4k::makeStillCapturePacket(uint8_t option, std::string sessionN
 	return Bufferizer::session(imager_session, buf);
 }
 
-int SenteraDouble4k::makeImagerTriggerPacket(uint8_t *buf) {
-	fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
+int SenteraDouble4k::makeImagerTriggerPacket(uint8_t mode, uint32_t period, uint8_t *buf) {
+	fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask, mode, period); // Construct new session packet
 	return Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
 }
 
@@ -287,7 +288,7 @@ int SenteraDouble4k::query_status_packet()
 			printf("Recv Packet Header Failure");
 			return 0;
 		}
-		else if (rec_buf[2] == RECV_PAYLOAD_METADATA) 
+		else if (rec_buf[2] == fw_packet_type_e::PAYLOAD_METADATA)
 		{
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x19 && rec_buf[4] == 0x00)) return 0;
@@ -373,7 +374,7 @@ int SenteraDouble4k::query_status_packet()
 			newdata_received = 1;
 		}
 		// Handle new image avilable packets
-		else if (rec_buf[2] == RECV_IMAGE_DATA_READY)
+		else if (rec_buf[2] == fw_packet_type_e::IMAGER_SESSION_ACK)
 		{
 			printf("Receive Data Ready\n");
 
@@ -411,7 +412,7 @@ int SenteraDouble4k::query_status_packet()
 
 		}
 		// Handle Time Ack Packets
-		else if (rec_buf[2] == RECV_SYSTEM_TIME_ACK)
+		else if (rec_buf[2] == fw_packet_type_e::SYSTEM_TIME_ACK)
 		{
 			printf("Receive System Time Ack"); //DEBUG
 
@@ -439,7 +440,7 @@ int SenteraDouble4k::query_status_packet()
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 48;
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 56;
 		}
-		else if (rec_buf[2] = RECV_IMAGER_TRIGGER_ACK)
+		else if (rec_buf[2] = fw_packet_type_e::IMAGER_TRIGGER_ACK)
 		{
 			printf("Received Imager Trigger Acknowledgement\n");
 		}

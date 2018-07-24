@@ -70,7 +70,7 @@ private:
 public:
 	SenteraDouble4k(Transform offset);
 	~SenteraDouble4k();
-	void Start();
-	void Stop();
+	int Start();
+	int Stop();
 	Frame Data();
 };

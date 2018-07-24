@@ -24,13 +24,9 @@ fw_imager_session_t DataPacketizer::session(uint8_t command, const char name[])
 
     if (imager_session.sessionCmd == 0)
     {
-		//char name[] = "SenteraImagerSession1";
-		printf("Session Name: "); //DEBUG
 		for (int i = 0; i < sizeof(*name); i++) {
 			imager_session.sessionName[i] = (uint8_t)name[i];
-			printf("%c", (char)imager_session.sessionName[i]); //DEBUG
 		}
-		printf("\n"); //DEBUG
 
         imager_session.resumeSession = 0x1 & 0xF;
 
