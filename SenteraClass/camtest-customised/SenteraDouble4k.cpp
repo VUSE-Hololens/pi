@@ -93,7 +93,7 @@ int SenteraDouble4k::Stop() {
 	}
 
 	live_session = false;
-	return;
+	return 0;
 }
 
 // starts server by setting up send and receive sockets
