@@ -29,7 +29,7 @@ class DataPacketizer
 
 public:
     static fw_imager_session_t session(uint8_t command, const char name[]);
-    static fw_imager_trigger_t trigger(uint8_t trigger_mask);
+    static fw_imager_trigger_t trigger(uint8_t trigger_mask, uint8_t option, uint32_t interval);
     static fw_imager_zoom_t zoom(uint8_t trigger_mask);
     static fw_imager_preview_stream_setup_t preview_stream_setup(uint8_t trigger_mask);
     static fw_elevation_metadata_t elevation_metadata();

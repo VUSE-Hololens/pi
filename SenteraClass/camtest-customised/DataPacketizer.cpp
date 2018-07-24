@@ -60,18 +60,17 @@ fw_imager_session_t DataPacketizer::session(uint8_t command, const char name[])
 // @brief Builds trigger command packet
 // @param trigger_mask Specifies which sensors are involved
 // @return Imager trigger packet
-fw_imager_trigger_t DataPacketizer::trigger(uint8_t trigger_mask)
+fw_imager_trigger_t DataPacketizer::trigger(uint8_t trigger_mask, uint8_t option, uint32_t interval)
 {
     // Initialize packet and clear the needed memory
     fw_imager_trigger_t imager_trigger;
     memset(&imager_trigger, 0, sizeof(imager_trigger));
     
     // Initialize trigger mode from user input
-    imager_trigger.trigMode = 0x02 & 0xFF; //Disable (0), Single (1), or Continuous (2)
+    imager_trigger.trigMode = option & 0xFF; //Disable (0), Single (1), or Continuous (2)
 
     if (imager_trigger.trigMode == 2)
     {
-		uint32_t interval = 1000; // milliseconds
         imager_trigger.trigPeriod = interval & 0xFFFF; //Interval (ms)
     }
 

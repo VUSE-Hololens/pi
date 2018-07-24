@@ -10,18 +10,10 @@ SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
 		camera_metadata_last_update_us[i] = 0;
 	}
 
-	// Reset our circular buffer
-	/* for (int i = 0; i< num_cameras; i++) {
-		recent_images_length[i] = 0;
-		recent_images_start[i] = 0;
-	}*/
-
 	// configure send and receive sockets
-	serv_status = startServer();
-	if (serv_status) {
-		printf("Made connection with camera!\n"); //DEBUG
+	if (startServer()) {
+		printf("Successfully Setup Sockets!\n"); //DEBUG
 	}
-
 }
 
 SenteraDouble4k::~SenteraDouble4k()
@@ -32,9 +24,75 @@ SenteraDouble4k::~SenteraDouble4k()
 
 void SenteraDouble4k::Start() {
 	currentSessionName = "TestingName1";
-	if (initializeSession(SEND_STILL_CAPTURE) != 1) {
-		printf("Session %X unable to initialize", SEND_STILL_CAPTURE);
+	if (serv_status == -1) {
+		printf("Server not initialized! Cannot start session.");
+		return -1;
 	}
+
+	// initialize packet to fill and send
+	uint8_t buf[BUFLEN];
+
+	// make packet of trigger data 
+	int packet_length = makeImagerTriggerPacket(buf);
+	if (packet_length <= 0) {
+		printf("Failed to create packet");
+		return -1;
+	}
+	printf("Trigger Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
+
+	//send packet of trigger data
+	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
+		printf("Failed to send packet: %d", errno); //DEBUG
+		return -1;
+	}
+
+	// reset buffer
+	memset(&buf, 0, sizeof(buf));
+
+	// make packet of still capture session data 
+	int packet_length = makeStillCapturePacket((uint8_t)0, currentSessionName, buf);
+	if (packet_length <= 0) {
+		printf("Failed to create packet");
+		return -1;
+	}
+	printf("Still Capture Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
+
+	// send packet of still capture session data
+	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
+		printf("Failed to send packet: %d", errno); //DEBUG
+		return -1;
+	}
+
+	// listen for updates
+	live_session = true;
+	while (live_session)
+	{
+		bool received_data = false;
+		while (!received_data)
+		{
+			received_data = (query_status_packet() == 1);
+		}
+	}
+	return 0;
+}
+
+void SenteraDouble4k::Stop() {
+	// make packet of still capture session data
+	uint8_t buf[BUFLEN];
+	int packet_length = makeStillCapturePacket((uint8_t)1, "Stop", buf); // 1 to close session
+	if (packet_length <= 0) {
+		printf("Failed to create packet");
+		return -1;
+	}
+
+	// send packet of still capture session data
+	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
+		printf("Failed to send packet: %d", errno); //DEBUG
+		return -1;
+	}
+
+	live_session = false;
+	return;
 }
 
 // starts server by setting up send and receive sockets
@@ -72,51 +130,6 @@ int SenteraDouble4k::startServer() {
 	return 1;
 }
 
-int SenteraDouble4k::initializeSession(uint8_t sessionType)
-{
-	// check if server is set up
-	if (serv_status == -1) {
-		printf("Server not initialized! Cannot start session.");
-		return -1;
-	}
-
-	// initialize packet to fill and send
-	uint8_t buf[BUFLEN];
-
-	// make packet of data 
-	int packet_length = makeSessionPacket(sessionType, buf);
-	if (packet_length <= 0) {
-		printf("Failed to create packet");
-		return -1;
-	}
-	printf("Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
-
-	//send packet of data
-	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
-		printf("Failed to send packet: %d", errno); //DEBUG
-		return -1;
-	}
-
-	// listen for updates
-	live_session = true;
-	while (live_session)
-	{
-		bool received_data = false;
-		while (!received_data)
-		{
-			received_data = (query_status_packet() == 1);
-		}
-	}
-	return 0;
-}
-
-void SenteraDouble4k::Stop() {
-	live_session = false;
-	close(s_send);
-	close(s_rec);
-	return;
-}
-
 // Configures a given socket returning a socket ID, -1 indicates failure
 int SenteraDouble4k::configure_socket(int myport, sockaddr_in& si_other, bool bind_socket)
 {
@@ -131,14 +144,6 @@ int SenteraDouble4k::configure_socket(int myport, sockaddr_in& si_other, bool bi
 		fprintf(stderr, "!! Failed to create socket !!\n");
 		return -1;
 	}
-
-	/* Dont need to be sending broadcast data 
-	// Configure socket for sending broadcast data 
-	if (setsockopt(s, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast)) == -1)
-	{
-		fprintf(stderr, "!! Failed allow broadcasts. !!\n");
-		return -1;
-	}*/ 
 
 	// Allow binding to address already in use
 	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
@@ -240,58 +245,14 @@ int SenteraDouble4k::configure_receive(int myport, sockaddr_in& si_other)
 	return s;
 }
 
-int SenteraDouble4k::makeSessionPacket(uint8_t sessionType, uint8_t *buf)
-{
-	int packet_length = -1;
-	switch (sessionType & 0xFF) {
-		case SEND_IMAGER_TRIGGER: {
-			fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
-			packet_length = Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
-			break;
-		}
-		case SEND_STILL_CAPTURE: {
-			fw_imager_session_t imager_session = DataPacketizer::session((uint8_t)0, currentSessionName.c_str()); // 0x00 to Open, 0x01 to close
-			packet_length = Bufferizer::session(imager_session, buf);
-			break;
-		}
-		case SEND_VIDEO_CAPTURE: {
-			fw_video_session_t video_session = DataPacketizer::video();
-			packet_length = Bufferizer::video(video_session, buf);
-			break;
-		}
-		case SEND_STILL_FOCUS: {
-			fw_still_focus_session_t still_focus_session = DataPacketizer::sf();
-			packet_length = Bufferizer::sf(still_focus_session, buf);
-			break;
-		}
-		case SEND_VIDEO_ADJUST: {
-			fw_video_adjust_t video_adjust = DataPacketizer::video_adjust();
-			packet_length = Bufferizer::videoadjust(video_adjust, buf);
-			break;
-		}
-		case SEND_IMAGER_ZOOM: {
-			fw_imager_zoom_t imager_zoom = DataPacketizer::zoom(trigger_mask);
-			packet_length = Bufferizer::zoom(imager_zoom, buf);
-			break;
-		}
-		case SEND_SYSTEM_TIME: {
-			printf("SystemTime option not implemented yet.");
-			//fw_system_time_t system_time = DataPacketizer::system_time();
-			//packet_length = Bufferizer::system_time(system_time, buf);
-			break;
-		}
-		case SEND_EXPOSURE_ADJUST: {
-			fw_exposure_adjust_t exposure_adjust = DataPacketizer::exposureadjust();
-			packet_length = Bufferizer::exposureadjust(exposure_adjust, buf);
-			break;
-		}
-		default: {
-			printf("Cannot initialize session of type ");
-			return -1;
-		}
-	}
-	return packet_length;
+int SenteraDouble4k::makeStillCapturePacket(uint8_t option, std::string sessionName, uint8_t *buf) { // 0x00 to Open, 0x01 to close
+	fw_imager_session_t imager_session = DataPacketizer::session(option, sessionName.c_str()); 
+	return Bufferizer::session(imager_session, buf);
+}
 
+int SenteraDouble4k::makeImagerTriggerPacket(uint8_t *buf) {
+	fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
+	return Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
 }
 
 int SenteraDouble4k::query_status_packet()
@@ -328,8 +289,6 @@ int SenteraDouble4k::query_status_packet()
 		}
 		else if (rec_buf[2] == RECV_PAYLOAD_METADATA) 
 		{
-			printf("Received Payload Metadata"); //DEBUG
-
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x19 && rec_buf[4] == 0x00)) return 0;
 
@@ -416,7 +375,7 @@ int SenteraDouble4k::query_status_packet()
 		// Handle new image avilable packets
 		else if (rec_buf[2] == RECV_IMAGE_DATA_READY)
 		{
-			printf("Receeive Data Ready\n");
+			printf("Receive Data Ready\n");
 
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x21 && rec_buf[4] == 0x00)) return 0;
@@ -444,29 +403,11 @@ int SenteraDouble4k::query_status_packet()
 			else {
 				fprintf(stderr, "Imager ID not 1 or 2: Failed to store new image data\n");
 			}
-			printf("Stored new image\n");
-
-			// Store the packet in the appropriate location of the circular buffer
-			/*for (int i = 0; i < num_cameras; i++)
-			{
-				recent_images[i] = new_image;
-				if (new_image.imagerID & (0x01 << i)) 
-				{
-					// Handle circular buffer wraparound
-					recent_images_length[i]++;
-					if (recent_images_length[i] > FILE_HISTORY_SIZE)
-					{
-						recent_images_length[i] = FILE_HISTORY_SIZE;
-						recent_images_start[i]++;
-						recent_images_start[i] = recent_images_start[i] % FILE_HISTORY_SIZE;
-					}
-
-					int cur_idx = (recent_images_start[i] + recent_images_length[i] - 1) % FILE_HISTORY_SIZE;
-					recent_images[i][cur_idx] = new_image;
-				}
-			}*/
+			printf("Stored new image for camera %d\n", new_image.imagerID);
 
 			newdata_received = 1;
+
+
 
 		}
 		// Handle Time Ack Packets
@@ -518,8 +459,8 @@ Frame SenteraDouble4k::Data() {
 
 int SenteraDouble4k::retrieveCurrentData() {
 	
-	std::string rgbStr = makeFilePath(recent_images[0].fileName, false);
-	std::string nirStr = makeFilePath(recent_images[1].fileName, false);
+	std::string rgbStr = makeFilePath(recent_images[0].fileName, true);
+	std::string nirStr = makeFilePath(recent_images[1].fileName, true);
 	printf(rgbStr.c_str());
 	printf("\n");
 	printf(nirStr.c_str());
@@ -529,11 +470,10 @@ int SenteraDouble4k::retrieveCurrentData() {
 	//http_response response;
 	//response = client.request(methods::GET).get(); // unsure of arguments to this request method
 	
-
 }
 
 std::string SenteraDouble4k::makeFilePath(uint8_t *filename, bool url) {
-	//// http ://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
+	// http ://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
 	std::string outStr;
 	if (url) { // url path
 		outStr = "http://";
@@ -542,7 +482,7 @@ std::string SenteraDouble4k::makeFilePath(uint8_t *filename, bool url) {
 		outStr += "8080";
 		outStr += "/cur_session?path=/";
 	}
-	//// /sdcard?path=/snapshots/*currentSessionName/filename
+	// /sdcard?path=/snapshots/*currentSessionName/filename
 	else { // file path
 		outStr = "/sdcard?path=/snapshots/";
 		outStr += currentSessionName;
