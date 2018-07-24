@@ -47,7 +47,6 @@ private:
 	unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 
-	std::string currentSessionName;
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;
@@ -68,7 +67,7 @@ private:
 	//processing data
 	int processImages();
 	int retrieveCurrentData();
-	std::string makeFilePath(uint8_t *filename, bool url);
+	std::string makeUrlPath(uint8_t *filename, bool url);
 
 public:
 	SenteraDouble4k(Transform offset);

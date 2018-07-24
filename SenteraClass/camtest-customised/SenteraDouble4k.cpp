@@ -24,7 +24,7 @@ SenteraDouble4k::~SenteraDouble4k()
 }
 
 int SenteraDouble4k::Start() {
-	currentSessionName = "TestingName1";
+	const char[80] = "TestingName1";
 	if (serv_status == -1) {
 		printf("Server not initialized! Cannot start session.");
 		return -1;
@@ -50,14 +50,16 @@ int SenteraDouble4k::Start() {
 
 	// listen for updates
 	live_session = true;
+	int recvType = 0;
 	while (live_session)
 	{
 		bool received_data = false;
 		while (!received_data)
 		{
-			received_data = (query_status_packet() == 1);
-			if (received_data) {
-				processImages();
+			recvType = query_status_packet(); // query for new data
+			received_data = (recvType >= 1); // successfully received packet?
+			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
+				processImages(); // process data
 			}
 		}
 	}
@@ -65,7 +67,7 @@ int SenteraDouble4k::Start() {
 }
 
 int SenteraDouble4k::Stop() {
-	// make packet of still capture session data
+	// make packet of still capture session data to stop session
 	uint8_t buf[BUFLEN];
 	int packet_length = makeStillCapturePacket((uint8_t)1, "Stop", buf); // 1 to close session
 	if (packet_length <= 0) {
@@ -101,9 +103,10 @@ int SenteraDouble4k::UpdateTrigger() {
 	}
 	printf("Trigger Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
 
-																						//send packet of trigger data
+	//send packet of trigger data
 	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
 		printf("Failed to send packet: %d", errno); //DEBUG
+		return -1;
 		return -1;
 	}
 }
@@ -258,8 +261,8 @@ int SenteraDouble4k::configure_receive(int myport, sockaddr_in& si_other)
 	return s;
 }
 
-int SenteraDouble4k::makeStillCapturePacket(uint8_t option, std::string sessionName, uint8_t *buf) { // 0x00 to Open, 0x01 to close
-	fw_imager_session_t imager_session = DataPacketizer::session(option, sessionName.c_str()); 
+int SenteraDouble4k::makeStillCapturePacket(uint8_t option, const char *sessionName, uint8_t *buf) { // 0x00 to Open, 0x01 to close
+	fw_imager_session_t imager_session = DataPacketizer::session(option, sessionName); 
 	return Bufferizer::session(imager_session, buf);
 }
 
@@ -280,7 +283,8 @@ int SenteraDouble4k::query_status_packet()
 	// Since each packet can be from a different imagerID, we process each one
 	// old buffers will override new ones.
 	// Non-blocking receives with no data will simply not write to the buffer (tested)
-	do
+
+	do //DEBUG - test do while loop necessity
 	{
 		// Check for receiving packet; recvfrom returns length of packet
 		current_packet = recvfrom(s_rec, rec_buf, BUFLEN, MSG_DONTWAIT, (struct sockaddr *) &si_other_rec, (socklen_t*)&slen_rec);
@@ -383,7 +387,7 @@ int SenteraDouble4k::query_status_packet()
 				}
 			}
 
-			newdata_received = 1;
+			newdata_received = fw_packet_type_e::PAYLOAD_METADATA;
 		}
 		// Handle new image avilable packets
 		else if (rec_buf[2] == fw_packet_type_e::IMAGER_DATA_READY)
@@ -416,7 +420,7 @@ int SenteraDouble4k::query_status_packet()
 			}
 			printf("Stored new image for camera %d\n", new_image.imagerID);
 
-			newdata_received = 1;
+			newdata_received = fw_packet_type_e::IMAGER_DATA_READY;
 
 		}
 		// Handle Time Ack Packets
@@ -447,10 +451,13 @@ int SenteraDouble4k::query_status_packet()
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 40;
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 48;
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 56;
+
+			newdata_received = fw_packet_type_e::SYSTEM_TIME_ACK;
 		}
 		else if (rec_buf[2] = fw_packet_type_e::IMAGER_TRIGGER_ACK)
 		{
 			printf("Received Imager Trigger Acknowledgement\n");
+			newdata_received = fw_packet_type_e::IMAGER_TRIGGER_ACK;
 		}
 		else
 		{
@@ -485,23 +492,14 @@ int SenteraDouble4k::retrieveCurrentData() {
 	
 }
 
-std::string SenteraDouble4k::makeFilePath(uint8_t *filename, bool url) {
+std::string SenteraDouble4k::makeUrlPath(uint8_t *filename, bool url) {
 	// http ://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
-	std::string outStr;
-	if (url) { // url path
-		outStr = "http://";
-		outStr += server_ipaddr;
-		outStr += ":";
-		outStr += "8080";
-		outStr += "/cur_session?path=/";
-	}
-	// /sdcard?path=/snapshots/*currentSessionName/filename
-	else { // file path
-		outStr = "/sdcard?path=/snapshots/";
-		outStr += currentSessionName;
-		outStr += "/";
-	}
-	for (int i = 0; i < sizeof(filename); i++) {
+	std::string outStr = "http://";
+	outStr += server_ipaddr;
+	outStr += ":";
+	outStr += "8080";
+	outStr += "/cur_session?path=/";
+	for (int i = 0; i < 48; i++) { // filename array size 48
 		outStr += (const char)filename[i];
 	}
 	return outStr;
