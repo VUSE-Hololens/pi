@@ -1,0 +1,2 @@
+﻿  HTTPDownloader.cpp
+c:\users\henry\onedrive\documents\hololens\vadl_git\pi-transmit\senteraclass\http_downloads\httpdownloader\httpdownloader\curl\curlbuild.h(66): fatal error C1189: #error:  "CURL_TYPEOF_CURL_SOCKLEN_T shall not be defined except in curlbuild.h"
