@@ -1,0 +1,8 @@
+camtest: clean
+	cl -o camtest CameraTest.cpp crc.c Bufferizer.cpp Packetizer.cpp UnixForWindows.cpp
+
+clean:
+	del -f camtest
+ 
+all: clean camtest
+
