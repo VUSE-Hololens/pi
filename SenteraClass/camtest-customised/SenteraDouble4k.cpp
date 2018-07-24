@@ -31,9 +31,8 @@ SenteraDouble4k::~SenteraDouble4k()
 }
 
 void SenteraDouble4k::Start() {
-	int test = initializeSession(SEND_IMAGER_TRIGGER);
-	if (test != 1) {
-
+	if (initializeSession(SEND_STILL_CAPTURE) != 1) {
+		printf("Session %X unable to initialize", SEND_STILL_CAPTURE);
 	}
 }
 
@@ -250,7 +249,7 @@ int SenteraDouble4k::makeSessionPacket(uint8_t sessionType, uint8_t *buf)
 			break;
 		}
 		case SEND_STILL_CAPTURE: {
-			fw_imager_session_t imager_session = DataPacketizer::session();
+			fw_imager_session_t imager_session = DataPacketizer::session(0x00, "TestingName1"); // 0x00 to Open, 0x01 to close
 			packet_length = Bufferizer::session(imager_session, buf);
 			break;
 		}
@@ -514,10 +513,10 @@ int SenteraDouble4k::query_status_packet()
 
 int retrieveCurrentData() {
 	
-	//std::string rgbStr = makeUrlStr(recent_images[0][recent_images_start[0]].fileName);
-	//std::string nirStr = makeUrlStr(recent_images[1][recent_images_start[1]].fileName);
-	//printf((const char*)rgbStr + "\n");
-	//printf((const char*)nirStr + "\n");
+	std::string rgbStr = makeUrlStr(recent_images[0][recent_images_start[0]].fileName);
+	std::string nirStr = makeUrlStr(recent_images[1][recent_images_start[1]].fileName);
+	printf((const char*)rgbStr + "\n");
+	printf((const char*)nirStr + "\n");
 
 	//http_client client(rgbStr);
 	//http_response response;
@@ -530,17 +529,24 @@ Frame SenteraDouble4k::Data() {
 	return *data;
 }
 
-/*
-std::string makeUrlString(uint8_t *filename) {
-	//http://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
-	std::string urlStr("http://");
-	urlStr += server_ipaddr;
-	urlStr += ":";
-	urlStr += "8080";
-	urlStr += "/cur_session?path=/";
-	for (int i = 0; i < filename.Length; i++){
-		urlStr += (const char*)filename[i];
+std::string makeFilePath(uint8_t *filename, bool url = false) {
+	//// http ://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
+	if (url) { // url path
+		std::string outStr = "http://";
+		outStr += server_ipaddr;
+		outStr += ":";
+		outStr += "8080";
+		outStr += "/cur_session?path=/";
 	}
-	return urlStr;
-}*/
+	else { // file path
+		std::string outStr = "/sdcard?path=/snapshots/";
+		for (int i = 0; i < sizeof(name); i++) {
+			outStr += (const char*)imager_session.sessionName[i];
+		}
+	}
+	for (int i = 0; i < filename.Length; i++){
+		outStr += (const char*)filename[i];
+	}
+	return outStr;
+}
 

@@ -13,18 +13,18 @@
 // @brief Builds session packet
 // @param none
 // @return Imager session packet
-fw_imager_session_t DataPacketizer::session()
+fw_imager_session_t DataPacketizer::session(uint8_t command, char name[])
 {
     // Initialize packet and clear the needed memory
     fw_imager_session_t imager_session;
     memset(&imager_session, 0, sizeof(imager_session));
 
     // Open, close, or kill session according to user input
-    imager_session.sessionCmd = 0x00 & 0xFF; //open (0), close (1), or kill (2):
+    imager_session.sessionCmd = command & 0xFF; //open (0), close (1), or kill (2):
 
     if (imager_session.sessionCmd == 0)
     {
-		char name[] = "SenteraImagerSession1";
+		//char name[] = "SenteraImagerSession1";
 		printf("Session Name: "); //DEBUG
 		for (int i = 0; i < sizeof(name); i++) {
 			imager_session.sessionName[i] = (uint8_t)name[i];
