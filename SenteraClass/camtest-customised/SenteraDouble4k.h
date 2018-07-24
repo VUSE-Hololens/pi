@@ -59,7 +59,7 @@ private:
 	int configure_receive(int myport, sockaddr_in& si_other);
 	int startServer();
 	// initializing session
-	int makeImagerTriggerPacket(uint8_t *buf);
+	int makeImagerTriggerPacket(uint8_t mode, uint32_t period, uint8_t *buf);
 	int makeStillCapturePacket(uint8_t option, std::string sessionName, uint8_t *buf);
 
 	//retreiving data
