@@ -29,31 +29,12 @@ int SenteraDouble4k::Start() {
 		printf("Server not initialized! Cannot start session.");
 		return -1;
 	}
-
+	
 	// initialize packet to fill and send
 	uint8_t buf[BUFLEN];
 
-	// make packet of trigger data 
-	int packet_length = makeImagerTriggerPacket((uint8_t)2, (uint32_t)1000, buf);
-	if (packet_length <= 0) {
-		printf("Failed to create packet");
-		return -1;
-	}
-	printf("Trigger Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
-
-	//send packet of trigger data
-	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
-		printf("Failed to send packet: %d", errno); //DEBUG
-		return -1;
-	}
-
-	// reset buffer
-	memset(&buf, 0, sizeof(buf));
-	packet_length = 0;
-	usleep(1000);
-	
 	// make packet of still capture session data 
-	packet_length = makeStillCapturePacket((uint8_t)0, currentSessionName, buf);
+	int packet_length = makeStillCapturePacket((uint8_t)0, currentSessionName, buf);
 	if (packet_length <= 0) {
 		printf("Failed to create packet");
 		return -1;
@@ -96,6 +77,31 @@ int SenteraDouble4k::Stop() {
 
 	live_session = false;
 	return 0;
+}
+
+int SenteraDouble4k::UpdateTrigger() {
+	//check server
+	if (serv_status == -1) {
+		printf("Server not initialized! Cannot start session.");
+		return -1;
+	}
+
+	// initialize packet to fill and send
+	uint8_t buf[BUFLEN];
+
+	// make packet of trigger data 
+	int packet_length = makeImagerTriggerPacket((uint8_t)2, (uint32_t)1000, buf);
+	if (packet_length <= 0) {
+		printf("Failed to create packet");
+		return -1;
+	}
+	printf("Trigger Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
+
+																						//send packet of trigger data
+	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
+		printf("Failed to send packet: %d", errno); //DEBUG
+		return -1;
+	}
 }
 
 // starts server by setting up send and receive sockets

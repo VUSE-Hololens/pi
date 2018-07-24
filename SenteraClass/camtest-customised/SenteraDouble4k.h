@@ -72,5 +72,6 @@ public:
 	~SenteraDouble4k();
 	int Start();
 	int Stop();
+	int UpdateTrigger();
 	Frame Data();
 };
