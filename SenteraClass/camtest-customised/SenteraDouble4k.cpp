@@ -477,11 +477,11 @@ Frame SenteraDouble4k::Data() {
 }
 
 int SenteraDouble4k::processImages() {
-	std::string urlStr = makeUrlPath(recent_images[0].fileName, true);
+	std::string urlStr = makeUrlPath(recent_images[0].fileName);
 	printf(urlStr.c_str());
 	printf("\n");
 
-	std::string content = downloader.download(urlStr);
+	std::string content = http_downloader.download(urlStr);
 	printf("RGB Img String of Length: %d\n", content.length());
 	return 0;
 }
