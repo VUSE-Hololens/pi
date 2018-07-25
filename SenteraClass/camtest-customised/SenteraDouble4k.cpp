@@ -477,21 +477,16 @@ Frame SenteraDouble4k::Data() {
 }
 
 int SenteraDouble4k::ProcessImages() {
-	retrieveCurrentData();
-}
-
-int SenteraDouble4k::retrieveCurrentData() {
-	
 	std::string urlStr = makeUrlPath(recent_images[0].fileName, true);
 	printf(urlStr.c_str());
 	printf("\n");
 
-	std::string content = HTTPDownloader.download(urlStr);
+	std::string content = downloader.download(urlStr);
 	printf("RGB Img String of Length: %d\n", content.length());
-	
+	return 0;
 }
 
-std::string SenteraDouble4k::makeUrlPath(uint8_t *filename, bool url) {
+std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
 	// http ://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
 	std::string outStr = "http://";
 	outStr += server_ipaddr;

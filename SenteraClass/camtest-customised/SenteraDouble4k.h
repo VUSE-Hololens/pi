@@ -71,8 +71,7 @@ private:
 
 	//processing data
 	int processImages();
-	int retrieveCurrentData();
-	std::string makeUrlPath(uint8_t *filename, bool url);
+	std::string makeUrlPath(uint8_t *filename);
 
 public:
 	SenteraDouble4k(Transform offset);
