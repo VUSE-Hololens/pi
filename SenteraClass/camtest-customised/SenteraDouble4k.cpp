@@ -496,7 +496,7 @@ std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
 	for (int i = 0; i < 48; i++) { // filename array size 48
 		outStr += (const char)filename[i];
 	} */
-	outStr += "/last_img?lnk=li0&camera=1";
+	outStr += "/last_img?lnk=li1&camera=2";
 	return outStr;
 }
 
