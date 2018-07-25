@@ -17,12 +17,6 @@
 #include <iostream>
 
 
-size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream) {
-	std::string data((const char*)ptr, (size_t)size * nmemb);
-	*((std::stringstream*)stream) << data; // << endl;
-	return size * nmemb;
-}
-
 /**
 * A non-threadsafe simple libcURL-easy based HTTP downloader
 */
@@ -63,5 +57,10 @@ public:
 	};
 
 private:
+	size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream) {
+		std::string data((const char*)ptr, (size_t)size * nmemb);
+		*((std::stringstream*)stream) << data; // << endl;
+		return size * nmemb;
+	}
 };
 #endif  /* HTTPDOWNLOADER_HPP */
