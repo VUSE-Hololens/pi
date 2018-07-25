@@ -62,7 +62,7 @@ int SenteraDouble4k::Start() {
 			recvType = query_status_packet(); // query for new data
 			received_data = (recvType >= 1); // successfully received packet?
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
-				processImages(); // process data
+				processImage(); // process data
 			}
 		}
 	}
@@ -476,24 +476,18 @@ Frame SenteraDouble4k::Data() {
 	return *data;
 }
 
-int SenteraDouble4k::processImages() {
+int SenteraDouble4k::processImage() {
 	retrieveCurrentData();
 }
 
 int SenteraDouble4k::retrieveCurrentData() {
 	
-	std::string rgbStr = makeUrlPath(recent_images[0].fileName, true);
-	std::string nirStr = makeUrlPath(recent_images[1].fileName, true);
-	printf(rgbStr.c_str());
-	printf("\n");
-	printf(nirStr.c_str());
+	std::string urlStr = makeUrlPath(recent_images[0].fileName, true);
+	printf(urlStr.c_str());
 	printf("\n");
 
-	downloader.download(rgbStr);
-
-	//http_client client(rgbStr);
-	//http_response response;
-	//response = client.request(methods::GET).get(); // unsure of arguments to this request method
+	std::string content = HTTPDownloader.download(rgbStr);
+	printf("RGB Img String of Length: %d\n", content.length);
 	
 }
 

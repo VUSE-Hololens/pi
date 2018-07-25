@@ -49,7 +49,7 @@ private:
 	unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 
-	HTTPDownloader downloader;												// downloader
+	HTTPDownloader http_downloader;											// downloader
 
 	// other
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
