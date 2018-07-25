@@ -11,13 +11,14 @@
 #include <thread>
 
 // user includes
-#include "Bufferizer.h"
-#include "DataPacketizer.h"
-#include "Sensor.h" // extends
-#include "packets.h"
+#include "Bufferizer.h" // bufferizes packets of data
+#include "DataPacketizer.h" // makes packets of data
+#include "Sensor.h" // parent class
+#include "packets.h" // packet structures
+#include "HTTPDownloader.h" // download HTTP packets
 
 // defines
-#define BUFLEN 512
+// #define BUFLEN 512
 
 class SenteraDouble4k : public Sensor // implements sensor
 {
@@ -26,6 +27,7 @@ public:
 
 private:
 	// class variables
+	static const int BUFLEN = 512;											// Buffer length
 	struct sockaddr_in si_other_send;										// Socket address of camera
 	struct sockaddr_in si_other_rec;										// Socket address receiving
 	int slen_send = sizeof(si_other_send);
@@ -47,6 +49,9 @@ private:
 	unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 
+	HTTPDownloader downloader;												// downloader
+
+	// other
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;

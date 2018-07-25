@@ -1,3 +1,6 @@
+// Header for Sentera Camera Class
+// Henry Bristol
+// July 25, 2018
 
 // includes
 #include "SenteraDouble4k.h"
@@ -485,6 +488,8 @@ int SenteraDouble4k::retrieveCurrentData() {
 	printf("\n");
 	printf(nirStr.c_str());
 	printf("\n");
+
+	downloader.download(rgbStr);
 
 	//http_client client(rgbStr);
 	//http_response response;
