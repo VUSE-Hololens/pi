@@ -62,7 +62,7 @@ int SenteraDouble4k::Start() {
 			recvType = query_status_packet(); // query for new data
 			received_data = (recvType >= 1); // successfully received packet?
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
-				ProcessImages(); // process data
+				processImages(); // process data
 			}
 		}
 	}
@@ -476,7 +476,7 @@ Frame SenteraDouble4k::Data() {
 	return *data;
 }
 
-int SenteraDouble4k::ProcessImages() {
+int SenteraDouble4k::processImages() {
 	std::string urlStr = makeUrlPath(recent_images[0].fileName, true);
 	printf(urlStr.c_str());
 	printf("\n");
