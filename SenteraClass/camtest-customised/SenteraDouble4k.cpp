@@ -62,7 +62,7 @@ int SenteraDouble4k::Start() {
 			recvType = query_status_packet(); // query for new data
 			received_data = (recvType >= 1); // successfully received packet?
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
-				processImage(); // process data
+				ProcessImages(); // process data
 			}
 		}
 	}
@@ -476,7 +476,7 @@ Frame SenteraDouble4k::Data() {
 	return *data;
 }
 
-int SenteraDouble4k::processImage() {
+int SenteraDouble4k::ProcessImages() {
 	retrieveCurrentData();
 }
 
@@ -486,8 +486,8 @@ int SenteraDouble4k::retrieveCurrentData() {
 	printf(urlStr.c_str());
 	printf("\n");
 
-	std::string content = HTTPDownloader.download(rgbStr);
-	printf("RGB Img String of Length: %d\n", content.length);
+	std::string content = HTTPDownloader.download(urlStr);
+	printf("RGB Img String of Length: %d\n", content.length());
 	
 }
 

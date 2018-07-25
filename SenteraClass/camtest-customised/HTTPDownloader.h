@@ -19,7 +19,7 @@
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream) {
 	std::string data((const char*)ptr, (size_t)size * nmemb);
-	*((std::stringstream*)stream) << data << endl;
+	*((std::stringstream*)stream) << data; // << endl;
 	return size * nmemb;
 }
 
