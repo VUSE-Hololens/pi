@@ -17,5 +17,6 @@ int main(int argc, char** argv) {
 	std::string urlStr = "https://upload.wikimedia.org/wikipedia/commons/b/b4/JPEG_example_JPG_RIP_100.jpg";
 	//std::string urlStr = "https://192.168.143.141:8080/sdcard?path=/snapshots/SenteraImagerSession1/NDRE/IMG_00001.jpg";
 	std::string content = downloader.download(urlStr);
-	std::cout << content << std::endl;
+	printf("\n");
+	printf("Length: %d\n", content.length());
 }
