@@ -493,7 +493,7 @@ std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
 	outStr += server_ipaddr;
 	outStr += ":";
 	outStr += "8080";
-	outStr += "/sdcard/cur_session&path=/";
+	outStr += "/sdcard?cur_session&path=/";
 	for (int i = 0; i < 48; i++) { // filename array size 48
 		outStr += (const char)filename[i];
 	}
