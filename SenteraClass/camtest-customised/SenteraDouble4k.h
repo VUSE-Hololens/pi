@@ -55,6 +55,7 @@ private:
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;
+	Frame data_out;															// Data Out
 
 // methods
 private:
