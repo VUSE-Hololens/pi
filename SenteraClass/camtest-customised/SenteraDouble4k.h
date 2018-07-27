@@ -51,7 +51,6 @@ private:
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 	int imgReadyID;															// ID of most recent image ready
 	HTTPDownloader http_downloader;											// downloader
-	unsigned char* http_buffer;												// buffer for reading in images?
 
 	// other
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask

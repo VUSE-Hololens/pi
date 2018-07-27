@@ -491,12 +491,15 @@ int SenteraDouble4k::processImage(int cam) {
 	printf(urlStr.c_str());
 	printf("\n");
 	
-	http_buffer = new unsigned char[size];
+	unsigned char* http_buffer = new unsigned char[size];
+	int width, height;
 	std::string imgContent = http_downloader.download(urlStr);
 	printf("Imager ID %d: Data string of Length %d\n", cam, imgContent.length()); // DEBUG
-	decompressJpg(imgContent, http_buffer, sensor_data[cam - 1].width, sensor_data[cam - 1].height);
+	decompressJpg(imgContent, http_buffer, width, height);
+	// deal with buffer
+	sensor_data[cam - 1].width = width;
+	sensor_data[cam - 1].height = height;
 	delete[] http_buffer; // free up buffer memory
-	
 	return 0;
 }
 
