@@ -9,7 +9,6 @@
 #include <time.h>
 #include <errno.h>
 #include <thread>
-#include <turbojpeg.h>
 
 // user includes
 #include "Bufferizer.h" // bufferizes packets of data
@@ -17,6 +16,7 @@
 #include "Sensor.h" // parent class
 #include "packets.h" // packet structures
 #include "HTTPDownloader.h" // download HTTP packets
+#include <turbojpeg.h>
 
 // defines
 // #define BUFLEN 512
