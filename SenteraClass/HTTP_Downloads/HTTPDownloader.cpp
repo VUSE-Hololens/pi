@@ -21,7 +21,8 @@ int main(int argc, char** argv) {
 	printf("\n");
 	printf("Length: %d\n", content.length());
 
-	unsigned char *compressedImg = content.data(); // consolidate with lines above
+	//unsigned char *compressedImg = content.data(); // consolidate with lines above
+	strcpy((char*)compressedImg, content.c_str());
 
 	// TO BE TESTED!!! 
 	int width, height;
