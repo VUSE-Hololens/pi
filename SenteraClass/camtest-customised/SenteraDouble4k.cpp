@@ -500,7 +500,7 @@ int SenteraDouble4k::processImage(int cam) {
 	int width, height;
 	tjhandle _jpegDecompressor = tjInitDecompress();
 	printf("ImgSize: %d\n", imgLength);
-	tjDecompressHeader(_jpegDecompressor, compressedImg, imgLength, width, height);
+	tjDecompressHeader(_jpegDecompressor, compressedImg, imgLength, &width, &height);
 	size_t size = width * height * 3; // 3 channels for RGB data
 	printf("Image Dimensions: (%d, %d, %d)\n", width, height, 3);
 
