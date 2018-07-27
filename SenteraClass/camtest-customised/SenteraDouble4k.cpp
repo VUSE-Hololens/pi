@@ -493,7 +493,8 @@ int SenteraDouble4k::processImage(int cam) {
 	
 	http_buffer = new unsigned char[size];
 	std::string imgContent = http_downloader.download(urlStr);
-	decompressJpg(imgContent, http_buffer, &sensor_data[cam - 1].width, &sensor_data[cam - 1].height);
+	printf("Imager ID %d: Data string of Length %d\n", cam, imgContent.length()); // DEBUG
+	decompressJpg(imgContent, http_buffer, sensor_data[cam - 1].width, sensor_data[cam - 1].height);
 	delete[] http_buffer; // free up buffer memory
 	
 	return 0;
@@ -502,9 +503,8 @@ int SenteraDouble4k::processImage(int cam) {
 // decompresses jpg stored in string into unsigned char buffer 
 void SenteraDouble4k::decompressJpg(std::string compressed, unsigned char *buf, int *width, int *height) {
 	int imgLength = compressed.length();
-	printf("Imager ID %d: Data string of Length %d\n", cam, imgLength);
 	
-	unsigned char* compressedImg = (unsigned char*)compressed.data().c_str();
+	unsigned char* compressedImg = (unsigned char*)compressed.c_str();
 	tjhandle _jpegDecompressor = tjInitDecompress();
 	printf("ImgSize: %d\n", imgLength);
 	tjDecompressHeader(_jpegDecompressor, compressedImg, imgLength, &width, &height);
