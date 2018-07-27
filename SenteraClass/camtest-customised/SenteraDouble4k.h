@@ -41,7 +41,7 @@ private:
 	uint16_t localPort = 60531;												// Default local port for receiving
 
 	// for receiving
-	const static int num_cameras = 2;										// Double camera
+	//const static int num_cameras = 2;										// Double camera
 	fw_imager_data_ready_t recent_images[num_cameras];						// Store individual history of the last num_cameras images - no circular buffer
 
 	fw_payload_metadata_t camera_metadata[num_cameras];						// Store up to num_cameras worth of camera info
@@ -50,6 +50,7 @@ private:
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 	int imgReadyID;															// ID of most recent image ready
 	HTTPDownloader http_downloader;											// downloader
+	unsigned char* http_buffer;												// buffer for reading in images?
 
 	// other
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
@@ -57,7 +58,7 @@ private:
 	bool live_session = false;
 
 	// Frame and associated data
-	Frame senteraFrame;														// Data Out
+	//Frame senteraFrame;														// Data Out
 
 // methods
 private:

@@ -86,6 +86,13 @@ public:
 		updated = false;
 		data = new Frame();
 	}
+	Sensor(Transform _offset, int cams)
+		: offset(_offset)
+	{
+		num_cameras = cams;
+		updated = false;
+		data = new Frame()[cams];
+	}
 
 	// copy constructor
 	Sensor(const Sensor &rhs)
@@ -97,7 +104,7 @@ public:
 
 	// destructor
 	virtual ~Sensor() {
-		delete data;
+		delete data[];
 	}
 
 	// offset accessor, mutator
@@ -122,7 +129,10 @@ protected:
 	bool updated;
 
 	// sensor's most current data
-	Frame *data;
+	Frame *sensor_data;
+
+	// number of cameras
+	int num_cameras;
 
 };
 

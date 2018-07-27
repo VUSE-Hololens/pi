@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 	// consolidate with above tbd
 	unsigned char* compressedImg = (unsigned char*)content.c_str();
 
-	// TO BE TESTED!!! 
+	// WORKS!
 	int width, height;
 	int channels = 3; // i think?
 	tjhandle _jpegDecompressor = tjInitDecompress();
@@ -38,6 +38,6 @@ int main(int argc, char** argv) {
 	tjDecompress2(_jpegDecompressor, compressedImg, imgLength, buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
 	printf("Decompressed JPG\n");
 	tjDestroy(_jpegDecompressor);
-	printf("Destroyed Decompressor");
+	printf("Destroyed Decompressor\n");
 
 }

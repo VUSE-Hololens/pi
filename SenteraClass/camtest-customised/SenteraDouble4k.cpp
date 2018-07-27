@@ -5,7 +5,7 @@
 // includes
 #include "SenteraDouble4k.h"
 
-SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
+SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, num_cameras)
 {
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
@@ -382,8 +382,8 @@ int SenteraDouble4k::query_status_packet()
 			unsigned long long timestamp = (((unsigned long long)currTime.tv_sec) * 1000000) + ((unsigned long long)currTime.tv_usec);
 
 			// update data
-			senteraFrame.FOVx = status.imagerHFOV;
-			senteraFrame.FOVy = status.imagerVFOV;
+			sensor_data.FOVx = status.imagerHFOV;
+			sensor_data.FOVy = status.imagerVFOV;
 
 			// Store the most recent packet for each camera
 			// A packet can be for more than one camera.
@@ -491,14 +491,38 @@ int SenteraDouble4k::ProcessImage(int cam) {
 	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
 	printf(urlStr.c_str());
 	printf("\n");
-
-	std::string content = http_downloader.download(urlStr);
-	printf("Imager ID %d: Data string of Length %d\n", cam, content.length());
-	// manipulate string here
-	const char *c = content.data();
-
-
+	
+	http_buffer = new unsigned char[size];
+	std::string imgContent = http_downloader.download(urlStr);
+	if (cam == 1) {
+		decompressJpg(imgContent, http_buffer, sensor_data.width, sensor_data.height);
+	}
+	else if (cam == 2) {
+		decompressJpg(imgContent, http_buffer, sensor_data.width, sensor_data.height);
+	}
+	delete[] http_buffer; // free up buffer memory
+	
 	return 0;
+}
+
+// decompresses jpg stored in string into unsigned char buffer 
+void SenteraDouble4k::decompressJpg(std::string compressed, unsigned char *buf, int *width, int *height) {
+	int imgLength = compressed.length();
+	printf("Imager ID %d: Data string of Length %d\n", cam, imgLength);
+	
+	unsigned char* compressedImg = (unsigned char*)compressed.data().c_str();
+	tjhandle _jpegDecompressor = tjInitDecompress();
+	printf("ImgSize: %d\n", imgLength);
+	tjDecompressHeader(_jpegDecompressor, compressedImg, imgLength, &width, &height);
+	size_t size = width * height * 3; // 3 channels for RGB data
+	printf("Image Dimensions: (%d, %d, %d)\n", width, height, 3);
+
+	tjDecompress2(_jpegDecompressor, compressedImg, imgLength, buf, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
+	printf("Decompressed JPG\n");
+	tjDestroy(_jpegDecompressor);
+	printf("Destroyed Decompressor\n");
+
+	return;
 }
 
 std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
