@@ -80,31 +80,26 @@ protected:
 
 public:
 	// constructor
-	Sensor(Transform _offset)
-		: offset(_offset)
-	{
-		updated = false;
-		data = new Frame();
-	}
 	Sensor(Transform _offset, int cams)
 		: offset(_offset)
 	{
 		num_cameras = cams;
 		updated = false;
-		data = new Frame()[cams];
+		sensor_data = new Frame()[cams];
 	}
 
 	// copy constructor
 	Sensor(const Sensor &rhs)
 		: offset(rhs.offset)
 	{
+		num_cameras = rhs.num_cameras;
 		updated = false;
-		data = new Frame();
+		sensor_data = new Frame()[num_cameras];
 	}
 
 	// destructor
 	virtual ~Sensor() {
-		delete data[];
+		delete sensor_data[];
 	}
 
 	// offset accessor, mutator
