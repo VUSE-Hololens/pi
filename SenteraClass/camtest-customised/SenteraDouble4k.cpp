@@ -64,6 +64,7 @@ int SenteraDouble4k::Start() {
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
 
 				processImage(imgReadyID); // process data for appropriate image
+				printf("ImgSize: (%d, %d)\n", sensor_data[0].width, sensor_data[0].height);
 			}
 		}
 	}
