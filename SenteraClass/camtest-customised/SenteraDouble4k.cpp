@@ -493,12 +493,7 @@ int SenteraDouble4k::processImage(int cam) {
 	
 	http_buffer = new unsigned char[size];
 	std::string imgContent = http_downloader.download(urlStr);
-	if (cam == 1) {
-		decompressJpg(imgContent, http_buffer, sensor_data[cam-1].width, sensor_data[cam-1].height);
-	}
-	else if (cam == 2) {
-		decompressJpg(imgContent, http_buffer, sensor_data[cam-1].width, sensor_data[cam-1].height);
-	}
+	decompressJpg(imgContent, http_buffer, &sensor_data[cam - 1].width, &sensor_data[cam - 1].height);
 	delete[] http_buffer; // free up buffer memory
 	
 	return 0;
