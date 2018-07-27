@@ -85,7 +85,7 @@ public:
 	{
 		num_cameras = cams;
 		updated = false;
-		sensor_data = new Frame()[cams];
+		sensor_data = new Frame[num_cameras]();
 	}
 
 	// copy constructor
@@ -94,7 +94,7 @@ public:
 	{
 		num_cameras = rhs.num_cameras;
 		updated = false;
-		sensor_data = new Frame()[num_cameras];
+		sensor_data = new Frame[num_cameras]();
 	}
 
 	// destructor
