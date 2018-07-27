@@ -18,7 +18,8 @@ int main(int argc, char** argv) {
 	std::string urlStr = "http://www.simpopdf.com/sample/image-to-pdf-sample.jpg";
 
 	std::string content = downloader.download(urlStr);
-	printf("Length: %d\n", content.length());
+	int imgLength = content.length();
+	printf("Length: %d\n", length);
 
 	// consolidate with above tbd
 	unsigned char* compressedImg = (unsigned char*)content.c_str();
@@ -28,13 +29,13 @@ int main(int argc, char** argv) {
 	int channels = 3; // i think?
 	tjhandle _jpegDecompressor = tjInitDecompress();
 	printf("Initialized Decompressor\n");
-	printf("ImgSize: %d\n", sizeof(compressedImg));
-	tjDecompressHeader(_jpegDecompressor, compressedImg, sizeof(compressedImg), &width, &height);
+	printf("ImgSize: %d\n", imgLength);
+	tjDecompressHeader(_jpegDecompressor, compressedImg, imgLength, &width, &height);
 	size_t size = width * height * channels;
 	printf("Image Dimensions: (%d, %d, %d)\n", width, height, channels);
 	unsigned char* buffer = new unsigned char[size];
 	printf("Made new buffer\n");
-	tjDecompress2(_jpegDecompressor, compressedImg, sizeof(compressedImg), buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
+	tjDecompress2(_jpegDecompressor, compressedImg, imgLength, buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
 	printf("Decompressed JPG\n");
 	tjDestroy(_jpegDecompressor);
 	printf("Destroyed Decompressor");
