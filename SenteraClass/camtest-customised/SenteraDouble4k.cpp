@@ -491,7 +491,6 @@ int SenteraDouble4k::processImage(int cam) {
 	printf(urlStr.c_str());
 	printf("\n");
 	
-	unsigned char* http_buffer = new unsigned char[size];
 	std::string imgContent = http_downloader.download(urlStr);
 	printf("Imager ID %d: Data string of Length %d\n", cam, imgContent.length()); // DEBUG
 
@@ -505,7 +504,9 @@ int SenteraDouble4k::processImage(int cam) {
 	size_t size = width * height * 3; // 3 channels for RGB data
 	printf("Image Dimensions: (%d, %d, %d)\n", width, height, 3);
 
-	tjDecompress2(_jpegDecompressor, compressedImg, imgLength, buf, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
+	unsigned char* http_buffer = new unsigned char[size];
+
+	tjDecompress2(_jpegDecompressor, compressedImg, imgLength, http_buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
 	printf("Decompressed JPG\n");
 	tjDestroy(_jpegDecompressor);
 	printf("Destroyed Decompressor\n");
