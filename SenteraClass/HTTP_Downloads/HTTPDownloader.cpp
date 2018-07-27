@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 	printf("Length: %d\n", content.length());
 
 	//unsigned char *compressedImg = content.data(); // consolidate with lines above
-	strcpy((char*)compressedImg, content.c_str());
+	unsigned char* compressedImg = (unsigned char*)content.data();
 
 	// TO BE TESTED!!! 
 	int width, height;
