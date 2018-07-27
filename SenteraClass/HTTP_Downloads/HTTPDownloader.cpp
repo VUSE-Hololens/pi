@@ -15,7 +15,7 @@
 
 int main(int argc, char** argv) {
 	HTTPDownloader downloader;
-	std::string urlStr = "http://www.simpopdf.com/sample/image-to-pdf-sample.jpg;
+	std::string urlStr = "http://www.simpopdf.com/sample/image-to-pdf-sample.jpg";
 
 	std::string content = downloader.download(urlStr);
 	printf("Length: %d\n", content.length());
