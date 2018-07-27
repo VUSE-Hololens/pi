@@ -15,20 +15,20 @@
 
 int main(int argc, char** argv) {
 	HTTPDownloader downloader;
-	std::string urlStr = "https://upload.wikimedia.org/wikipedia/commons/b/b4/JPEG_example_JPG_RIP_100.jpg";
-	//std::string urlStr = "https://192.168.143.141:8080/sdcard?path=/snapshots/SenteraImagerSession1/NDRE/IMG_00001.jpg";
+	std::string urlStr = "http://www.simpopdf.com/sample/image-to-pdf-sample.jpg;
+
 	std::string content = downloader.download(urlStr);
-	printf("\n");
 	printf("Length: %d\n", content.length());
 
-	//unsigned char *compressedImg = content.data(); // consolidate with lines above
-	unsigned char* compressedImg = (unsigned char*)content.data();
+	// consolidate with above tbd
+	unsigned char* compressedImg = (unsigned char*)content.c_str();
 
 	// TO BE TESTED!!! 
 	int width, height;
 	int channels = 3; // i think?
 	tjhandle _jpegDecompressor = tjInitDecompress();
 	printf("Initialized Decompressor\n");
+	printf("ImgSize: %d\n", sizeof(compressedImg));
 	tjDecompressHeader(_jpegDecompressor, compressedImg, sizeof(compressedImg), &width, &height);
 	size_t size = width * height * channels;
 	printf("Image Dimensions: (%d, %d, %d)\n", width, height, channels);
