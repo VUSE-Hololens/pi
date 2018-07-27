@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 	printf("\n");
 	printf("Length: %d\n", content.length());
 
-	const char *compressedImg = content.data(); // consolidate with lines above
+	unsigned char *compressedImg = content.data(); // consolidate with lines above
 
 	// TO BE TESTED!!! 
 	int width, height;
@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 	unsigned char* buffer = new unsigned char[size];
 	printf("Made new buffer\n");
 	tjDecompress2(_jpegDecompressor, compressedImg, sizeof(compressedImg), buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
-	printf("Decompressed JPG\n")
+	printf("Decompressed JPG\n");
 	tjDestroy(_jpegDecompressor);
 	printf("Destroyed Decompressor");
 
