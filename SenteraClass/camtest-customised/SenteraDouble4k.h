@@ -9,6 +9,7 @@
 #include <time.h>
 #include <errno.h>
 #include <thread>
+#include <turbojpeg.h>
 
 // user includes
 #include "Bufferizer.h" // bufferizes packets of data
