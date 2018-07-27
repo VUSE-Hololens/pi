@@ -1,6 +1,6 @@
 
 main: clean.main
-	g++ -o main HTTPDownloader.cpp -l curl
+	g++ -o main HTTPDownloader.cpp -l curl -l turbojpeg
 
 main.arm: clean.arm
 	arm-none-linux-gnueabi-g++ -o main.arm HTTPDownloader.cpp
