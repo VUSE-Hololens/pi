@@ -5,7 +5,7 @@
 // includes
 #include "SenteraDouble4k.h"
 
-SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this.cams)
+SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this->cams)
 {
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
@@ -63,7 +63,7 @@ int SenteraDouble4k::Start() {
 			received_data = (recvType >= 1); // successfully received packet?
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
 
-				ProcessImage(imgReadyID); // process data for appropriate image
+				processImage(imgReadyID); // process data for appropriate image
 			}
 		}
 	}
@@ -483,10 +483,10 @@ int SenteraDouble4k::query_status_packet()
 }
 
 Frame SenteraDouble4k::Data() {
-	return *data;
+	return *sensor_data;
 }
 
-int SenteraDouble4k::ProcessImage(int cam) {
+int SenteraDouble4k::processImage(int cam) {
 	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
 	printf(urlStr.c_str());
 	printf("\n");

@@ -75,6 +75,7 @@ private:
 
 	//processing data
 	int processImage(int cam);
+	void decompressJpg(std::string compressed, unsigned char *buf, int *width, int *height);
 	std::string makeUrlPath(uint8_t *filename);
 
 public:
