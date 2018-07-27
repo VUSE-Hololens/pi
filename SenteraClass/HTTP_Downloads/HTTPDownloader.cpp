@@ -28,12 +28,12 @@ int main(int argc, char** argv) {
 	int channels = 3; // i think?
 	tjhandle _jpegDecompressor = tjInitDecompress();
 	printf("Initialized Decompressor\n");
-	tjDecompressHeader(_jpegDecompressor, compressedImg, _jpegSize, &width, &height);
+	tjDecompressHeader(_jpegDecompressor, compressedImg, sizeof(compressedImg), &width, &height);
 	size_t size = width * height * channels;
 	printf("Image Dimensions: (%d, %d, %d)\n", width, height, channels);
 	unsigned char* buffer = new unsigned char[size];
 	printf("Made new buffer\n");
-	tjDecompress2(_jpegDecompressor, compressedImg, _jpegSize, buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
+	tjDecompress2(_jpegDecompressor, compressedImg, sizeof(compressedImg), buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
 	printf("Decompressed JPG\n")
 	tjDestroy(_jpegDecompressor);
 	printf("Destroyed Decompressor");
