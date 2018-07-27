@@ -62,7 +62,8 @@ int SenteraDouble4k::Start() {
 			recvType = query_status_packet(); // query for new data
 			received_data = (recvType >= 1); // successfully received packet?
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
-				processImages(); // process data
+
+				ProcessImage(imgReadyID); // process data for appropriate image
 			}
 		}
 	}
@@ -373,10 +374,16 @@ int SenteraDouble4k::query_status_packet()
 				status.videoDstPort = 0;
 			}
 
+			// 
+
 			// Get the time we received the packet (approx)
 			struct timeval currTime;
 			gettimeofday(&currTime, NULL);
 			unsigned long long timestamp = (((unsigned long long)currTime.tv_sec) * 1000000) + ((unsigned long long)currTime.tv_usec);
+
+			// update data
+			senteraFrame.FOVx = status.imagerHFOV;
+			senteraFrame.FOVy = status.imagerVFOV;
 
 			// Store the most recent packet for each camera
 			// A packet can be for more than one camera.
@@ -414,12 +421,16 @@ int SenteraDouble4k::query_status_packet()
 
 			if (new_image.imagerID == (uint8_t)1) {
 				recent_images[0] = new_image;
+				imgReadyID = 1;
 			}
 			else if (new_image.imagerID == (uint8_t)2) {
 				recent_images[1] = new_image;
+				imgReadyID = 2;
 			}
 			else {
+				imgReadyID = 0;
 				fprintf(stderr, "Imager ID not 1 or 2: Failed to store new image data\n");
+				return -1;
 			}
 			printf("Stored new image for camera %d\n", new_image.imagerID);
 
@@ -476,19 +487,22 @@ Frame SenteraDouble4k::Data() {
 	return *data;
 }
 
-int SenteraDouble4k::processImages() {
-	std::string urlStr = makeUrlPath(recent_images[0].fileName);
+int SenteraDouble4k::ProcessImage(int cam) {
+	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
 	printf(urlStr.c_str());
 	printf("\n");
 
 	std::string content = http_downloader.download(urlStr);
-	printf("RGB Img String of Length: %d\n", content.length());
+	printf("Imager ID %d: Data string of Length %d\n", cam, content.length());
 	// manipulate string here
+	const char *c = content.data();
+
+
 	return 0;
 }
 
 std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
-	// http ://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
+	// http ://192.168.143.141:8080/sdcard?cur_session&path=/RGB/IMG_000001.jpg
 	std::string outStr = "http://";
 	outStr += server_ipaddr;
 	outStr += ":";

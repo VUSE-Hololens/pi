@@ -33,7 +33,7 @@ public:
 		curl_easy_cleanup(curl);
 	};
 	/**
-	* Download a file using HTTP GET and store in in a std::string
+	* Download a file using HTTP GET and store in a std::string
 	* @param url The URL to download
 	* @return The download result
 	*/

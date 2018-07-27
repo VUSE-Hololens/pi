@@ -48,14 +48,16 @@ private:
 	bool camera_metadata_valid[num_cameras];								// Indicates whether each ID was valid 
 	unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
-
+	int imgReadyID;															// ID of most recent image ready
 	HTTPDownloader http_downloader;											// downloader
 
 	// other
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;
-	Frame data_out;															// Data Out
+
+	// Frame and associated data
+	Frame senteraFrame;														// Data Out
 
 // methods
 private:
@@ -71,7 +73,7 @@ private:
 	int query_status_packet();
 
 	//processing data
-	int processImages();
+	int processImage(int cam);
 	std::string makeUrlPath(uint8_t *filename);
 
 public:
@@ -79,6 +81,6 @@ public:
 	~SenteraDouble4k();
 	int Start();
 	int Stop();
-	int UpdateTrigger();
 	Frame Data();
+	int UpdateTrigger();
 };
