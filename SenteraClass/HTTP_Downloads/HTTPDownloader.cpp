@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 
 	std::string content = downloader.download(urlStr);
 	int imgLength = content.length();
-	printf("Length: %d\n", length);
+	printf("Length: %d\n", imgLength);
 
 	// consolidate with above tbd
 	unsigned char* compressedImg = (unsigned char*)content.c_str();
