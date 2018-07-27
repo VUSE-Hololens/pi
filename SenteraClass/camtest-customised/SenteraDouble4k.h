@@ -41,12 +41,12 @@ private:
 	uint16_t localPort = 60531;												// Default local port for receiving
 
 	// for receiving
-	//const static int num_cameras = 2;										// Double camera
-	fw_imager_data_ready_t recent_images[num_cameras];						// Store individual history of the last num_cameras images - no circular buffer
+	const static int cams = 2;												// Double camera
+	fw_imager_data_ready_t recent_images[cams];							// Store individual history of the last num_cameras images - no circular buffer
 
-	fw_payload_metadata_t camera_metadata[num_cameras];						// Store up to num_cameras worth of camera info
-	bool camera_metadata_valid[num_cameras];								// Indicates whether each ID was valid 
-	unsigned long long camera_metadata_last_update_us[num_cameras];			// Timestamp of last update 
+	fw_payload_metadata_t camera_metadata[cams];						// Store up to num_cameras worth of camera info
+	bool camera_metadata_valid[cams];									// Indicates whether each ID was valid 
+	unsigned long long camera_metadata_last_update_us[cams];			// Timestamp of last update 
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 	int imgReadyID;															// ID of most recent image ready
 	HTTPDownloader http_downloader;											// downloader

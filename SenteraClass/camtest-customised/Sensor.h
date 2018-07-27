@@ -99,7 +99,7 @@ public:
 
 	// destructor
 	virtual ~Sensor() {
-		delete sensor_data[];
+		delete[] sensor_data;
 	}
 
 	// offset accessor, mutator

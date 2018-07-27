@@ -5,7 +5,7 @@
 // includes
 #include "SenteraDouble4k.h"
 
-SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, num_cameras)
+SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this.cams)
 {
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
