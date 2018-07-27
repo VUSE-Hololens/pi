@@ -381,16 +381,15 @@ int SenteraDouble4k::query_status_packet()
 			gettimeofday(&currTime, NULL);
 			unsigned long long timestamp = (((unsigned long long)currTime.tv_sec) * 1000000) + ((unsigned long long)currTime.tv_usec);
 
-			// update data
-			sensor_data.FOVx = status.imagerHFOV;
-			sensor_data.FOVy = status.imagerVFOV;
-
 			// Store the most recent packet for each camera
 			// A packet can be for more than one camera.
 			for (int i = 0; i < num_cameras; i++)
 			{
 				if (status.imagerID & (0x01 << i))
 				{
+					// TODO: check sensor band data stuff/ptr stuff
+					sensor_data[i].FOVx = status.imagerHFOV;
+					sensor_data[i].FOVy = status.imagerVFOV;
 					camera_metadata[i] = status;
 					camera_metadata_valid[i] = true;
 					camera_metadata_last_update_us[i] = timestamp;
