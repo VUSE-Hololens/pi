@@ -11,6 +11,8 @@
 #include "SensorDataTypes.h"
 #include "Sensor.h"
 #include "DataProcessor.h"
+#include "SenteraDouble4k.h"
+#include "DataProcessor.h"
 
 class SensorManager {
 
@@ -34,7 +36,7 @@ private:
 
 	// methods
 public:
-	SensorManager();
+	SensorManager(int _num_sensors, std::string *_sensor_names);
 	~SensorManager();
 
 	// check if data ready to be sent

@@ -2,11 +2,7 @@
 //
 //
 
-#include <string>
-
 #include "SensorManager.h"
-#include "SenteraDouble4k.h"
-#include "DataProcessor.h"
 
 SensorManager::SensorManager(int _num_sensors, std::string *_sensor_names) {
 	// Note: num_sensors and length of sensorNames MUST be equal
@@ -17,6 +13,7 @@ SensorManager::SensorManager(int _num_sensors, std::string *_sensor_names) {
 	num_sensors = _num_sensors;
 	data_ready = false;
 	sensorNames = _sensor_names;
+	sensors = new Sensor[num_sensors]();
 
 	// initialize all sensors to default offset
 	Transform _offset;
@@ -26,6 +23,7 @@ SensorManager::SensorManager(int _num_sensors, std::string *_sensor_names) {
 			SenteraDouble4k sentera(_offset);
 			sensors[i] = sentera;
 			sensor_keys.push_back("sentera");
+			printf("Initialized sentera class \n");
 		} 
 		else {
 			printf("Cannot initialize sensor of type %s\n", _sensor_names[i]);
