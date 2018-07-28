@@ -540,7 +540,7 @@ int SenteraDouble4k::processImage(int cam) {
 	sensor_data[cam - 1].height = height;
 	sensor_data[cam - 1].bands = channels;
 	updated[cam - 1] = true;
-	printf("Sentera Updated: (%d, %d)\n", updated[0], updates[1]);
+	printf("Sentera Updated: (%d, %d)\n", updated[0], updated[1]);
 
 	return 0;
 }
