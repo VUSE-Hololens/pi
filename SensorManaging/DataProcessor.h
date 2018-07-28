@@ -25,7 +25,7 @@ public:
 		}
 		if (!newSize.equals(nirSize)) {
 			nirBuf = new uint8_t[newSize.x * newSize.y * newSize.z];
-			Resample(sensorData[1].pixels, nirSize, newSize, nirBuf)
+			Resample(sensorData[1].pixels, nirSize, newSize, nirBuf);
 		}
 		else {
 			nirBuf = sensorData[1].pixels;
@@ -77,7 +77,7 @@ public:
 				nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
 				red_edge = nirBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red edge band of rgb
 				ndre = (1.0*nir - red_edge) / (1.0*nir + red_edge);
-				buf[i + newSize.x * j] = this::clamp_val(ndre);
+				buf[i + newSize.x * j] = clamp_val(ndre);
 			}
 		}
 		delete[] nirBuf;
