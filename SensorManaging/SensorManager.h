@@ -19,7 +19,7 @@ class SensorManager {
 	// variables
 public:
 	// array of sensors to be managed
-	Sensor *sensors;
+	Sensor *sentera;
 
 private:
 	// frame of one band data to be compressed and transmitted
@@ -41,10 +41,6 @@ public:
 
 	// check if data ready to be sent
 	bool checkDataReady();
-
-	// start, stop all sensor sessions
-	int StopAll();
-	int StartAll();
 
 private:
 	void updateImageData();

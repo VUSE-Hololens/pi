@@ -64,6 +64,10 @@ public:
 		return out; 
 	}
 
+	int getNumCameras() {
+		return num_cameras;
+	}
+
 	// data accessor
 	virtual Frame Data() = 0;
 

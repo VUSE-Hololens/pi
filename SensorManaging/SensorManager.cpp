@@ -5,61 +5,30 @@
 #include "SensorManager.h"
 
 SensorManager::SensorManager() {
-	// Note: num_sensors and length of sensorNames MUST be equal
-	if (num_sensors <= 0) {
-		printf("Out of range error: SensorManager must be initialized with at least 1 sensor.");
-		return;
-	}
-	num_sensors = 1;
 	data_ready = false;
 	// initialize all sensors to default offset
 	Transform _offset;
-	SenteraDouble4k sentera(_offset);
-	sensors = { &sentera };
-
+	sentera = new SenteraDouble4k sentera(_offset);
 }
 
 SensorManager::~SensorManager() {
-	StopAll();
-	delete[] sensors;
+	delete sentera;
 }
 
 bool SensorManager::checkDataReady() {
 	return data_ready;
 }
 
-int SensorManager::StartAll() {
-	for (int i = 0; i < num_sensors; i++) {
-		if (sensors[i].Start() < 0) {
-			printf("Sensor %d: failed to start\n", i);
-			return -1; 
-		}
-	}
-	return 1;
-}
-
-int SensorManager::StopAll() {
-	for (int i = 0; i < num_sensors; i++) {
-		if (sensors[i].Stop() < 0) {
-			printf("Sensor %d: failed to stop\n", i);
-			return -1;
-		}
-	}
-	return 1;
-}
-
 void SensorManager::updateImageData() {
 	// check if we should process new data. customizeable to specific visualization
-	bool process = true;
-	for (int i = 0; i < num_sensors; i++) {
-		process = process && sensors[i].getUpdated();
-	}
-	if (!process) return; 
+	
+	if (!sentera->getUpdated()) return; 
 
-	Frame *sentera_data = sensors[0].Data();
+	int cams = sentera->getNumCameras();
+	Frame sentera_data = sentera->Data();
 
-	Vector3Int outSize(sentera_data[0].width, sentera_data[0].height, 1);
-	DataProcessor::getSenteraNDVI(sentera_data, image_data.pixels, outSize);
-	transform = sensors[0].getOffset();
+	//Vector3Int outSize(sentera_data[0].width, sentera_data[0].height, 1);
+	//DataProcessor::getSenteraNDVI(sentera_data, image_data.pixels, outSize);
+	//transform = sensors[0].getOffset();
 	
 }
