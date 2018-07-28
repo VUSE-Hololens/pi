@@ -84,6 +84,6 @@ public:
 	~SenteraDouble4k();
 	int Start();
 	int Stop();
-	Frame Data();
+	std::vector<Frame> Data();
 	int updateTrigger();
 };
