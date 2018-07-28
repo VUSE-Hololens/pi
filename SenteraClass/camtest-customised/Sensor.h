@@ -123,7 +123,7 @@ protected:
 	Transform offset;
 
 	// has data been updated since last access?
-	bool* updated; // array this??
+	bool *updated; 
 
 	// sensor's most current data
 	Frame *sensor_data;

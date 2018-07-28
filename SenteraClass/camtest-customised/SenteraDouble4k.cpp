@@ -507,20 +507,20 @@ int SenteraDouble4k::processImage(int cam) {
 	//printf("Image Dimensions: (%d, %d, %d)\n", width, height, channels);
 
 	//unsigned char* http_buffer = new unsigned char[size];
-	unsigned char http_buffer[size];
+	//unsigned char http_buffer[size];
 
-	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, http_buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
-	//printf("Decompressed JPG\n");
+	delete[] sensor_data[cam - 1].pixels;
+	sensor_data[cam - 1].pixels = new unsigned char[size];
+	printf("Allocated Pixel Array in sensor_data..\n")
+	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
+	printf("Decompressed JPG\n");
 	tjDestroy(_jpegDecompressor);
-	//printf("Destroyed Decompressor\n");
+	printf("Destroyed Decompressor\n");
 																				  
 	// deal with buffer
 	sensor_data[cam - 1].width = width;
 	sensor_data[cam - 1].height = height;
 	sensor_data[cam - 1].bands = channels;
-
-	delete[] sensor_data[cam - 1].pixels;
-	sensor_data[cam - 1].pixels = http_buffer;
 	updated[cam - 1] = true;
 
 	delete[] http_buffer; // free up buffer memory. check if this works??
