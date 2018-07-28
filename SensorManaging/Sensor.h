@@ -22,6 +22,12 @@ protected:
 	const std::string PI_IP = "192.168.143.130";
 
 public:
+
+	Sensor(int _cams) {
+		Transform _off;
+		Sensor(_off, _cams);
+	}
+
 	// constructor
 	Sensor(Transform _offset, int _cams)
 		: offset(_offset)
