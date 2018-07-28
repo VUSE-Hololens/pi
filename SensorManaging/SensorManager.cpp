@@ -21,12 +21,13 @@ bool SensorManager::checkDataReady() {
 }
 
 void SensorManager::StartSession() {
-	std::chrono::milliseconds dura(100);
 
 	sentera->Start();
+	std::chrono::seconds dura(10);
+	std::this_thread::sleep_for(dura);
+	delete dura;
 
-	std::this_thread::sleep_for(std::chrono::seconds(10));
-
+	std::chrono::milliseconds dura(100);
 	live_session = true;
 	while (live_session) {
 		if (!sentera->getUpdated()) {
