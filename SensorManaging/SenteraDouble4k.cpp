@@ -53,9 +53,16 @@ int SenteraDouble4k::Start() {
 	}
 	printf("Sent still capture packet");
 
+	std::thread t1(sessionListener);
+
+	return 0;
+}
+
+int SenteraDouble4k::sessionListener() {
 	// listen for updates
 	live_session = true;
 	int recvType = 0;
+
 	while (live_session)
 	{
 		// havent yet received data
@@ -68,10 +75,10 @@ int SenteraDouble4k::Start() {
 		while (!received_data)
 		{
 			// query for new data
-			recvType = query_status_packet(); 
+			recvType = query_status_packet();
 
 			// received a new packet?
-			received_data = (recvType >= 1); 
+			received_data = (recvType >= 1);
 
 			endtime = std::chrono::system_clock::now();
 
@@ -88,7 +95,7 @@ int SenteraDouble4k::Start() {
 			}
 
 			// if new data is ready to process, do that
-			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { 
+			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
 				processImage(imgReadyID); // process data for appropriate image
 				filterBands(imgReadyID); // filter band data appropriately
 			}

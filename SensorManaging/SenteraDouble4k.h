@@ -71,6 +71,9 @@ private:
 	int makeImagerTriggerPacket(uint8_t mode, uint32_t period, uint8_t *buf);
 	int makeStillCapturePacket(uint8_t option, const char *sessionName, uint8_t *buf);
 
+	// listener for side thread
+	int sessionListener();
+
 	//receiving data
 	int query_status_packet();
 

@@ -10,18 +10,17 @@ int main() {
 
 	//Transform t1;
 
-	int num = 1;
-	std::string names[num] = { "sentera" };
-	SensorManager sensor_manager;
+	//int num = 1;
+	//std::string names[num] = { "sentera" };
+	//SensorManager sensor_manager;
 
-	std::chrono::seconds waittime(3);
-	std::this_thread::sleep_for(waittime);
+	//std::chrono::seconds waittime(3);
+	//std::this_thread::sleep_for(waittime);
 
-	sensor_manager.StartSession();
+	//sensor_manager.StartSession();
 	
-	//SenteraDouble4k sentera(t1);
-	//usleep(3000);
-	//sentera.Start();
+	SenteraDouble4k sentera;
+	sentera.Start();
 
 	return 0;
 }
