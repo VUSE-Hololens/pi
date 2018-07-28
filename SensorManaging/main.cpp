@@ -1,7 +1,9 @@
-#include "SensorManager.h"
-#include "Sensor.h"
 
 #include <unistd.h>
+#include <string>
+
+#include "SensorManager.h"
+#include "Sensor.h"
 
 int main() {
 
