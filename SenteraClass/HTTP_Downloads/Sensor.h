@@ -69,7 +69,6 @@ struct Frame {
 	}
 
 	void clear() {
-		delete[] updated;
 		delete[] pixels;
 	}
 };

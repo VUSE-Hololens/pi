@@ -493,51 +493,39 @@ int SenteraDouble4k::processImage(int cam) {
 	printf("\n");
 	
 	std::string imgContent = http_downloader.download(urlStr);
-	printf("Imager ID %d: Data string of Length %d\n", cam, imgContent.length()); // DEBUG
+	//printf("Imager ID %d: Data string of Length %d\n", cam, imgContent.length()); // DEBUG
 
-	int imgLength = imgContent.length();
+	size_t compressedImgLength = imgContent.length();
 	unsigned char* compressedImg = (unsigned char*)imgContent.c_str();
 
 	int width, height;
+	int channels = 3;
 	tjhandle _jpegDecompressor = tjInitDecompress();
-	printf("ImgSize: %d\n", imgLength);
-	tjDecompressHeader(_jpegDecompressor, compressedImg, imgLength, &width, &height);
-	size_t size = width * height * 3; // 3 channels for RGB data
-	printf("Image Dimensions: (%d, %d, %d)\n", width, height, 3);
+	//printf("ImgSize: %d\n", imgLength);
+	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
+	size_t size = width * height * channels; // 3 channels for RGB data
+	//printf("Image Dimensions: (%d, %d, %d)\n", width, height, channels);
 
-	unsigned char* http_buffer = new unsigned char[size];
+	//unsigned char* http_buffer = new unsigned char[size];
+	unsigned char http_buffer[size];
 
-	tjDecompress2(_jpegDecompressor, compressedImg, imgLength, http_buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
-	printf("Decompressed JPG\n");
+	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, http_buffer, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
+	//printf("Decompressed JPG\n");
 	tjDestroy(_jpegDecompressor);
-	printf("Destroyed Decompressor\n");
+	//printf("Destroyed Decompressor\n");
 																				  
 	// deal with buffer
 	sensor_data[cam - 1].width = width;
 	sensor_data[cam - 1].height = height;
-	delete[] http_buffer; // free up buffer memory
+	sensor_data[cam - 1].bands = channels;
+
+	delete[] sensor_data[cam - 1].pixels;
+	sensor_data[cam - 1].pixels = http_buffer;
+	updated[cam - 1] = true;
+
+	delete[] http_buffer; // free up buffer memory. check if this works??
 	return 0;
 }
-
-// decompresses jpg stored in string into unsigned char buffer 
-/*
-void SenteraDouble4k::decompressJpg(std::string compressed, unsigned char *buf, int& width, int& height) {
-	int imgLength = compressed.length();
-	
-	unsigned char* compressedImg = (unsigned char*)compressed.c_str();
-	tjhandle _jpegDecompressor = tjInitDecompress();
-	printf("ImgSize: %d\n", imgLength);
-	tjDecompressHeader(_jpegDecompressor, compressedImg, imgLength, width, height);
-	size_t size = width * height * 3; // 3 channels for RGB data
-	printf("Image Dimensions: (%d, %d, %d)\n", width, height, 3);
-
-	tjDecompress2(_jpegDecompressor, compressedImg, imgLength, buf, width&, 0, height&, TJPF_RGB, TJFLAG_FASTDCT);
-	printf("Decompressed JPG\n");
-	tjDestroy(_jpegDecompressor);
-	printf("Destroyed Decompressor\n");
-
-	return;
-} */
 
 std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
 	// http ://192.168.143.141:8080/sdcard?cur_session&path=/RGB/IMG_000001.jpg

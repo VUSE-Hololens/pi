@@ -12,6 +12,7 @@
 //#include "stdafx.h"
 #include "HTTPDownloader.h"
 #include <turbojpeg.h>
+#include "Sensor.h"
 
 int main(int argc, char** argv) {
 	HTTPDownloader downloader;
