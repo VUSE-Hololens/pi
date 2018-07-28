@@ -80,6 +80,7 @@ private:
 	std::string makeUrlPath(uint8_t *filename);
 
 public:
+	SenteraDouble4k();
 	SenteraDouble4k(Transform offset);
 	~SenteraDouble4k();
 	int Start();

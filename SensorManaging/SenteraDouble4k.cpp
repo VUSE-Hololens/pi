@@ -5,10 +5,7 @@
 // includes
 #include "SenteraDouble4k.h"
 
-SenteraDouble4k::SenteraDouble4k() {
-	Transform off;
-	SenteraDouble4k(off);
-}
+SenteraDouble4k::SenteraDouble4k() : SenteraDouble4k::SenteraDouble4k(offset){}
 
 SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this->cams)
 {
