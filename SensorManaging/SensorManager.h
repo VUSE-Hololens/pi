@@ -34,6 +34,8 @@ private:
 	// is data ready to be transmitted
 	bool data_ready;
 
+	bool live_session;
+
 	// methods
 public:
 	SensorManager();

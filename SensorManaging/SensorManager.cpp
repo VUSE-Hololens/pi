@@ -9,6 +9,7 @@ SensorManager::SensorManager() {
 	// initialize all sensors to default offset
 	Transform _offset;
 	sentera = new SenteraDouble4k(_offset);
+	live_session = false;
 }
 
 SensorManager::~SensorManager() {
@@ -24,8 +25,9 @@ void SensorManager::StartSession() {
 
 	sentera->Start();
 
-	std::this_thread::sleep_for(std::chrono::seconds(10))
+	std::this_thread::sleep_for(std::chrono::seconds(10));
 
+	live_session = true;
 	while (live_session) {
 		if (!sentera->getUpdated()) {
 			std::this_thread::sleep_for(dura);
@@ -43,9 +45,7 @@ void SensorManager::updateImageData() {
 	Frame sentera_data = sentera->Data();
 	printf("Sentera FOV = (%0.2f, %0.2f)", sentera_data.FOVx, sentera_data.FOVy);
 
-
 	//Vector3Int outSize(sentera_data[0].width, sentera_data[0].height, 1);
 	//DataProcessor::getSenteraNDVI(sentera_data, image_data.pixels, outSize);
 	//transform = sensors[0].getOffset();
-	
 }
