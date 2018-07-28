@@ -3,7 +3,6 @@
 #ifndef SENSOR_MANAGER_H_
 #define SENSOR_MANAGER_H_
 
-#include <map>
 #include <vector>
 #include <string>
 

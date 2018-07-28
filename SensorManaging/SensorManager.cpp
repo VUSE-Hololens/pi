@@ -43,8 +43,8 @@ void SensorManager::updateImageData() {
 
 	int cams = sentera->getNumCameras();
 	printf("Sentera has %d cams\n", cams);
-	Frame sentera_data = sentera->Data();
-	printf("Sentera FOV = (%0.2f, %0.2f)", sentera_data.FOVx, sentera_data.FOVy);
+	std::vector<Frame> sentera_data = sentera->Data();
+	printf("Sentera FOV = (%0.2f, %0.2f)", sentera_data.at(0)->width, sentera_data.at(0).height);
 
 	//Vector3Int outSize(sentera_data[0].width, sentera_data[0].height, 1);
 	//DataProcessor::getSenteraNDVI(sentera_data, image_data.pixels, outSize);

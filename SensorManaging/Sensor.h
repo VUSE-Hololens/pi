@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 // user include
 #include "SensorDataTypes.h"
@@ -69,7 +70,7 @@ public:
 	}
 
 	// data accessor
-	virtual Frame Data() = 0;
+	virtual std::vector<Frame> Data() = 0;
 
 	// start/stop sensor recording
 	virtual int Start() = 0;

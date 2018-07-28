@@ -420,7 +420,6 @@ int SenteraDouble4k::query_status_packet()
 					camera_metadata[i] = status;
 					camera_metadata_valid[i] = true;
 					camera_metadata_last_update_us[i] = timestamp;
-					printf("Camera %d FOV: (%0.2f, %0.2f)\n", i + 1, sensor_data[i].FOVx, sensor_data[i].FOVy);
 				}
 			}
 
@@ -504,8 +503,13 @@ int SenteraDouble4k::query_status_packet()
 	return newdata_received;
 }
 
-Frame SenteraDouble4k::Data() {
-	return *sensor_data;
+std::vector<Frame> SenteraDouble4k::Data() {
+	std::vector<Frame> outFrames;
+	for (int i = 0; i < num_cameras; i++) {
+		updated[i] = false;
+		outFrames.push_back(sensor_data[i]);
+	}
+	return outFrames;
 }
 
 int SenteraDouble4k::processImage(int cam) {
@@ -536,6 +540,7 @@ int SenteraDouble4k::processImage(int cam) {
 	sensor_data[cam - 1].height = height;
 	sensor_data[cam - 1].bands = channels;
 	updated[cam - 1] = true;
+	printf("Updated: (%d, %d)\n");
 
 	return 0;
 }
