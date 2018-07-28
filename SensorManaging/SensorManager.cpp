@@ -10,7 +10,7 @@ SensorManager::SensorManager() {
 		printf("Out of range error: SensorManager must be initialized with at least 1 sensor.");
 		return;
 	}
-	num_sensors = _num_sensors;
+	num_sensors = 1;
 	data_ready = false;
 	// initialize all sensors to default offset
 	Transform _offset;
