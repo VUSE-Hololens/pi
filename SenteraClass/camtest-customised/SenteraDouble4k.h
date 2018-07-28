@@ -44,11 +44,11 @@ private:
 
 	// for receiving
 	const static int cams = 2;												// Double camera
-	fw_imager_data_ready_t recent_images[cams];							// Store individual history of the last num_cameras images - no circular buffer
+	fw_imager_data_ready_t recent_images[cams];								// Store individual history of the last num_cameras images - no circular buffer
 
-	fw_payload_metadata_t camera_metadata[cams];						// Store up to num_cameras worth of camera info
-	bool camera_metadata_valid[cams];									// Indicates whether each ID was valid 
-	unsigned long long camera_metadata_last_update_us[cams];			// Timestamp of last update 
+	fw_payload_metadata_t camera_metadata[cams];							// Store up to num_cameras worth of camera info
+	bool camera_metadata_valid[cams];										// Indicates whether each ID was valid 
+	unsigned long long camera_metadata_last_update_us[cams];				// Timestamp of last update 
 	fw_system_time_ack_t recent_time_ack;									// The most recent system time acknowledgement data
 	int imgReadyID;															// ID of most recent image ready
 	HTTPDownloader http_downloader;											// downloader
@@ -57,10 +57,10 @@ private:
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;
-	static int timeout = 5000;												// milliseconds until timeout
+	const static int timeout = 5000;										// milliseconds until timeout
 
 	// Frame and associated data
-	//Frame senteraFrame;														// Data Out
+	//Frame senteraFrame;													// Data Out
 
 // methods
 private:
