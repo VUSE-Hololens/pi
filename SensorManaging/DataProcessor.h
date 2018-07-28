@@ -77,7 +77,7 @@ public:
 				nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
 				red_edge = nirBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red edge band of rgb
 				ndre = (1.0*nir - red_edge) / (1.0*nir + red_edge);
-				buf[i + newSize.x * j] = clamp_val(ndre);
+				buf[i + newSize.x * j] = this::clamp_val(ndre);
 			}
 		}
 		delete[] nirBuf;
@@ -110,7 +110,7 @@ public:
 
 private:
 	// clamp float to uint8_t
-	uint8_t clamp_val(float n) {
+	static uint8_t clamp_val(float n) {
 		if (n < 0) return (uint8_t)0;
 		if (n > 255) return (uint8_t)255;
 		return (uint8_t)n;
