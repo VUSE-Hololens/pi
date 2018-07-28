@@ -42,6 +42,9 @@ public:
 	// check if data ready to be sent
 	bool checkDataReady();
 
+	// start session
+	void StartSession();
+
 private:
 	void updateImageData();
 

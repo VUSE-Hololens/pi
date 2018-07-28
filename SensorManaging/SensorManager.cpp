@@ -19,13 +19,30 @@ bool SensorManager::checkDataReady() {
 	return data_ready;
 }
 
+void SensorManager::StartSession() {
+	std::chrono::milliseconds dura(100);
+
+	sentera->Start();
+
+	std::this_thread::sleep_for(std::chrono::seconds(10))
+
+	while (live_session) {
+		if (!sentera->getUpdated()) {
+			std::this_thread::sleep_for(dura);
+			continue;
+		}
+		updateImageData();
+	}
+}
+
 void SensorManager::updateImageData() {
 	// check if we should process new data. customizeable to specific visualization
-	
-	if (!sentera->getUpdated()) return; 
 
 	int cams = sentera->getNumCameras();
+	printf("Sentera has %d cams\n", cams);
 	Frame sentera_data = sentera->Data();
+	printf("Sentera FOV = (%0.2f, %0.2f)", sentera_data.FOVx, sentera_data.FOVy);
+
 
 	//Vector3Int outSize(sentera_data[0].width, sentera_data[0].height, 1);
 	//DataProcessor::getSenteraNDVI(sentera_data, image_data.pixels, outSize);
