@@ -26,7 +26,6 @@ public:
 		: offset(_offset)
 	{
 		num_cameras = _cams;
-		name = _name;
 		updated = new bool[num_cameras](); // initialized to false
 		sensor_data = new Frame[num_cameras]();
 	}
