@@ -64,7 +64,6 @@ int SenteraDouble4k::Start() {
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
 
 				processImage(imgReadyID); // process data for appropriate image
-				printf("ImgSize: (%d, %d)\n", sensor_data[0].width, sensor_data[0].height);
 			}
 		}
 	}
@@ -106,7 +105,7 @@ int SenteraDouble4k::UpdateTrigger() {
 		printf("Failed to create packet");
 		return -1;
 	}
-	printf("Trigger Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
+	//printf("Trigger Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
 
 	//send packet of trigger data
 	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
@@ -410,14 +409,11 @@ int SenteraDouble4k::query_status_packet()
 			fw_imager_data_ready_t new_image;
 			new_image.imagerID = rec_buf[n++];
 
-			printf("Filename: ");
 			for (int i = 0; i < 48; ++i)
 			{
 				new_image.fileName[i] = rec_buf[n];
-				printf("%c", new_image.fileName[i]);
 				n++;
 			}
-			printf("\n");
 
 			if (new_image.imagerID == (uint8_t)1) {
 				recent_images[0] = new_image;
@@ -432,7 +428,6 @@ int SenteraDouble4k::query_status_packet()
 				fprintf(stderr, "Imager ID not 1 or 2: Failed to store new image data\n");
 				return -1;
 			}
-			printf("Stored new image for camera %d\n", new_image.imagerID);
 
 			newdata_received = fw_packet_type_e::IMAGER_DATA_READY;
 
@@ -440,8 +435,6 @@ int SenteraDouble4k::query_status_packet()
 		// Handle Time Ack Packets
 		else if (rec_buf[2] == fw_packet_type_e::SYSTEM_TIME_ACK)
 		{
-			printf("Receive System Time Ack"); //DEBUG
-
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x12 && rec_buf[4] == 0x00)) return 0;
 
@@ -488,44 +481,34 @@ Frame SenteraDouble4k::Data() {
 }
 
 int SenteraDouble4k::processImage(int cam) {
+	// make URL string to grab data from, then grab the data
 	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
-	printf(urlStr.c_str());
-	printf("\n");
-	
 	std::string imgContent = http_downloader.download(urlStr);
-	//printf("Imager ID %d: Data string of Length %d\n", cam, imgContent.length()); // DEBUG
-
 	size_t compressedImgLength = imgContent.length();
 	unsigned char* compressedImg = (unsigned char*)imgContent.c_str();
 
+	// initialize variables to fill with data
 	int width, height;
-	int channels = 3;
+	int channels = 3; // 3 channels for RGB data
+
+	// initialize decompressor and get size
 	tjhandle _jpegDecompressor = tjInitDecompress();
-	//printf("ImgSize: %d\n", imgLength);
-	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
-	size_t size = width * height * channels; // 3 channels for RGB data
-	//printf("Image Dimensions: (%d, %d, %d)\n", width, height, channels);
+	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &sensor_data[cam-1].width, &sensor_data[cam-1].height);
+	size_t size = width * height * channels; 
 
-	//unsigned char* http_buffer = new unsigned char[size];
-	//unsigned char http_buffer[size];
+	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
+	sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
 
-	delete[] sensor_data[cam - 1].pixels;
-	sensor_data[cam - 1].pixels = new unsigned char[size];
-	printf("Allocated Pixel Array in sensor_data..\n");
-	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
-	printf("Decompressed JPG\n");
+	// decompress the jpg
+	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, sensor_data[cam-1].width, 0, sensor_data[cam-1].height, TJPF_RGB, TJFLAG_FASTDCT);
 	tjDestroy(_jpegDecompressor);
-	printf("Destroyed Decompressor\n");
 																				  
-	// deal with buffer
-	sensor_data[cam - 1].width = width;
-	sensor_data[cam - 1].height = height;
+	// Process rest of data attributes
+	//sensor_data[cam - 1].width = width;
+	//sensor_data[cam - 1].height = height;
 	sensor_data[cam - 1].bands = channels;
 	updated[cam - 1] = true;
-
-	printf("Img Size: (%d, %d, %d)\n", sensor_data[cam - 1].width, sensor_data[cam - 1].height, sensor_data[cam - 1].bands);
-
-	//delete[] http_buffer; // free up buffer memory. check if this works??
+	printf("Size: (%d, %d, %d)", sensor_data[cam - 1].width, sensor_data[cam - 1].height, sensor_data[cam - 1].bands);
 	return 0;
 }
 
