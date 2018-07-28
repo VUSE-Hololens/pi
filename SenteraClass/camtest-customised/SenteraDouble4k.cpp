@@ -493,22 +493,22 @@ int SenteraDouble4k::processImage(int cam) {
 
 	// initialize decompressor and get size
 	tjhandle _jpegDecompressor = tjInitDecompress();
-	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &sensor_data[cam-1].width, &sensor_data[cam-1].height);
+	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
 	size_t size = width * height * channels; 
 
 	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
 	sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
 
 	// decompress the jpg
-	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, sensor_data[cam-1].width, 0, sensor_data[cam-1].height, TJPF_RGB, TJFLAG_FASTDCT);
+	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
 	tjDestroy(_jpegDecompressor);
 																				  
-	// Process rest of data attributes
-	//sensor_data[cam - 1].width = width;
-	//sensor_data[cam - 1].height = height;
+	// deal with buffer
+	sensor_data[cam - 1].width = width;
+	sensor_data[cam - 1].height = height;
 	sensor_data[cam - 1].bands = channels;
 	updated[cam - 1] = true;
-	printf("Size: (%d, %d, %d)", sensor_data[cam - 1].width, sensor_data[cam - 1].height, sensor_data[cam - 1].bands);
+
 	return 0;
 }
 
