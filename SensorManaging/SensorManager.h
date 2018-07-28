@@ -17,8 +17,7 @@ class SensorManager {
 
 	// variables
 public:
-	// array of sensors to be managed
-	Sensor *sentera;
+	SenteraDouble4k sentera;
 
 private:
 	// frame of one band data to be compressed and transmitted
