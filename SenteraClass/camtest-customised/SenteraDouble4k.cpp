@@ -77,7 +77,7 @@ int SenteraDouble4k::Start() {
 			if (!received_data) {
 				// check if we've timed out, and send packet to stop session if so.
 				if (std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime).count() > timeout) {
-					fprintf(stderr, "System Timeout: No UDP packets received in %d milliseconds.", timeout);
+					fprintf(stderr, "System Timeout: No UDP packets received in %d milliseconds.\n", timeout);
 					Stop();
 					return -1;
 				}

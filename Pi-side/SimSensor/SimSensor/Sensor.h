@@ -75,7 +75,9 @@ struct Frame {
 
 // abstract class for all sensor inputs
 class Sensor {
-	const std::string PI_IP = "0.0.0.0";
+protected:
+	const static std::string PI_IP = "192.168.143.130";
+
 public:
 	// constructor
 	Sensor(Transform _offset)
@@ -112,7 +114,7 @@ public:
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
 
-protected:
+protected: 
 	// positional offset of sensor in hololens local coordinates
 	Transform offset;
 
@@ -121,6 +123,7 @@ protected:
 
 	// sensor's most current data
 	Frame *data;
+
 };
 
 #endif // SENSOR_H
