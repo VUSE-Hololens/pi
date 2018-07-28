@@ -8,7 +8,7 @@ int main() {
 	Transform t1;
 	SenteraDouble4k sentera(t1);
 	usleep(3000);
-	sentera.Start();
+	//sentera.Start();
 
 	return 0;
 }

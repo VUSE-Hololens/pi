@@ -24,17 +24,17 @@ struct Vector3Int {
 	int x, y, z;
 
 	// default constructor
-	Vector3() {
+	Vector3Int() {
 		x = y = z = 0;
 	}
 
-	Vector3(int _x, int _y, int _z) {
+	Vector3Int(int _x, int _y, int _z) {
 		x = _x;
 		y = _y;
 		z = _z;
 	}
 
-	bool equals(Vector3 & rhs) {
+	bool equals(Vector3Int & rhs) {
 		return (x == rhs.x && y == rhs.y && z == rhs.z);
 	}
 };
