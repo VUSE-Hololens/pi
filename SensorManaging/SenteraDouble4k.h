@@ -72,7 +72,7 @@ private:
 	int makeStillCapturePacket(uint8_t option, const char *sessionName, uint8_t *buf);
 
 	// listener for side thread
-	int sessionListener();
+	static int sessionListener();
 
 	//receiving data
 	int query_status_packet();
