@@ -388,12 +388,12 @@ int SenteraDouble4k::query_status_packet()
 				if (status.imagerID & (0x01 << i))
 				{
 					// TODO: check sensor band data stuff/ptr stuff
-					sensor_data[i].FOVx = status.imagerHFOV;
-					sensor_data[i].FOVy = status.imagerVFOV;
+					sensor_data[i].FOVx = status.imagerHFOV / 100.0;
+					sensor_data[i].FOVy = status.imagerVFOV / 100.0;
 					camera_metadata[i] = status;
 					camera_metadata_valid[i] = true;
 					camera_metadata_last_update_us[i] = timestamp;
-					printf("Camera %d FOV: (%0.2f, 0.2f)\n", i + 1, sensor_data[i].FOVx, sensor_data[i].FOVy);
+					printf("Camera %d FOV: (%0.2f, %0.2f)\n", i + 1, sensor_data[i].FOVx, sensor_data[i].FOVy);
 				}
 			}
 
