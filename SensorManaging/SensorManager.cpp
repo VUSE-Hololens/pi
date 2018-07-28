@@ -46,7 +46,7 @@ SensorManager::checkDataReady() {
 SensorManager::StartAll() {
 	for (Sensor s : sensors) {
 		if (s.Start() < 0) {
-			printf("Sensor %d: %s failed to start\n", i, sensors[i].name);
+			printf("Sensor %d: failed to start\n", i);
 			return -1; 
 		}
 	}
@@ -56,7 +56,7 @@ SensorManager::StartAll() {
 SensorManager::StopAll() {
 	for (Sensor s : sensors) {
 		if (s.Stop() < 0) {
-			printf("Sensor %d: %s failed to stop\n", i, sensors[i].name);
+			printf("Sensor %d: failed to stop\n", i);
 			return -1;
 		}
 	}

@@ -22,7 +22,7 @@ protected:
 
 public:
 	// constructor
-	Sensor(Transform _offset, std::string _name, int _cams)
+	Sensor(Transform _offset, int _cams)
 		: offset(_offset)
 	{
 		num_cameras = _cams;
@@ -73,9 +73,10 @@ public:
 	virtual int Stop() = 0;
 
 	// sensor name
-	const std::string name;
+	
 
 protected:
+
 	// positional offset of sensor in hololens local coordinates
 	Transform offset;
 
