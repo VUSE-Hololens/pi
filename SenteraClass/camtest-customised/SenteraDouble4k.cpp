@@ -7,8 +7,6 @@
 
 SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this->cams)
 {
-	timeout = 5000;
-
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
 		camera_metadata_valid[i] = false;
@@ -58,26 +56,42 @@ int SenteraDouble4k::Start() {
 	int recvType = 0;
 	while (live_session)
 	{
+		// havent yet received data
 		bool received_data = false;
+
+		// create timer
 		auto starttime = std::chrono::system_clock::now();
 		auto endtime = std::chrono::system_clock::now();
+
 		while (!received_data)
 		{
-			recvType = query_status_packet(); // query for new data
-			received_data = (recvType >= 1); // successfully received packet?
-			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { // if new data ready to process
+			// query for new data
+			recvType = query_status_packet(); 
 
+			// received a new packet?
+			received_data = (recvType >= 1); 
+
+			endtime = std::chrono::system_clock::now();
+
+			// if no new data received
+			if (!received_data) {
+				// check if we've timed out, and send packet to stop session if so.
+				if (std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime).count() > timeout) {
+					fprintf(stderr, "System Timeout: No UDP packets received in %d milliseconds.", timeout);
+					Stop();
+					return -1;
+				}
+				// else if we havent timed out, query for a new packet
+				continue;
+			}
+
+			// if new data is ready to process, do that
+			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { 
 				processImage(imgReadyID); // process data for appropriate image
 			}
-			endtime = std::chrono::system_clock::now();
-			if (std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime).count() > timeout) {
-				fprintf(stderr, "System Timeout: No UDP packets received in %d milliseconds.", timeout);
-				Stop();
-				return -1;
-			}
-			starttime = endtime;
 		}
-
+		// when data is received, reset timer
+		starttime = endtime;
 	}
 	return 0;
 }
