@@ -53,9 +53,9 @@ int SenteraDouble4k::Start() {
 	}
 	printf("Sent still capture packet");
 
-	std::thread t1(sessionListener);
+	return sessionListener();
 
-	return 0;
+	//return 0;
 }
 
 int SenteraDouble4k::sessionListener() {

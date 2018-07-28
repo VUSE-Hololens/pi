@@ -22,7 +22,7 @@ bool SensorManager::checkDataReady() {
 
 void SensorManager::StartSession() {
 
-	sentera.Start();
+	std::thread t1(sentera.Start);
 
 	live_session = true;
 	//std::chrono::milliseconds dura(100);

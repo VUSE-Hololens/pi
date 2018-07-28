@@ -8,7 +8,6 @@
 #include <string.h>
 #include <time.h>
 #include <errno.h>
-#include <thread>
 #include <chrono>
 
 // user includes
@@ -71,8 +70,8 @@ private:
 	int makeImagerTriggerPacket(uint8_t mode, uint32_t period, uint8_t *buf);
 	int makeStillCapturePacket(uint8_t option, const char *sessionName, uint8_t *buf);
 
-	// listener for side thread
-	static int sessionListener();
+	// listener to receive and process data
+	int sessionListener();
 
 	//receiving data
 	int query_status_packet();
