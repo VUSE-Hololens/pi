@@ -36,7 +36,7 @@ private:
 
 	// methods
 public:
-	SensorManager(int _num_sensors, std::string *_sensor_names);
+	SensorManager();
 	~SensorManager();
 
 	// check if data ready to be sent
