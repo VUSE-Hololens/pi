@@ -540,8 +540,6 @@ int SenteraDouble4k::processImage(int cam) {
 	sensor_data[cam - 1].height = height;
 	sensor_data[cam - 1].bands = channels;
 	updated[cam - 1] = true;
-	printf("Sentera Updated: (%d, %d)\n", updated[0], updated[1]);
-
 	return 0;
 }
 
@@ -555,7 +553,6 @@ std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
 	for (int i = 0; i < 48; i++) { // filename array size 48
 		outStr += (const char)filename[i];
 	}
-	// outStr += "/last_img?lnk=li1&camera=2";
 	return outStr;
 }
 

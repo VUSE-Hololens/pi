@@ -25,11 +25,11 @@ void SensorManager::StartSession() {
 	sentera->Start();
 
 	live_session = true;
-	std::chrono::milliseconds dura(100);
+	//std::chrono::milliseconds dura(100);
 
 	while (live_session) {
 		if (!sentera->getUpdated()) {
-			std::this_thread::sleep_for(dura);
+			//std::this_thread::sleep_for(dura);
 			continue;
 		}
 		updateImageData();
