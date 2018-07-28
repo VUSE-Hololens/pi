@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <thread>
 
 // user includes
 #include "SensorDataTypes.h"
