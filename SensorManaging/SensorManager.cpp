@@ -13,7 +13,7 @@ SensorManager::SensorManager() {
 }
 
 SensorManager::~SensorManager() {
-	delete sentera;
+	//delete sentera;
 }
 
 bool SensorManager::checkDataReady() {
