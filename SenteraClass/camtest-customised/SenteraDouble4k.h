@@ -57,7 +57,7 @@ private:
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;
-	const static int timeout = 5000;										// milliseconds until timeout
+	static int timeout = 5000;												// milliseconds until timeout
 
 	// Frame and associated data
 	//Frame senteraFrame;													// Data Out

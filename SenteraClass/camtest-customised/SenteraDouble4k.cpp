@@ -7,6 +7,8 @@
 
 SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this->cams)
 {
+	timeout = 5000;
+
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
 		camera_metadata_valid[i] = false;
