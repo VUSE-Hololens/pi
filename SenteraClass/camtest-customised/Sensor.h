@@ -75,7 +75,9 @@ struct Frame {
 
 // abstract class for all sensor inputs
 class Sensor {
+
 protected:
+	// static IP address of Raspberry Pi
 	const std::string PI_IP = "192.168.143.130";
 
 public:
@@ -108,7 +110,14 @@ public:
 	void setOffset(Transform newOffset) { offset = newOffset; }
 
 	// updated accessor 
-	bool getUpdated() { return updated; }
+	bool getUpdated() { 
+		// return true if all cameras have new data
+		bool out = true;
+		for (int i = 0; out && i < num_cameras; i++) {
+			out = out && updated[i];
+		}
+		return out; 
+	}
 
 	// data accessor
 	virtual Frame Data() = 0;
@@ -127,7 +136,7 @@ protected:
 	// sensor's most current data
 	Frame *sensor_data;
 
-	// number of cameras
+	// number of cameras on sensor
 	int num_cameras;
 
 };

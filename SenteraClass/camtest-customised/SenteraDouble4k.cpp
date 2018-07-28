@@ -393,6 +393,7 @@ int SenteraDouble4k::query_status_packet()
 					camera_metadata[i] = status;
 					camera_metadata_valid[i] = true;
 					camera_metadata_last_update_us[i] = timestamp;
+					printf("Camera %d FOV: (%0.2f, 0.2f)\n", i + 1, sensor_data[i].FOVx, sensor_data[i].FOVy);
 				}
 			}
 
