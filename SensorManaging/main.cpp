@@ -11,7 +11,7 @@ int main() {
 
 	int num = 1;
 	std::string names[num] = { "sentera" };
-	SensorManager sensor_manager(num, names);
+	SensorManager sensor_manager;
 	
 	//SenteraDouble4k sentera(t1);
 	//usleep(3000);

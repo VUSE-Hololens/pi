@@ -24,11 +24,11 @@ SensorManager::~SensorManager() {
 	delete[] sensors;
 }
 
-SensorManager::checkDataReady() {
+bool SensorManager::checkDataReady() {
 	return data_ready;
 }
 
-SensorManager::StartAll() {
+int SensorManager::StartAll() {
 	for (Sensor s : sensors) {
 		if (s.Start() < 0) {
 			printf("Sensor %d: failed to start\n", i);
@@ -38,7 +38,7 @@ SensorManager::StartAll() {
 	return 1;
 }
 
-SensorManager::StopAll() {
+int SensorManager::StopAll() {
 	for (Sensor s : sensors) {
 		if (s.Stop() < 0) {
 			printf("Sensor %d: failed to stop\n", i);
@@ -48,7 +48,7 @@ SensorManager::StopAll() {
 	return 1;
 }
 
-SensorManager::updateImageData() {
+void SensorManager::updateImageData() {
 	// check if we should process new data. customizeable to specific visualization
 	bool process = true;
 	for (Sensor s : sensors) {
