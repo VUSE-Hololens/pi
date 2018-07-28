@@ -523,6 +523,8 @@ int SenteraDouble4k::processImage(int cam) {
 	sensor_data[cam - 1].bands = channels;
 	updated[cam - 1] = true;
 
+	printf("Img Size: (%d, %d, %d)\n", sensor_data[cam - 1].width, sensor_data[cam - 1].height, sensor_data[cam - 1].bands);
+
 	//delete[] http_buffer; // free up buffer memory. check if this works??
 	return 0;
 }
