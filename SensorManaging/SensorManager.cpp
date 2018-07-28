@@ -28,7 +28,7 @@ void SensorManager::StartSession() {
 	//std::chrono::milliseconds dura(100);
 
 	while (live_session) {
-		if (!sentera->getUpdated()) {
+		if (!(sentera->getUpdated())) {
 			//std::this_thread::sleep_for(dura);
 			continue;
 		}
