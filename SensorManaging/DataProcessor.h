@@ -10,9 +10,6 @@
 class DataProcessor {
 
 public:
-	// adjustment between sentera NIR and RGB cameras
-	float sentera_nirAdj = 2.700;
-
 	static bool getSenteraNDVI(Frame *sensorData, uint8_t *buf, Vector3Int _newSize) {
 		Vector3Int newSize(_newSize.x, _newSize.y, 3);
 		Vector3Int rgbSize(sensorData[0].width, sensorData[0].height, sensorData[0].bands);
@@ -21,7 +18,7 @@ public:
 		uint8_t *rgbBuf, *nirBuf;
 		if (!newSize.equals(rgbSize)) {
 			rgbBuf = new uint8_t[newSize.x * newSize.y * newSize.z];
-			Resample(sensorData[0].pixels, rgbSize, newSize, rgbBuf)
+			Resample(sensorData[0].pixels, rgbSize, newSize, rgbBuf);
 		}
 		else {
 			rgbBuf = sensorData[0].pixels;
@@ -46,7 +43,7 @@ public:
 			{
 				nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
 				red = rgbBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red band of rgb
-				ndvi = (sentera_nirAdj * nir - red) / (sentera_nirAdj * nir + red);
+				ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 				buf[i + newSize.x * j] = clamp_val(ndvi);
 			}
 		}
@@ -71,7 +68,7 @@ public:
 		delete[] buf;
 		buf = new uint8_t[newSize.x * newSize.y];
 		uint8_t nir;
-		uint8_t red;
+		uint8_t red_edge;
 		float ndre;
 		for (int i = 0; i < newSize.x; i++) 
 		{
@@ -89,7 +86,7 @@ public:
 	
 	static bool Resample(uint8_t *old_data, Vector3Int oldSize, Vector3Int newSize, uint8_t *newDataBuf)
 	{
-		if (_data == NULL) return false;
+		if (old_data == NULL) return false;
 		//
 		// Get a new buffer to interpolate into
 		Vector3 scale((float)newSize.x / (float)oldSize.x, (float)newSize.y / (float)oldSize.y, (float)newSize.z / (float)oldSize.z);
