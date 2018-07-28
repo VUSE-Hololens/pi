@@ -29,8 +29,8 @@ bool SensorManager::checkDataReady() {
 }
 
 int SensorManager::StartAll() {
-	for (Sensor s : sensors) {
-		if (s.Start() < 0) {
+	for (int i = 0; i < num_sensors; i++) {
+		if (sensors[i].Start() < 0) {
 			printf("Sensor %d: failed to start\n", i);
 			return -1; 
 		}
@@ -39,8 +39,8 @@ int SensorManager::StartAll() {
 }
 
 int SensorManager::StopAll() {
-	for (Sensor s : sensors) {
-		if (s.Stop() < 0) {
+	for (int i = 0; i < num_sensors; i++) {
+		if (sensors[i].Stop() < 0) {
 			printf("Sensor %d: failed to stop\n", i);
 			return -1;
 		}
@@ -51,8 +51,8 @@ int SensorManager::StopAll() {
 void SensorManager::updateImageData() {
 	// check if we should process new data. customizeable to specific visualization
 	bool process = true;
-	for (Sensor s : sensors) {
-		process = process && s.getUpdated();
+	for (int i = 0; i < num_sensors; i++) {
+		process = process && sensors[i].getUpdated();
 	}
 	if (!process) return; 
 
