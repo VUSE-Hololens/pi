@@ -8,7 +8,7 @@ SensorManager::SensorManager() {
 	data_ready = false;
 	// initialize all sensors to default offset
 	Transform _offset;
-	sentera = new SenteraDouble4k sentera(_offset);
+	sentera = new SenteraDouble4k(_offset);
 }
 
 SensorManager::~SensorManager() {
