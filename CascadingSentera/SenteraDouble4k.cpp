@@ -98,7 +98,7 @@ int SenteraDouble4k::sessionListener() {
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
 				processImage(imgReadyID); // process data for appropriate image
 				filterBands(imgReadyID); // filter band data appropriately
-				sendNDVI(80);
+				if (imgReadyID == 2) sendNDVI(80); // send NDVI image each time NIR data is received
 			}
 		}
 		// when data is received, reset timer
