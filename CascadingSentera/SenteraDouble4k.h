@@ -82,7 +82,6 @@ private:
 
 	//processing data
 	int processImage(int cam);
-	int filterBands(int cam);
 	std::string makeUrlPath(uint8_t *filename);
 
 	// for transmitting cascade style

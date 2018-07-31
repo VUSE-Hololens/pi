@@ -14,60 +14,57 @@ public:
 			printf("Error: passed buffer pointer for output must be null\n");
 			return false;
 		}
-		uint8_t *nirBuf, *rgbBuf;
 		Vector3Int newSize(width, height, 3);
 		//DEBUG printf("New Size <%d, %d, %d>\n", newSize.x, newSize.y, newSize.z);
-		Vector3Int rgbSize(sensorData[0].width, sensorData[0].height, sensorData[0].bands);
+		//Vector3Int rgbSize(sensorData[0].width, sensorData[0].height, sensorData[0].bands);
 		//DEBUG printf("RGB Img Size <%d, %d, %d>\n", rgbSize.x, rgbSize.y, rgbSize.z);
-		Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands);
+		//Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands);
 		//DEBUG printf("NIR Img Size <%d, %d, %d>\n", nirSize.x, nirSize.y, nirSize.z);
 
-		if (!newSize.equals(rgbSize)) {
-			printf("rgbSize != newSize\n");
-			uint8_t *rgbBuf = new uint8_t[newSize.x * newSize.y * newSize.z];
-			Resample(sensorData[0].pixels, rgbSize, newSize, rgbBuf);
-		}
-		else {
-			rgbBuf = sensorData[0].pixels;
-		}
+		std::size_t size = newSize.x * newSize.y * newSize.z;
+		float *rgbBuf = new float[size], *nirBuf = new float[size];
 
-		if (!newSize.equals(nirSize)) {
-			printf("nirSize != newSize\n");
-			Resample(sensorData[1].pixels, nirSize, newSize, nirBuf);
-		}
-		else {
-			nirBuf = sensorData[1].pixels;
-		}
-
-		//DEBUG printf("nirBuf and rgbBuf initialized\n");
-
-		uint8_t nir;
-		uint8_t red; 
-		float ndvi = 0.0f;
+		float r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
+		float nir = 0.0f, red = 0.0f, ndvi = 0.0f;
 		int negCount = 0, inBounds = 0, abvCount = 0;
-		for (int i = 0; i < newSize.x; i++) 
-		{
-			for (int j = 0; j < newSize.y; j++)
-			{
-				nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
-				red = rgbBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red band of rgb
-				ndvi = (2.700 * nir - red) / (2.700 * nir + red);
-				if (ndvi < 0) {
-					negCount++;
-				}
-				else if (ndvi < 256) {
-					inBounds++;
-				}
-				else {
-					abvCount++;
-				}
-				buf[i + newSize.x * j] = clamp_val(ndvi);
+
+		// RGB camera
+		for (int i = 0; i < size; i += 3) {
+			r_rgb_tmp = sensorData[0].pixels[i + 0];
+			g_rgb_tmp = sensorData[0].pixels[i + 1];
+			b_rgb_tmp = sensorData[0].pixels[i + 2];
+			rgbBuf[i + 0] = +1.150 * r_rgb_tmp - 0.110 * g_rgb_tmp - 0.034 * b_rgb_tmp;
+			rgbBuf[i + 1] = -0.329 * r_rgb_tmp + 1.420 * g_rgb_tmp - 0.199 * b_rgb_tmp;
+			rgbBuf[i + 2] = -0.061 * r_rgb_tmp - 0.182 * g_rgb_tmp + 1.377 * b_rgb_tmp;
+
+			// ignore green band because it does not represent any red edge or IR data
+			r_nir_tmp = sensorData[1].pixels[i + 0];
+			b_nir_tmp = sensorData[1].pixels[i + 2];
+			nirBuf[i + 0] = +1.000 * r_tmp - 0.956 * b_tmp;
+			nirBuf[i + 2] = -0.341 * r_tmp + 2.436 * b_tmp;
+
+			nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
+			red = rgbBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red band of rgb
+
+			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
+			if (ndvi < 0) {
+				negCount++;
 			}
+			else if (ndvi < 256) {
+				inBounds++;
+			}
+			else {
+				abvCount++;
+			}
+
+			buf[i + newSize.x * j] = clamp_val(ndvi);
+
 		}
-		printf("Count: <%d, %d, %d>: total = %d = %d\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, newSize.x * newSize.y);
+
+		printf("Count: <%d, %d, %d>: total = %d\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount);
 		
-		if (!newSize.equals(rgbSize)) delete[] rgbBuf;
-		if (!newSize.equals(nirSize)) delete[] nirBuf;
+		delete[] rgbBuf;
+		delete[] nirBuf;
 		//DEBUG printf("NDVI calculated. Exiting getSenteraNDVI.\n");
 		return true;
 	}
@@ -78,12 +75,17 @@ public:
 		Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands); // only need NIR cam data
 
 		uint8_t  *nirBuf;
+		std::size_t size = newSize.x * newSize.y * newSize.z;
+		nirBuf = new float[size];
 		if (!newSize.equals(nirSize)) {
-			nirBuf = new uint8_t[newSize.x * newSize.y * newSize.z];
+			printf("NIR not implemented resize\n");
+			return;
 			Resample(sensorData[1].pixels, nirSize, newSize, nirBuf);
 		}
 		else {
-			nirBuf = sensorData[1].pixels;
+			for (int i = 0; i < size; i++) {
+				nirBuf[i] = sensorData[1].pixels[i];
+			}
 		}
 
 		uint8_t nir;
@@ -124,6 +126,38 @@ public:
 			}
 		}
 		return true;
+	}
+
+	static bool filterBands(Frame *sensor_data, int cam, float *nirBuf, float *rgbBuf) {
+		// initialize temp values and get image size
+		float r_tmp;
+		float g_tmp;
+		float b_tmp;
+		int width = sensor_data[cam - 1].width;
+		int height = sensor_data[cam - 1].height;
+		int bands = sensor_data[cam - 1].bands;
+
+		// if RGB camera
+		for (int i = 0; i < width*height*bands; i += 3) {
+			r_tmp = sensor_data[0].pixels[i + 0];
+			g_tmp = sensor_data[0].pixels[i + 1];
+			b_tmp = sensor_data[0].pixels[i + 2];
+			rgbBuf[i + 0] = +1.150 * r_tmp - 0.110 * g_tmp - 0.034 * b_tmp;
+			rgbBuf[i + 1] = -0.329 * r_tmp + 1.420 * g_tmp - 0.199 * b_tmp;
+			rgbBuf[i + 2] = -0.061 * r_tmp - 0.182 * g_tmp + 1.377 * b_tmp;
+		}
+
+		// if red edge/NIR camera
+		for (int i = 0; i < width*height*bands; i += 3) {
+			// ignore green band because it does not represent any red edge or IR data
+			r_tmp = sensor_data[1].pixels[i + 0];
+			g_tmp = sensor_data[1].pixels[i + 1];
+			b_tmp = sensor_data[1].pixels[i + 2];
+			nirBuf[i + 0] = +1.000 * r_tmp - 0.956* b_tmp;
+			nirBuf[i + 1] = g_tmp; // no modification here
+			nirBuf[i + 2] = -0.341 * r_tmp + 2.436 * b_tmp;
+		}
+		return 1;
 	}
 
 private:

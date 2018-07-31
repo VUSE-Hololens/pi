@@ -572,41 +572,6 @@ std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
 	return outStr;
 }
 
-int SenteraDouble4k::filterBands(int cam) {
-	// initialize temp values and get image size
-	unsigned char r_tmp;
-	unsigned char g_tmp;
-	unsigned char b_tmp;
-	int width = sensor_data[cam - 1].width;
-	int height = sensor_data[cam - 1].height;
-	int bands = sensor_data[cam - 1].bands;
-
-	// if RGB camera
-	if (cam == 1) {
-		for (int i = 0; i < width*height*bands; i += 3) {
-			r_tmp = sensor_data[cam - 1].pixels[i + 0];
-			g_tmp = sensor_data[cam - 1].pixels[i + 1];
-			b_tmp = sensor_data[cam - 1].pixels[i + 2];
-			sensor_data[cam - 1].pixels[i + 0] = +1.150 * r_tmp - 0.110 * g_tmp - 0.034 * b_tmp;
-			sensor_data[cam - 1].pixels[i + 1] = -0.329 * r_tmp + 1.420 * g_tmp - 0.199 * b_tmp;
-			sensor_data[cam - 1].pixels[i + 2] = -0.061 * r_tmp - 0.182 * g_tmp + 1.377 * b_tmp;
-		}
-		return 1;
-	}
-
-	// if red edge/NIR camera
-	else if (cam == 2) {
-		for (int i = 0; i < width*height*bands; i += 3) {
-			// ignore green band because it does not represent any red edge or IR data
-			r_tmp = sensor_data[cam - 1].pixels[i + 0];
-			b_tmp = sensor_data[cam - 1].pixels[i + 2];
-			sensor_data[cam - 1].pixels[i + 0] = +1.000 * r_tmp - 0.956* b_tmp;
-			sensor_data[cam - 1].pixels[i + 2] = -0.341 * r_tmp + 2.436 * b_tmp;
-		}
-		return 1;
-	}
-}
-
 void SenteraDouble4k::sendNDVI(int quality) {
 	// buffer for NDVI data
 	//image width and height
