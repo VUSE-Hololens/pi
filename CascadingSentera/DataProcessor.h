@@ -43,8 +43,8 @@ public:
 
 		uint8_t nir;
 		uint8_t red; 
-		float ndvi;
-		int negCount, inBounds, abvCount = 0;
+		float ndvi = 0.0f;
+		int negCount = 0, inBounds = 0, abvCount = 0;
 		for (int i = 0; i < newSize.x; i++) 
 		{
 			for (int j = 0; j < newSize.y; j++)
@@ -64,7 +64,7 @@ public:
 				buf[i + newSize.x * j] = clamp_val(ndvi);
 			}
 		}
-		printf("Count: <%d, %d, %d>: total = %d\n", negCount, inBounds, abvCount, newSize.x * newSize.y);
+		printf("Count: <%d, %d, %d>: total = %d = %d\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, newSize.x * newSize.y);
 		
 		if (!newSize.equals(rgbSize)) delete[] rgbBuf;
 		if (!newSize.equals(nirSize)) delete[] nirBuf;
