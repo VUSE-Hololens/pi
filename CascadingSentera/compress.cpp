@@ -1,8 +1,8 @@
 #include "compress.h"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
 
-using namespace cv;
+//#include "opencv2/highgui/highgui.hpp"
+//#include "opencv2/imgproc/imgproc.hpp"
+//using namespace cv;
 
 compress::compress()
 {
@@ -16,7 +16,7 @@ compress::~compress()
 }
 
 /* This method compresses 3-channel RGB matrices to JPEG*/
-long unsigned int compress::compressRGBJpeg(uchar* frame, uchar **compressed, int width, int height, int quality) {
+long unsigned int compress::compressRGBJpeg(uint8_t* frame, uint8_t **compressed, int width, int height, int quality) {
 
 	long unsigned int jpegSize = 0;
 	tjCompress2(jpegCompressor, frame, width, 0, height, TJPF_RGB, compressed, &jpegSize,
@@ -26,7 +26,7 @@ long unsigned int compress::compressRGBJpeg(uchar* frame, uchar **compressed, in
 }
 
 /* This method compresses 1-channel images */
-long unsigned int compress::compressBandJpeg(uchar* frame, uchar **compressed, int width, int height, int quality) {
+long unsigned int compress::compressBandJpeg(uint8_t* frame, uint8_t **compressed, int width, int height, int quality) {
 	long unsigned int jpegSize = 0;
 	tjCompress2(jpegCompressor, frame, width, 0, height, TJPF_GRAY, compressed, &jpegSize,
 		TJSAMP_GRAY, quality, TJFLAG_FASTDCT);
@@ -34,21 +34,21 @@ long unsigned int compress::compressBandJpeg(uchar* frame, uchar **compressed, i
 }
 
 /* This method takes a 3-D matrix (image) with band bands and returns a cv::Mat ptr */
-/*cv::Mat* compress::getMatFromArray(uchar*** ar, int rows, int cols, int bands) {
+/*cv::Mat* compress::getMatFromArray(uint8_t*** ar, int rows, int cols, int bands) {
 	int sizes[] = { rows, cols, bands };
 	Mat* ret = new Mat(3, sizes, CV_8U);
 	for (int i = 0; i < rows; ++i) {
 		for (int j = 0; j < cols; ++j) {
 			for (int b = 0; b < bands; ++b) {
-				ret->at<uchar>(i, j, b) = ar[i][j][b];
+				ret->at<uint8_t>(i, j, b) = ar[i][j][b];
 			}
 		}
 	}
 	return ret;
 }
 
-uchar* compress::getArrayFromMat(cv::Mat frame) {
-	uchar* ar = new uchar[frame.cols * frame.rows * frame.channels()];
+uint8_t* compress::getArrayFromMat(cv::Mat frame) {
+	uint8_t* ar = new uint8_t[frame.cols * frame.rows * frame.channels()];
 
 	for (int row = 0; row < frame.rows; ++row) {
 		for (int col = 0; col < frame.cols; ++col) {

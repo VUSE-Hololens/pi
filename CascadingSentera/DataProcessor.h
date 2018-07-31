@@ -15,7 +15,7 @@ public:
 		std::size_t size = width * height * 3;
 
 		if (sensorData[0].width != sensorData[1].width || sensorData[0].height != sensorData[1].height || sensorData[0].bands != sensorData[1].bands) {
-			printf("Error: Sentera RGB and NIR Image Dimension do not match!")
+			printf("Error: Sentera RGB and NIR Image Dimension do not match!");
 			return false;
 		}
 

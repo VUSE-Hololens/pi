@@ -2,6 +2,7 @@
 
 //#include "opencv2/opencv.hpp"
 #include "turbojpeg.h"
+#include "cstdint"
 
 class compress
 {
@@ -10,11 +11,11 @@ public:
 	~compress();
 
 
-	long unsigned int compressRGBJpeg(uchar* frame, uchar** compressed, int width, int height, int quality);
-	long unsigned int compressBandJpeg(uchar* frame, uchar **compressed, int width, int height, int quality);
+	long unsigned int compressRGBJpeg(uint8_t* frame, uint8_t** compressed, int width, int height, int quality);
+	long unsigned int compressBandJpeg(uint8_t* frame, uint8_t **compressed, int width, int height, int quality);
 
-	//cv::Mat* getMatFromArray(uchar*** ar, int rows, int cols, int bands);
-	//uchar* getArrayFromMat(cv::Mat frame);
+	//cv::Mat* getMatFromArray(uint8_t*** ar, int rows, int cols, int bands);
+	//uint8_t* getArrayFromMat(cv::Mat frame);
 private:
 
 	std::vector<int> params = std::vector<int>(2);
