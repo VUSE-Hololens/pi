@@ -54,7 +54,7 @@ public:
 				abvCount++;
 			}
 
-			buf[i/3] = clamp_val(ndvi);
+			buf[i/3] = clamp_val(255.0f*ndvi);
 
 		}
 
@@ -65,42 +65,6 @@ public:
 		//DEBUG printf("NDVI calculated. Exiting getSenteraNDVI.\n");
 		return true;
 	}
-
-	// *buf that is passed to method must be width*height in size. 
-	/* static bool getSenteraNDRE(Frame *sensorData, int width, int height, uint8_t *buf) {
-		Vector3Int newSize(width, height, 3);
-		Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands); // only need NIR cam data
-
-		uint8_t  *nirBuf;
-		std::size_t size = newSize.x * newSize.y * newSize.z;
-		nirBuf = new float[size];
-		if (!newSize.equals(nirSize)) {
-			printf("NIR not implemented resize\n");
-			return;
-			Resample(sensorData[1].pixels, nirSize, newSize, nirBuf);
-		}
-		else {
-			for (int i = 0; i < size; i++) {
-				nirBuf[i] = sensorData[1].pixels[i];
-			}
-		}
-
-		uint8_t nir;
-		uint8_t red_edge;
-		float ndre;
-		for (int i = 0; i < newSize.x; i++) 
-		{
-			for (int j = 0; j < newSize.y; j++) 
-			{
-				nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
-				red_edge = nirBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red edge band of rgb
-				ndre = (1.0*nir - red_edge) / (1.0*nir + red_edge);
-				buf[i + newSize.x * j] = clamp_val(ndre);
-			}
-		}
-		if (!newSize.equals(nirSize)) delete[] nirBuf;
-		return true;
-	} */
 	
 	static bool Resample(uint8_t *old_data, Vector3Int oldSize, Vector3Int newSize, uint8_t *newDataBuf)
 	{
