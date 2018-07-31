@@ -138,7 +138,7 @@ void transmit::doTransmit(struct packet* transmissionPacket) {
 }
 
 void transmit::throwLastError(std::string errorLabel){
-	std::cout <<  strerror(errno);
+	//printf("%s", strerror(errno));
 	throw std::system_error(errno, std::system_category(), errorLabel);
 }
 

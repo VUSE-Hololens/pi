@@ -15,6 +15,7 @@
 #include <condition_variable>
 #include <thread>
 #include <string>
+#include <cstring>
 #include <atomic>
 
 #define RECIPIENT_IP "10.66.194.16"
