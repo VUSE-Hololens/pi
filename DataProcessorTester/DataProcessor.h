@@ -39,14 +39,10 @@ public:
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 
 			buf[i/3] = clamp_val(255.0f*ndvi);
-
 		}
 
-		//printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
-		
 		delete[] rgbBuf;
 		delete[] nirBuf;
-		//DEBUG printf("NDVI calculated. Exiting getSenteraNDVI.\n");
 		return true;
 	}
 	

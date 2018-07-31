@@ -4,108 +4,47 @@
 #define DATA_PROCESSOR_H_
 
 #include "SensorDataTypes.h"
+#include <stdio.h>
 
 class DataProcessor {
 
 public:
 	// *buf that is passed to method must be width*height in size. 
 	static bool getSenteraNDVI(Frame *sensorData, int width, int height, uint8_t *buf) {
-		if (!buf) {
-			printf("Error: passed buffer pointer for output must be null\n");
-			return false;
-		}
-		Vector3Int newSize(width, height, 3);
-		//DEBUG printf("New Size <%d, %d, %d>\n", newSize.x, newSize.y, newSize.z);
-		//Vector3Int rgbSize(sensorData[0].width, sensorData[0].height, sensorData[0].bands);
-		//DEBUG printf("RGB Img Size <%d, %d, %d>\n", rgbSize.x, rgbSize.y, rgbSize.z);
-		//Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands);
-		//DEBUG printf("NIR Img Size <%d, %d, %d>\n", nirSize.x, nirSize.y, nirSize.z);
 
-		std::size_t size = newSize.x * newSize.y * newSize.z;
+		std::size_t size = width * height * 3;
+
 		float *rgbBuf = new float[size], *nirBuf = new float[size];
-
 		float r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
 		float nir = 0.0f, red = 0.0f, ndvi = 0.0f;
-		int negCount = 0, inBounds = 0, abvCount = 0;
 
 		// loop camera
 		float min_ndvi = 0;
 		for (int i = 0; i < size; i += 3) {
-			r_rgb_tmp = sensorData[1].pixels[i + 0];
-			g_rgb_tmp = sensorData[1].pixels[i + 1];
-			b_rgb_tmp = sensorData[1].pixels[i + 2];
+			r_rgb_tmp = sensorData[0].pixels[i + 0];
+			g_rgb_tmp = sensorData[0].pixels[i + 1];
+			b_rgb_tmp = sensorData[0].pixels[i + 2];
 			rgbBuf[i + 0] = +1.150 * r_rgb_tmp - 0.110 * g_rgb_tmp - 0.034 * b_rgb_tmp;
 			rgbBuf[i + 1] = -0.329 * r_rgb_tmp + 1.420 * g_rgb_tmp - 0.199 * b_rgb_tmp;
 			rgbBuf[i + 2] = -0.061 * r_rgb_tmp - 0.182 * g_rgb_tmp + 1.377 * b_rgb_tmp;
 
 			// ignore green band because it does not represent any red edge or IR data
-			r_nir_tmp = sensorData[0].pixels[i + 0];
-			b_nir_tmp = sensorData[0].pixels[i + 2];
+			r_nir_tmp = sensorData[1].pixels[i + 0];
+			b_nir_tmp = sensorData[1].pixels[i + 2];
 			nirBuf[i + 0] = +1.000 * r_nir_tmp - 0.956 * b_nir_tmp;
 			nirBuf[i + 2] = -0.341 * r_nir_tmp + 2.436 * b_nir_tmp;
 
 			nir = nirBuf[i + 2]; // blue band of NIR rgb
 			red = rgbBuf[i + 0]; // red band of rgb
-			printf("(%d, %d)", )
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
-			if (ndvi < 0) {
-				if (ndvi < min_ndvi) min_ndvi = ndvi;
-				negCount++;
-			}
-			else if (ndvi < 256) {
-				inBounds++;
-			}
-			else {
-				abvCount++;
-			}
 
-			buf[i/3] = clamp_val(ndvi);
-
+			buf[i/3] = clamp_val(255.0f*ndvi);
 		}
 
-		printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
-		
 		delete[] rgbBuf;
 		delete[] nirBuf;
-		//DEBUG printf("NDVI calculated. Exiting getSenteraNDVI.\n");
 		return true;
 	}
-
-	// *buf that is passed to method must be width*height in size. 
-	/* static bool getSenteraNDRE(Frame *sensorData, int width, int height, uint8_t *buf) {
-		Vector3Int newSize(width, height, 3);
-		Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands); // only need NIR cam data
-
-		uint8_t  *nirBuf;
-		std::size_t size = newSize.x * newSize.y * newSize.z;
-		nirBuf = new float[size];
-		if (!newSize.equals(nirSize)) {
-			printf("NIR not implemented resize\n");
-			return;
-			Resample(sensorData[1].pixels, nirSize, newSize, nirBuf);
-		}
-		else {
-			for (int i = 0; i < size; i++) {
-				nirBuf[i] = sensorData[1].pixels[i];
-			}
-		}
-
-		uint8_t nir;
-		uint8_t red_edge;
-		float ndre;
-		for (int i = 0; i < newSize.x; i++) 
-		{
-			for (int j = 0; j < newSize.y; j++) 
-			{
-				nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
-				red_edge = nirBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red edge band of rgb
-				ndre = (1.0*nir - red_edge) / (1.0*nir + red_edge);
-				buf[i + newSize.x * j] = clamp_val(ndre);
-			}
-		}
-		if (!newSize.equals(nirSize)) delete[] nirBuf;
-		return true;
-	} */
 	
 	static bool Resample(uint8_t *old_data, Vector3Int oldSize, Vector3Int newSize, uint8_t *newDataBuf)
 	{
