@@ -52,7 +52,7 @@ public:
 				red = rgbBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red band of rgb
 				ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 				buf[i + newSize.x * j] = clamp_val(ndvi);
-				if (j % 50 == 0) printf("%d ", clamp_val(ndvi));
+				if (j % 50 == 0) printf("%x ", clamp_val(ndvi));
 			}
 		}
 		
