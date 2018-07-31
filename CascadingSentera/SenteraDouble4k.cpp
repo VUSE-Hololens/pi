@@ -609,7 +609,7 @@ int SenteraDouble4k::filterBands(int cam) {
 void SenteraDouble4k::sendNDVI(int quality) {
 	// buffer for NDVI data
 	//image width and height
-	int width = sensor_data[0].width; 
+	int width = sensor_data[0].width; // doesnt have to be!! can choose to send any size image. will resample and scale accordingly
 	int height = sensor_data[0].height;
 	printf("Sensor image size (%d, %d)\n", width, height);
 	// fill NDVI buffer

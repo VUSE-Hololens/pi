@@ -88,7 +88,7 @@ public:
 				buf[i + newSize.x * j] = clamp_val(ndre);
 			}
 		}
-		delete[] nirBuf;
+		if (!newSize.equals(nirSize)) delete[] nirBuf;
 		return true;
 	}
 	
@@ -105,6 +105,7 @@ public:
 			{
 				for (int cx = 0; cx < newSize.z; cx++)
 				{
+					// bilinear interpolation approximation for resizing. 
 					int pixel = cz + (cx * newSize.z) + (cy * (newSize.y * newSize.z));
 					int nearestMatch = (cz + ((int)(cx / scale.x) * oldSize.z) + ((int)(cy / scale.y) * (oldSize.x * oldSize.z)));
 					newDataBuf[pixel] = old_data[nearestMatch];
@@ -113,8 +114,6 @@ public:
 		}
 		return true;
 	}
-
-	//TODO: getTransform (get cumulative image transform)
 
 private:
 	// clamp float to uint8_t
