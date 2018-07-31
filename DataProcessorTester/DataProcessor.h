@@ -24,6 +24,15 @@ public:
 		}
 
 		printf("\n-------------------\n");
+
+		for (int i = 0; i < size; i += 3) {
+			printf("%d ", sensorData[1].pixels[i + 0]);
+			printf("%d ", sensorData[1].pixels[i + 1]);
+			printf("%d ", sensorData[1].pixels[i + 2]);
+		}
+
+		printf("\n-------------------\n");
+
 		//float *rgbBuf = new float[size], *nirBuf = new float[size];
 
 		float r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
