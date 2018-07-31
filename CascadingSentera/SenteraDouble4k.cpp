@@ -530,6 +530,7 @@ int SenteraDouble4k::processImage(int cam) {
 	// make URL string to grab data from, then grab the data
 	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
 	std::string imgContent = http_downloader.download(urlStr);
+	printf("Made ImgContent String of Length %d\n", imgContent.length());
 	size_t compressedImgLength = imgContent.length();
 	unsigned char* compressedImg = (unsigned char*)imgContent.c_str();
 
@@ -542,7 +543,7 @@ int SenteraDouble4k::processImage(int cam) {
 	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
 	size_t size = width * height * channels; 
 
-	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
+	if (!sensor_data[cam-1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
 	sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
 
 	// decompress the jpg
