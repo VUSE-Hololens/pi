@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 // vector 3
 struct Vector3 {
 	float x, y, z;
