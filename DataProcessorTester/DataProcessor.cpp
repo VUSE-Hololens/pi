@@ -32,10 +32,5 @@ int main() {
 	}
 
 	printf("-------------\n");
-	for (int i = 0; i < width; i++) {
-		for (int i = 0; i < height; i++) {
-			//printf("%d ", )
-		}
-	}
 
 }
