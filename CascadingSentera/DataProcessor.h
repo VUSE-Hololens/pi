@@ -44,6 +44,7 @@ public:
 		uint8_t nir;
 		uint8_t red; 
 		float ndvi;
+		int negCount, inBounds, abvCount = 0;
 		for (int i = 0; i < newSize.x; i++) 
 		{
 			for (int j = 0; j < newSize.y; j++)
@@ -51,10 +52,19 @@ public:
 				nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
 				red = rgbBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red band of rgb
 				ndvi = (2.700 * nir - red) / (2.700 * nir + red);
+				if (ndvi < 0) {
+					negCount++;
+				}
+				else if (ndvi < 256) {
+					inBounds++;
+				}
+				else {
+					abvCount++;
+				}
 				buf[i + newSize.x * j] = clamp_val(ndvi);
-				if (j % 50 == 0) printf("%x ", clamp_val(ndvi));
 			}
 		}
+		printf("Count: <%d, %d, %d>: total = %d\n", negCount, inBounds, abvCount, newSize.x * newSize.y);
 		
 		if (!newSize.equals(rgbSize)) delete[] rgbBuf;
 		if (!newSize.equals(nirSize)) delete[] nirBuf;
