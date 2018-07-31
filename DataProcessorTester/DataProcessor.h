@@ -11,10 +11,6 @@ class DataProcessor {
 public:
 	// *buf that is passed to method must be width*height in size. 
 	static bool getSenteraNDVI(Frame *sensorData, int width, int height, uint8_t *buf) {
-		if (!buf) {
-			printf("Error: passed buffer pointer for output must be null\n");
-			return false;
-		}
 
 		std::size_t size = width * height * 3;
 		for (int i = 0; i < size; i+=3) {
@@ -73,6 +69,12 @@ public:
 
 			buf[i/3] = out;
 
+		}
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				printf("%d ", buf[i + width * j]);
+			}
+			printdf(";\n");
 		}
 
 		printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
