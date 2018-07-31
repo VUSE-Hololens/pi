@@ -7,7 +7,7 @@
 
 int main() {
 	Frame *testFrame = new Frame[2]();
-	int width = 3, height = 3;
+	int width = 4, height = 3;
 	testFrame[0].pixels = new uint8_t[width*height*3];
 	testFrame[1].pixels = new uint8_t[width*height*3];
 	for (int i = 0; i < width; i++) {
