@@ -607,13 +607,13 @@ int SenteraDouble4k::filterBands(int cam) {
 
 void SenteraDouble4k::sendNDVI(int quality) {
 	// buffer for NDVI data
-	uint8_t* ndvibuf;
-	printf("NDVI Buffer Made\n");
 	//image width and height
 	int width = sensor_data[0].width; 
 	int height = sensor_data[0].height;
 	printf("Sensor image size (%d, %d)\n", width, height);
 	// fill NDVI buffer
+	uint8_t *buf = new uint8_t[width * height];
+	printf("NDVI Buffer made of size %d\n", width*height);
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 	printf("Filled NDVI data buffer\n");
 	transmitter.transmitImage(ndvibuf, width, height, quality);

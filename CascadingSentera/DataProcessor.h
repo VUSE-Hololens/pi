@@ -8,7 +8,7 @@
 class DataProcessor {
 
 public:
-	// *buf that is passed to method must be null 
+	// *buf that is passed to method must be width*height in size. 
 	static bool getSenteraNDVI(Frame *sensorData, int width, int height, uint8_t *buf) {
 		if (!buf) {
 			printf("Error: passed buffer pointer for output must be null\n");
@@ -40,9 +40,6 @@ public:
 		}
 
 		printf("nirBuf and rgbBuf initialized\n");
-
-		buf = new uint8_t[newSize.x * newSize.y];
-		printf("reinitialized buf of size %d\n", newSize.x*newSize.y);
 
 		uint8_t nir;
 		uint8_t red; 
