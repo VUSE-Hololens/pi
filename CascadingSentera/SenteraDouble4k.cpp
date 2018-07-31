@@ -612,7 +612,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	int height = sensor_data[0].height;
 	printf("Sensor image size (%d, %d)\n", width, height);
 	// fill NDVI buffer
-	uint8_t *buf = new uint8_t[width * height];
+	uint8_t *ndvibuf = new uint8_t[width * height];
 	printf("NDVI Buffer made of size %d\n", width*height);
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 	printf("Filled NDVI data buffer\n");

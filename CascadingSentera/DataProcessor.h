@@ -60,6 +60,7 @@ public:
 		return true;
 	}
 
+	// *buf that is passed to method must be width*height in size. 
 	static bool getSenteraNDRE(Frame *sensorData, int width, int height, uint8_t *buf) {
 		Vector3Int newSize(width, height, 3);
 		Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands); // only need NIR cam data
@@ -72,10 +73,6 @@ public:
 		else {
 			nirBuf = sensorData[1].pixels;
 		}
-
-		// reinitialize buffer to appropriate length
-		delete[] buf;
-		buf = new uint8_t[newSize.x * newSize.y];
 
 		uint8_t nir;
 		uint8_t red_edge;
