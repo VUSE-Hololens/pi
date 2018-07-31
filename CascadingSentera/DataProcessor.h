@@ -11,7 +11,7 @@ public:
 	// *buf that is passed to method must be null 
 	static bool getSenteraNDVI(Frame *sensorData, int width, int height, uint8_t *buf) {
 		if (!buf) {
-			printf("Error: passed buffer pointer for output must be null\n")
+			printf("Error: passed buffer pointer for output must be null\n");
 			return false;
 		}
 		Vector3Int newSize(width, height, 3);
