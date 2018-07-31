@@ -24,8 +24,8 @@ int main() {
 	uint8_t *ndvibuf = new uint8_t[width*height];
 	DataProcessor::getSenteraNDVI(testFrame, width, height, ndvibuf);
 	printf("NDVI Array: \n");
-	for (int i = 0; i < side; i++) {
-		for (int j = 0; j < side; j++) {
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
 			printf("%d ", ndvibuf[i * width*j]);
 		}
 		printf(";\n");
