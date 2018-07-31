@@ -10,11 +10,15 @@ class DataProcessor {
 public:
 	static bool getSenteraNDVI(Frame *sensorData, int width, int height, uint8_t *buf) {
 		Vector3Int newSize(width, height, 3);
+		printf("New Size <%d, %d, %d>\n", newSize.x, newSize.y, newSize.z);
 		Vector3Int rgbSize(sensorData[0].width, sensorData[0].height, sensorData[0].bands);
+		printf("RGB Img Size <%d, %d, %d>\n", rgbSize.x, rgbSize.y, rgbSize.z);
 		Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands);
+		printf("NIR Img Size <%d, %d, %d>\n", nirSize.x, nirSize.y, nirSize.z);
 
 		uint8_t *rgbBuf, *nirBuf;
 		if (!newSize.equals(rgbSize)) {
+			printf("rgbSize != newSize\n");
 			rgbBuf = new uint8_t[newSize.x * newSize.y * newSize.z];
 			Resample(sensorData[0].pixels, rgbSize, newSize, rgbBuf);
 		}
@@ -22,6 +26,7 @@ public:
 			rgbBuf = sensorData[0].pixels;
 		}
 		if (!newSize.equals(nirSize)) {
+			printf("nirSize != newSize\n");
 			nirBuf = new uint8_t[newSize.x * newSize.y * newSize.z];
 			Resample(sensorData[1].pixels, nirSize, newSize, nirBuf);
 		}
@@ -29,8 +34,11 @@ public:
 			nirBuf = sensorData[1].pixels;
 		}
 
+		printf("nirBuf and rgbBuf initialized\n");
+
 		delete[] buf;
 		buf = new uint8_t[newSize.x * newSize.y];
+		printf("reinitialized buf of size %d\n", newSize.x*newSize.y);
 
 		uint8_t nir;
 		uint8_t red; 
@@ -47,6 +55,7 @@ public:
 		}
 		delete[] rgbBuf;
 		delete[] nirBuf;
+		printf("NDVI calculated. Exiting getSenteraNDVI.\n");
 		return true;
 	}
 

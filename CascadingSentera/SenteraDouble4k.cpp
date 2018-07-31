@@ -96,9 +96,13 @@ int SenteraDouble4k::sessionListener() {
 
 			// if new data is ready to process, do that
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
+				printf("Images ready for Camera %d\n", imgReadyID);
 				processImage(imgReadyID); // process data for appropriate image
+				printf("Images processed for Camera %d\n", imgReadyID);
 				filterBands(imgReadyID); // filter band data appropriately
-				if (imgReadyID == 2) sendNDVI(80); // send NDVI image each time NIR data is received
+				printf("Bands Filtered for Camera %d\n", imgReadyID);
+				if (imgReadyID == 2 && getUpdated()) sendNDVI(80); // send NDVI image each time NIR data is received
+				printf("NDVI data sent \n");
 			}
 		}
 		// when data is received, reset timer
@@ -604,11 +608,15 @@ int SenteraDouble4k::filterBands(int cam) {
 void SenteraDouble4k::sendNDVI(int quality) {
 	// buffer for NDVI data
 	uint8_t* ndvibuf;
+	printf("NDVI Buffer Made\n");
 	//image width and height
 	int width = sensor_data[0].width; 
-	int height = sensor_data[1].height;
+	int height = sensor_data[0].height;
+	printf("Sensor image size (%d, %d)\n", width, height);
 	// fill NDVI buffer
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
+	printf("Filled NDVI data buffer\n");
 	transmitter.transmitImage(ndvibuf, width, height, quality);
+	printf("Transmitted NDVI Image\n");
 }
 
