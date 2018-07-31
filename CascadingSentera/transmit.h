@@ -17,7 +17,7 @@
 #include <string>
 #include <atomic>
 
-#define RECIPIENT_IP "10.66.108.2"
+#define RECIPIENT_IP "10.66.194.16"
 #define PORT "5000"
 #define IMAGE_BUFFER_LEN 6
 
