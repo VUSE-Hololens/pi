@@ -33,7 +33,6 @@ public:
 
 		float r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
 		float nir = 0.0f, red = 0.0f, ndvi = 0.0f;
-		int negCount = 0, inBounds = 0, abvCount = 0;
 
 		// loop camera
 		float min_ndvi = 0;
@@ -41,46 +40,28 @@ public:
 			r_rgb_tmp = sensorData[0].pixels[i + 0];
 			g_rgb_tmp = sensorData[0].pixels[i + 1];
 			b_rgb_tmp = sensorData[0].pixels[i + 2];
-			//rgbBuf[i + 0] = +1.150 * r_rgb_tmp - 0.110 * g_rgb_tmp - 0.034 * b_rgb_tmp;
-			//rgbBuf[i + 1] = -0.329 * r_rgb_tmp + 1.420 * g_rgb_tmp - 0.199 * b_rgb_tmp;
-			//rgbBuf[i + 2] = -0.061 * r_rgb_tmp - 0.182 * g_rgb_tmp + 1.377 * b_rgb_tmp;
+			rgbBuf[i + 0] = +1.150 * r_rgb_tmp - 0.110 * g_rgb_tmp - 0.034 * b_rgb_tmp;
+			rgbBuf[i + 1] = -0.329 * r_rgb_tmp + 1.420 * g_rgb_tmp - 0.199 * b_rgb_tmp;
+			rgbBuf[i + 2] = -0.061 * r_rgb_tmp - 0.182 * g_rgb_tmp + 1.377 * b_rgb_tmp;
 
 			// ignore green band because it does not represent any red edge or IR data
 			r_nir_tmp = sensorData[1].pixels[i + 0];
 			b_nir_tmp = sensorData[1].pixels[i + 2];
-			//nirBuf[i + 0] = +1.000 * r_nir_tmp - 0.956 * b_nir_tmp;
-			//nirBuf[i + 2] = -0.341 * r_nir_tmp + 2.436 * b_nir_tmp;
+			nirBuf[i + 0] = +1.000 * r_nir_tmp - 0.956 * b_nir_tmp;
+			nirBuf[i + 2] = -0.341 * r_nir_tmp + 2.436 * b_nir_tmp;
 
-			nir = b_nir_tmp;//nirBuf[i + 2]; // blue band of NIR rgb
-			red = r_rgb_tmp;//rgbBuf[i + 0]; // red band of rgb
+			nir = nirBuf[i + 2]; // blue band of NIR rgb
+			red = rgbBuf[i + 0]; // red band of rgb
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
-			uint8_t out = clamp_val(255.0f*ndvi);
-			printf("(%0.2f, %0.2f) == %0.2f :: %d\n", nir, red, ndvi, out);
-			if (ndvi < 0) {
-				if (ndvi < min_ndvi) min_ndvi = ndvi;
-				negCount++;
-			}
-			else if (ndvi < 256) {
-				inBounds++;
-			}
-			else {
-				abvCount++;
-			}
 
-			buf[i/3] = out;
+			buf[i/3] = clamp_val(255.0f*ndvi);
 
-		}
-		for (int j = 0; j < height; j++) {
-			for (int i = 0; i < width; i++) {
-				printf("%d ", buf[i + width * j]);
-			}
-			printf(";\n");
 		}
 
 		printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
 		
-		//delete[] rgbBuf;
-		//delete[] nirBuf;
+		delete[] rgbBuf;
+		delete[] nirBuf;
 		//DEBUG printf("NDVI calculated. Exiting getSenteraNDVI.\n");
 		return true;
 	}
