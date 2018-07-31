@@ -70,7 +70,7 @@ public:
 	}
 
 	// *buf that is passed to method must be width*height in size. 
-	static bool getSenteraNDRE(Frame *sensorData, int width, int height, uint8_t *buf) {
+	/* static bool getSenteraNDRE(Frame *sensorData, int width, int height, uint8_t *buf) {
 		Vector3Int newSize(width, height, 3);
 		Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands); // only need NIR cam data
 
@@ -103,7 +103,7 @@ public:
 		}
 		if (!newSize.equals(nirSize)) delete[] nirBuf;
 		return true;
-	}
+	} */
 	
 	static bool Resample(uint8_t *old_data, Vector3Int oldSize, Vector3Int newSize, uint8_t *newDataBuf)
 	{
