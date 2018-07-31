@@ -58,7 +58,8 @@ public:
 			nir = b_nir_tmp;//nirBuf[i + 2]; // blue band of NIR rgb
 			red = r_rgb_tmp;//rgbBuf[i + 0]; // red band of rgb
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
-			printf("(%0.2f, %0.2f) == %0.2f\n", nir, red, ndvi);
+			uint8_t out = clamp_val(ndvi);
+			printf("(%0.2f, %0.2f) == %0.2f :: %d\n", nir, red, ndvi, out);
 			if (ndvi < 0) {
 				if (ndvi < min_ndvi) min_ndvi = ndvi;
 				negCount++;
@@ -70,7 +71,7 @@ public:
 				abvCount++;
 			}
 
-			buf[i/3] = clamp_val(255.0f*ndvi);
+			buf[i/3] = out;
 
 		}
 

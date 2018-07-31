@@ -30,7 +30,10 @@ int main() {
 		}
 		printf(";\n");
 	}
-
+	testFrame[0].clear();
+	testFrame[1].clear();
+	delete[] ndvibuf;
+	delete[] testFrame;
 	printf("-------------\n");
 
 }
