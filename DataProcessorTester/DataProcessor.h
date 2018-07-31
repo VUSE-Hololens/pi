@@ -74,7 +74,7 @@ public:
 			for (int i = 0; i < width; i++) {
 				printf("%d ", buf[i + width * j]);
 			}
-			printdf(";\n");
+			printf(";\n");
 		}
 
 		printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
