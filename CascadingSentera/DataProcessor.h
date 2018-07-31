@@ -52,6 +52,7 @@ public:
 				red = rgbBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red band of rgb
 				ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 				buf[i + newSize.x * j] = clamp_val(ndvi);
+				printf("%d ", clamp_val(ndvi));
 			}
 		}
 		
@@ -120,7 +121,7 @@ private:
 	static uint8_t clamp_val(float n) {
 		if (n < 0) return (uint8_t)0;
 		if (n > 255) return (uint8_t)255;
-		return (uint8_t)n;
+		return (uint8_t)((int)n & 0xff);
 	}
 };
 
