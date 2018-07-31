@@ -16,11 +16,11 @@ public:
 		}
 		uint8_t *nirBuf, *rgbBuf;
 		Vector3Int newSize(width, height, 3);
-		printf("New Size <%d, %d, %d>\n", newSize.x, newSize.y, newSize.z);
+		//DEBUG printf("New Size <%d, %d, %d>\n", newSize.x, newSize.y, newSize.z);
 		Vector3Int rgbSize(sensorData[0].width, sensorData[0].height, sensorData[0].bands);
-		printf("RGB Img Size <%d, %d, %d>\n", rgbSize.x, rgbSize.y, rgbSize.z);
+		//DEBUG printf("RGB Img Size <%d, %d, %d>\n", rgbSize.x, rgbSize.y, rgbSize.z);
 		Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands);
-		printf("NIR Img Size <%d, %d, %d>\n", nirSize.x, nirSize.y, nirSize.z);
+		//DEBUG printf("NIR Img Size <%d, %d, %d>\n", nirSize.x, nirSize.y, nirSize.z);
 
 		if (!newSize.equals(rgbSize)) {
 			printf("rgbSize != newSize\n");
@@ -39,7 +39,7 @@ public:
 			nirBuf = sensorData[1].pixels;
 		}
 
-		printf("nirBuf and rgbBuf initialized\n");
+		//DEBUG printf("nirBuf and rgbBuf initialized\n");
 
 		uint8_t nir;
 		uint8_t red; 
@@ -57,7 +57,7 @@ public:
 		
 		if (!newSize.equals(rgbSize)) delete[] rgbBuf;
 		if (!newSize.equals(nirSize)) delete[] nirBuf;
-		printf("NDVI calculated. Exiting getSenteraNDVI.\n");
+		//DEBUG printf("NDVI calculated. Exiting getSenteraNDVI.\n");
 		return true;
 	}
 

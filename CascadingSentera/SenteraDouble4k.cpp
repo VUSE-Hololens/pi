@@ -51,7 +51,8 @@ int SenteraDouble4k::Start() {
 		printf("Failed to send packet: %d", errno); //DEBUG
 		return -1;
 	}
-	printf("Sent still capture packet");
+	//DEBUG printf("NDVI data sent \n");
+	//DEBUG printf("Sent still capture packet");
 
 	return sessionListener();
 
@@ -96,13 +97,13 @@ int SenteraDouble4k::sessionListener() {
 
 			// if new data is ready to process, do that
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
-				printf("Images ready for Camera %d\n", imgReadyID);
+				//DEBUG printf("Images ready for Camera %d\n", imgReadyID);
 				processImage(imgReadyID); // process data for appropriate image
-				printf("Images processed for Camera %d\n", imgReadyID);
+				//DEBUG printf("Images processed for Camera %d\n", imgReadyID);
 				filterBands(imgReadyID); // filter band data appropriately
-				printf("Bands Filtered for Camera %d\n", imgReadyID);
+				//DEBUG printf("Bands Filtered for Camera %d\n", imgReadyID);
 				if (imgReadyID == 2 && getUpdated()) sendNDVI(80); // send NDVI image each time NIR data is received
-				printf("NDVI data sent \n");
+				//DEBUG printf("NDVI data sent \n");
 			}
 		}
 		// when data is received, reset timer
@@ -530,7 +531,7 @@ int SenteraDouble4k::processImage(int cam) {
 	// make URL string to grab data from, then grab the data
 	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
 	std::string imgContent = http_downloader.download(urlStr);
-	printf("Made ImgContent String of Length %d\n", imgContent.length());
+	//DEBUG printf("Made ImgContent String of Length %d\n", imgContent.length());
 	size_t compressedImgLength = imgContent.length();
 	unsigned char* compressedImg = (unsigned char*)imgContent.c_str();
 
@@ -611,14 +612,14 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	//image width and height
 	int width = sensor_data[0].width; // doesnt have to be!! can choose to send any size image. will resample and scale accordingly
 	int height = sensor_data[0].height;
-	printf("Sensor image size (%d, %d)\n", width, height);
+	//DEBUG printf("Sensor image size (%d, %d)\n", width, height);
 	// fill NDVI buffer
 	uint8_t *ndvibuf = new uint8_t[width * height];
-	printf("NDVI Buffer made of size %d\n", width*height);
+	//DEBUG printf("NDVI Buffer made of size %d\n", width*height);
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
-	printf("Filled NDVI data buffer\n");
+	//DEBUG printf("Filled NDVI data buffer\n");
 	transmitter.transmitImage(ndvibuf, width, height, quality);
 	delete[] ndvibuf;
-	printf("Transmitted NDVI Image\n");
+	//DEBUG printf("Transmitted NDVI Image\n");
 }
 
