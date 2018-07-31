@@ -16,7 +16,7 @@
 #include "Sensor.h" // parent class
 #include "packets.h" // packet structures
 #include "HTTPDownloader.h" // download HTTP packets
-#include <turbojpeg.h>
+#include <turbojpeg.h> // turbojpeg for decompression
 
 // defines
 // #define BUFLEN 512

@@ -22,7 +22,9 @@ bool SensorManager::checkDataReady() {
 
 void SensorManager::StartSession() {
 
-	std::thread t1(sentera.Start);
+	//std::thread t1(sentera.Start);
+	sentera.Start();
+	//TODO: doesnt get past here because start is an infinite loop fuck
 
 	live_session = true;
 	//std::chrono::milliseconds dura(100);
