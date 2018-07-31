@@ -70,7 +70,7 @@ void transmit::doTransmit(struct packet* transmissionPacket) {
 	int numBytesPacketIndex = 3;
 	len = len + (numBytesPacketIndex * num_packets);
 
-	std::cout << "num_packets: " + num_packets;
+	//DEBUG std::cout << "num_packets: " + num_packets;
 	const int initial_transmission_length = 3;
 	char initial_transmission[initial_transmission_length];
 	initial_transmission[0] = transmissionPacket->type; // First char received at the start of a transmission, it's necessary in order to determine RGB or 1-band

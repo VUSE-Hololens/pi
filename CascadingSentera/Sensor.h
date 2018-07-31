@@ -63,7 +63,7 @@ public:
 		for (int i = 0; out && i < num_cameras; i++) {
 			out = out && updated[i];
 		}
-		printf("getUpdated: %s\n", out? "true" : "false");
+		//DEBUG printf("getUpdated: %s\n", out? "true" : "false");
 		return out; 
 	}
 
