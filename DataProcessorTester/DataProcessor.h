@@ -42,7 +42,7 @@ public:
 
 		}
 
-		printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
+		//printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
 		
 		delete[] rgbBuf;
 		delete[] nirBuf;
