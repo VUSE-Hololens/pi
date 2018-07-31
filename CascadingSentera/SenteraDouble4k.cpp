@@ -617,6 +617,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 	printf("Filled NDVI data buffer\n");
 	transmitter.transmitImage(ndvibuf, width, height, quality);
+	delete[] ndvibuf;
 	printf("Transmitted NDVI Image\n");
 }
 
