@@ -34,7 +34,7 @@ long unsigned int compress::compressBandJpeg(uchar* frame, uchar **compressed, i
 }
 
 /* This method takes a 3-D matrix (image) with band bands and returns a cv::Mat ptr */
-cv::Mat* compress::getMatFromArray(uchar*** ar, int rows, int cols, int bands) {
+/*cv::Mat* compress::getMatFromArray(uchar*** ar, int rows, int cols, int bands) {
 	int sizes[] = { rows, cols, bands };
 	Mat* ret = new Mat(3, sizes, CV_8U);
 	for (int i = 0; i < rows; ++i) {
@@ -59,4 +59,4 @@ uchar* compress::getArrayFromMat(cv::Mat frame) {
 		}
 	}
 	return ar;
-}
+}*/
