@@ -15,14 +15,8 @@ public:
 			printf("Error: passed buffer pointer for output must be null\n");
 			return false;
 		}
-		Vector3Int newSize(width, height, 3);
-		//DEBUG printf("New Size <%d, %d, %d>\n", newSize.x, newSize.y, newSize.z);
-		//Vector3Int rgbSize(sensorData[0].width, sensorData[0].height, sensorData[0].bands);
-		//DEBUG printf("RGB Img Size <%d, %d, %d>\n", rgbSize.x, rgbSize.y, rgbSize.z);
-		//Vector3Int nirSize(sensorData[1].width, sensorData[1].height, sensorData[1].bands);
-		//DEBUG printf("NIR Img Size <%d, %d, %d>\n", nirSize.x, nirSize.y, nirSize.z);
 
-		std::size_t size = newSize.x * newSize.y * newSize.z;
+		std::size_t size = width * height * 3;
 		float *rgbBuf = new float[size], *nirBuf = new float[size];
 
 		float r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
