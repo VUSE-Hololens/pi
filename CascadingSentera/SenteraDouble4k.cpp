@@ -543,7 +543,7 @@ int SenteraDouble4k::processImage(int cam) {
 	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
 	size_t size = width * height * channels; 
 
-	if (!sensor_data[cam-1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
+	if (sensor_data[cam-1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
 	sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
 
 	// decompress the jpg

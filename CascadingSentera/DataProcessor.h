@@ -28,7 +28,8 @@ public:
 		float nir = 0.0f, red = 0.0f, ndvi = 0.0f;
 		int negCount = 0, inBounds = 0, abvCount = 0;
 
-		// RGB camera
+		// loop camera
+		float min_ndvi = 0;
 		for (int i = 0; i < size; i += 3) {
 			r_rgb_tmp = sensorData[0].pixels[i + 0];
 			g_rgb_tmp = sensorData[0].pixels[i + 1];
@@ -45,9 +46,10 @@ public:
 
 			nir = nirBuf[i + 2]; // blue band of NIR rgb
 			red = rgbBuf[i + 0]; // red band of rgb
-
+	
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 			if (ndvi < 0) {
+				if (ndvi < min_ndvi) min_ndvi = ndvi;
 				negCount++;
 			}
 			else if (ndvi < 256) {
@@ -61,7 +63,7 @@ public:
 
 		}
 
-		printf("Count: <%d, %d, %d>: total = %d\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount);
+		printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
 		
 		delete[] rgbBuf;
 		delete[] nirBuf;
