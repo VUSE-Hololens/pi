@@ -3,6 +3,7 @@
 //#include "opencv2/opencv.hpp"
 #include "turbojpeg.h"
 #include "cstdint"
+#include <vector>
 
 class compress
 {
