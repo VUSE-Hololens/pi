@@ -17,7 +17,7 @@ public:
 		}
 
 		std::size_t size = width * height * 3;
-		float *rgbBuf = new float[size], *nirBuf = new float[size];
+		//float *rgbBuf = new float[size], *nirBuf = new float[size];
 
 		float r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
 		float nir = 0.0f, red = 0.0f, ndvi = 0.0f;
@@ -29,18 +29,18 @@ public:
 			r_rgb_tmp = sensorData[1].pixels[i + 0];
 			g_rgb_tmp = sensorData[1].pixels[i + 1];
 			b_rgb_tmp = sensorData[1].pixels[i + 2];
-			rgbBuf[i + 0] = +1.150 * r_rgb_tmp - 0.110 * g_rgb_tmp - 0.034 * b_rgb_tmp;
-			rgbBuf[i + 1] = -0.329 * r_rgb_tmp + 1.420 * g_rgb_tmp - 0.199 * b_rgb_tmp;
-			rgbBuf[i + 2] = -0.061 * r_rgb_tmp - 0.182 * g_rgb_tmp + 1.377 * b_rgb_tmp;
+			//rgbBuf[i + 0] = +1.150 * r_rgb_tmp - 0.110 * g_rgb_tmp - 0.034 * b_rgb_tmp;
+			//rgbBuf[i + 1] = -0.329 * r_rgb_tmp + 1.420 * g_rgb_tmp - 0.199 * b_rgb_tmp;
+			//rgbBuf[i + 2] = -0.061 * r_rgb_tmp - 0.182 * g_rgb_tmp + 1.377 * b_rgb_tmp;
 
 			// ignore green band because it does not represent any red edge or IR data
 			r_nir_tmp = sensorData[0].pixels[i + 0];
 			b_nir_tmp = sensorData[0].pixels[i + 2];
-			nirBuf[i + 0] = +1.000 * r_nir_tmp - 0.956 * b_nir_tmp;
-			nirBuf[i + 2] = -0.341 * r_nir_tmp + 2.436 * b_nir_tmp;
+			//nirBuf[i + 0] = +1.000 * r_nir_tmp - 0.956 * b_nir_tmp;
+			//nirBuf[i + 2] = -0.341 * r_nir_tmp + 2.436 * b_nir_tmp;
 
-			nir = nirBuf[i + 2]; // blue band of NIR rgb
-			red = rgbBuf[i + 0]; // red band of rgb
+			nir = b_nir_tmp;//nirBuf[i + 2]; // blue band of NIR rgb
+			red = r_rgb_tmp;//rgbBuf[i + 0]; // red band of rgb
 			//printf("(%0.2f, %0.2f)\n", nir, rgb)
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 			if (ndvi < 0) {
@@ -60,8 +60,8 @@ public:
 
 		printf("Count: <%d, %d, %d>: total = %d, minNDVI = %0.2f\n", negCount, inBounds, abvCount, negCount + inBounds + abvCount, min_ndvi);
 		
-		delete[] rgbBuf;
-		delete[] nirBuf;
+		//delete[] rgbBuf;
+		//delete[] nirBuf;
 		//DEBUG printf("NDVI calculated. Exiting getSenteraNDVI.\n");
 		return true;
 	}
