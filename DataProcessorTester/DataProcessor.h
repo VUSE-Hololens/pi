@@ -4,7 +4,7 @@
 #define DATA_PROCESSOR_H_
 
 #include "SensorDataTypes.h"
-#include <stdio>
+#include <stdio.h>
 
 class DataProcessor {
 

@@ -1,6 +1,6 @@
 
 #include <cstdint>
-#include <stdio>
+#include <stdio.h>
 
 #include "DataProcessor.h"
 #include "SensorDataTypes.h"
@@ -22,7 +22,7 @@ int main() {
 		}
 	}
 	uint8_t *ndvibuf = new uint8_t[side*side];
-	DataProcessor::getSenteraNDVI(testFrame, side, side, ndviBuf);
+	DataProcessor::getSenteraNDVI(testFrame, side, side, ndvibuf);
 	printf("NDVI Array: \n");
 	for (int i = 0; i < side; i++) {
 		for (int j = 0; j < side; j++) {
