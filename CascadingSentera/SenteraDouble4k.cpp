@@ -100,7 +100,6 @@ int SenteraDouble4k::sessionListener() {
 				//DEBUG printf("Images ready for Camera %d\n", imgReadyID);
 				processImage(imgReadyID); // process data for appropriate image
 				//DEBUG printf("Images processed for Camera %d\n", imgReadyID);
-				filterBands(imgReadyID); // filter band data appropriately
 				//DEBUG printf("Bands Filtered for Camera %d\n", imgReadyID);
 				if (imgReadyID == 2 && getUpdated()) sendNDVI(80); // send NDVI image each time NIR data is received
 				//DEBUG printf("NDVI data sent \n");

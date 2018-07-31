@@ -40,11 +40,11 @@ public:
 			// ignore green band because it does not represent any red edge or IR data
 			r_nir_tmp = sensorData[1].pixels[i + 0];
 			b_nir_tmp = sensorData[1].pixels[i + 2];
-			nirBuf[i + 0] = +1.000 * r_tmp - 0.956 * b_tmp;
-			nirBuf[i + 2] = -0.341 * r_tmp + 2.436 * b_tmp;
+			nirBuf[i + 0] = +1.000 * r_nir_tmp - 0.956 * b_nir_tmp;
+			nirBuf[i + 2] = -0.341 * r_nir_tmp + 2.436 * b_nir_tmp;
 
-			nir = nirBuf[2 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // blue band of NIR rgb
-			red = rgbBuf[0 + (i*newSize.z) + (j*newSize.z*newSize.y)]; // red band of rgb
+			nir = nirBuf[i + 2]; // blue band of NIR rgb
+			red = rgbBuf[i + 0]; // red band of rgb
 
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 			if (ndvi < 0) {
@@ -57,7 +57,7 @@ public:
 				abvCount++;
 			}
 
-			buf[i + newSize.x * j] = clamp_val(ndvi);
+			buf[i/3] = clamp_val(ndvi);
 
 		}
 
