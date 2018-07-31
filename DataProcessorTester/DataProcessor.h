@@ -4,6 +4,7 @@
 #define DATA_PROCESSOR_H_
 
 #include "SensorDataTypes.h"
+#include <stdio>
 
 class DataProcessor {
 
@@ -46,7 +47,7 @@ public:
 
 			nir = nirBuf[i + 2]; // blue band of NIR rgb
 			red = rgbBuf[i + 0]; // red band of rgb
-			printf("(%d, %d)", )
+			//printf("(%0.2f, %0.2f)\n", nir, rgb)
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 			if (ndvi < 0) {
 				if (ndvi < min_ndvi) min_ndvi = ndvi;

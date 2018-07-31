@@ -1,6 +1,9 @@
+
+#include <cstdint>
+#include <stdio>
+
 #include "DataProcessor.h"
 #include "SensorDataTypes.h"
-#include <cstdint>
 
 int main() {
 	Frame *testFrame = new Frame[2]();
