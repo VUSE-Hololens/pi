@@ -26,16 +26,16 @@ public:
 		// loop camera
 		float min_ndvi = 0;
 		for (int i = 0; i < size; i += 3) {
-			r_rgb_tmp = sensorData[1].pixels[i + 0];
-			g_rgb_tmp = sensorData[1].pixels[i + 1];
-			b_rgb_tmp = sensorData[1].pixels[i + 2];
+			r_rgb_tmp = sensorData[0].pixels[i + 0];
+			g_rgb_tmp = sensorData[0].pixels[i + 1];
+			b_rgb_tmp = sensorData[0].pixels[i + 2];
 			//rgbBuf[i + 0] = +1.150 * r_rgb_tmp - 0.110 * g_rgb_tmp - 0.034 * b_rgb_tmp;
 			//rgbBuf[i + 1] = -0.329 * r_rgb_tmp + 1.420 * g_rgb_tmp - 0.199 * b_rgb_tmp;
 			//rgbBuf[i + 2] = -0.061 * r_rgb_tmp - 0.182 * g_rgb_tmp + 1.377 * b_rgb_tmp;
 
 			// ignore green band because it does not represent any red edge or IR data
-			r_nir_tmp = sensorData[0].pixels[i + 0];
-			b_nir_tmp = sensorData[0].pixels[i + 2];
+			r_nir_tmp = sensorData[1].pixels[i + 0];
+			b_nir_tmp = sensorData[1].pixels[i + 2];
 			//nirBuf[i + 0] = +1.000 * r_nir_tmp - 0.956 * b_nir_tmp;
 			//nirBuf[i + 2] = -0.341 * r_nir_tmp + 2.436 * b_nir_tmp;
 
