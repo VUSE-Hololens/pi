@@ -19,6 +19,7 @@ public:
 			return false;
 		}
 
+		// init data
 		float *rgbBuf = new float[size], *nirBuf = new float[size];
 		float r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
 		float nir = 0.0f, red = 0.0f, ndvi = 0.0f;
