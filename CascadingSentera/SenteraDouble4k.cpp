@@ -592,6 +592,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 	//DEBUG printf("Filled NDVI data buffer\n");
 
+	uint8_t* jpegBuf = nullptr;
+	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, quality);
+
 	std::string outname = "NDVI/";
 	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
 		outname += (const char)recent_images[1].fileName[i];
@@ -599,7 +602,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	outname += ".jpg";
 	printf("Wrote: %s\n", outname.c_str());
 	std::ofstream outfile(outname, std::ofstream::binary);
-	outfile.write(reinterpret_cast<const char*> (ndvibuf), width*height);
+	outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
 
 
 	uint8_t *resampleBuf = new uint8_t[width / 2 * height / 2];
@@ -610,7 +613,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 	printf("Saved NDVI image to:%s\n", "1");
 	//printf("Downsampled image 2x2: Length %d\n", width / 2 * height / 2);
-	// transmitter.transmitImage(resampleBuf, width/2, height/2, quality);
+	//transmitter.transmitImage(resampleBuf, width/2, height/2, quality);
 	delete[] ndvibuf;
 	delete[] resampleBuf;
 	//DEBUG printf("Transmitted NDVI Image\n");

@@ -17,11 +17,11 @@
 #include "packets.h" // packet structures
 #include "HTTPDownloader.h" // download HTTP packets
 #include <turbojpeg.h> // turbojpeg for decompression
-#include "transmit.h" // for cascading transmit
 #include "DataProcessor.h" // for creating NDVI band data
 
-// defines
-// #define BUFLEN 512
+#include "transmit.h" // for cascading transmit
+#include "compress.h"
+
 
 class SenteraDouble4k : public Sensor // implements sensor
 {
@@ -62,6 +62,7 @@ private:
 
 	// cascading transmission
 	transmit transmitter;													// for transmitting cascade style
+	compress compressor;													// for testing compression
 
 // methods
 private:
