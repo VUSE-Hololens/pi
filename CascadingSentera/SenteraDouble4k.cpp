@@ -535,7 +535,10 @@ int SenteraDouble4k::processImage(int cam) {
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = std::reinterpret_cast<unsigned char*>(&imgContent.c_str());
 
-	std::string outname(recent_images[cam - 1].fileName);
+	std::string outname = "";
+	for (int i = 0; i < 48; i++) { // filename array size 48
+		outStr += (const char)filename[i];
+	}
 	outname += ".jpg";
 	std::ofstream outfile(outname , std::ofstream::binary);
 	outfile.write(imgContent.c_str(), compressedImgLength);
