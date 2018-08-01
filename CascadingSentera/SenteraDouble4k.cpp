@@ -593,7 +593,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	//DEBUG printf("Filled NDVI data buffer\n");
 
 	uint8_t* jpegBuf = nullptr;
-	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, quality);
+	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, 100);
 
 	std::string outname = "NDVI/";
 	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
