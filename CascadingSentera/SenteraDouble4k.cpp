@@ -538,7 +538,7 @@ int SenteraDouble4k::processImage(int cam) {
 	std::string outname(recent_images[cam - 1].fileName);
 	outname += ".jpg";
 	std::ofstream outfile(outname , std::ofstream::binary);
-	outfile.write(compressedImg, compressedImgLength);
+	outfile.write(imgContent.c_str(), compressedImgLength);
 
 	// initialize variables to fill with data
 	int width, height;
