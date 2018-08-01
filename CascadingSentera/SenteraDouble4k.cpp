@@ -601,7 +601,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	outname += ".jpg";
 	printf("Wrote: %s\n", outname.c_str());
 	std::ofstream outfile(outname, std::ofstream::binary);
-	outfile.write(reinterpret_cast<const char*> ndvibuf, width*height);
+	outfile.write(reinterpret_cast<const char*> (ndvibuf), width*height);
 
 
 	uint8_t *resampleBuf = new uint8_t[width / 2 * height / 2];
