@@ -590,7 +590,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		}
 	}
 	printf("Downsampled image 2x2: Length %d\n", width / 2 * height / 2);
-	transmitter.transmitImage(resampleBuf, width, height, quality);
+	transmitter.transmitImage(resampleBuf, width/2, height/2, quality);
 	delete[] ndvibuf;
 	delete[] resampleBuf;
 	//DEBUG printf("Transmitted NDVI Image\n");
