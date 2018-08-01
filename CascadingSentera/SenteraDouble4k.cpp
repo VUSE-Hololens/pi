@@ -586,11 +586,11 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	uint8_t resampleBuf[width / 2 * height / 2];
 	for (int i = 0; i < width/2; i++) {
 		for (int j = 0; j < height/2; j++) {
-			resampleBuf[i + width * j] = ndvibuf[i * 2 + width * 2 * j * 2];
+			resampleBuf[i + width/2 * j] = ndvibuf[i * 2 + width * 2 * j * 2];
 		}
 	}
 	printf("Downsampled image 2x2: Length %d\n", width / 2 * height / 2);
-	transmitter.transmitImage(ndvibuf, width, height, quality);
+	transmitter.transmitImage(resampleBuf, width, height, quality);
 	delete[] ndvibuf;
 	//DEBUG printf("Transmitted NDVI Image\n");
 }
