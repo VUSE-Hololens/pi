@@ -583,7 +583,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 	//DEBUG printf("Filled NDVI data buffer\n");
 
-	uint8_t resampleBuf = new uint8_t[width / 2 * height / 2];
+	uint8_t resampleBuf[width / 2 * height / 2];
 	for (int i = 0; i < width/2; i++) {
 		for (int j = 0; j < height/2; j++) {
 			resampleBuf[i + width * j] = ndvibuf[i * 2 + width * 2 * j * 2];
