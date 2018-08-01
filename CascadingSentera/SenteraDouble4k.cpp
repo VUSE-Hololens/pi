@@ -533,13 +533,14 @@ int SenteraDouble4k::processImage(int cam) {
 	std::string imgContent = http_downloader.download(urlStr);
 	//DEBUG printf("Made ImgContent String of Length %d\n", imgContent.length());
 	size_t compressedImgLength = imgContent.length();
-	unsigned char *compressedImg = std::reinterpret_cast<unsigned char*>(&imgContent.c_str());
+	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
 
 	std::string outname = "";
 	for (int i = 0; i < 48; i++) { // filename array size 48
-		outStr += (const char)filename[i];
+		outStr += (const char)recent_images[cam-1].fileName[i];
 	}
 	outname += ".jpg";
+
 	std::ofstream outfile(outname , std::ofstream::binary);
 	outfile.write(imgContent.c_str(), compressedImgLength);
 
