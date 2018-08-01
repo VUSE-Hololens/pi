@@ -537,7 +537,7 @@ int SenteraDouble4k::processImage(int cam) {
 
 	std::string outname = "";
 	for (int i = 0; i < 48; i++) { // filename array size 48
-		outStr += (const char)recent_images[cam-1].fileName[i];
+		outname += (const char)recent_images[cam-1].fileName[i];
 	}
 	outname += ".jpg";
 
