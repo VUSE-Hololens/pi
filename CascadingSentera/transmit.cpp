@@ -50,6 +50,7 @@ void transmit::transmitImage(uint8_t* uncompressedImage, int width, int height, 
 	uint8_t* jpegBuf = nullptr;
 	int jpegSize = compressor.compressBandJpeg(uncompressedImage, &jpegBuf, width, height, quality);
 	// Indicate 1-band image with I
+	printf("Made Compressed Image of Size: %d\n", jpegSize);
 	loadBuffer(jpegBuf, jpegSize, 'I', true);
 }
 
