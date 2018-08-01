@@ -586,7 +586,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	uint8_t *resampleBuf = new uint8_t[width / 2 * height / 2];
 	for (int i = 0; i < width/2; i++) {
 		for (int j = 0; j < height/2; j++) {
-			resampleBuf[i + width/2 * j] = ndvibuf[i * 2 + width * 2 * j * 2];
+			resampleBuf[i + width/2 * j] = ndvibuf[i * 2 + width * j * 2];
 		}
 	}
 	printf("Downsampled image 2x2: Length %d\n", width / 2 * height / 2);
