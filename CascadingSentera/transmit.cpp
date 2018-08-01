@@ -1,6 +1,6 @@
 #include "transmit.h"
 
-static int PACKET_SIZE = 30000; // anticipate + 28 packet size for headers
+static int PACKET_SIZE = 50000; // anticipate + 28 packet size for headers
 
 transmit::transmit(const char* remoteIp, const char* remotePort) {
 
