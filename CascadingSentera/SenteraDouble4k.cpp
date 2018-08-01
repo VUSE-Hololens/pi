@@ -596,12 +596,12 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	std::string outname = "NDVI/";
 	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
-		outname += (const char)recent_images[cam - 1].fileName[i];
+		outname += (const char)recent_images[1].fileName[i];
 	}
 	outname += ".jpg";
 	printf("Wrote: %s\n", outname.c_str());
 	std::ofstream outfile(outname, std::ofstream::binary);
-	outfile.write(ndvibuf, width*height);
+	outfile.write(reinterpret_cast<const char*> ndvibuf, width*height);
 
 
 	uint8_t *resampleBuf = new uint8_t[width / 2 * height / 2];
