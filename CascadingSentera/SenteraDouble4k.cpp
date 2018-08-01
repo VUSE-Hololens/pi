@@ -52,9 +52,8 @@ int SenteraDouble4k::Start() {
 		printf("Failed to send packet: %d", errno); //DEBUG
 		return -1;
 	}
-	//DEBUG printf("NDVI data sent \n");
 	//DEBUG printf("Sent still capture packet");
-
+	printf("Started and listening for data!\n");
 	return sessionListener();
 
 	//return 0;
