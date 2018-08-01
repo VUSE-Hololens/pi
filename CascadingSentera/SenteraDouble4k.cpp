@@ -76,7 +76,6 @@ int SenteraDouble4k::sessionListener() {
 
 		while (!received_data)
 		{
-			printf("ReceivedData");
 			// query for new data
 			recvType = query_status_packet();
 
