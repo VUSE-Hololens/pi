@@ -54,6 +54,7 @@ public:
 		printf("NDVI data: <%d, %d, %d, %d>\n", hist[0], hist[1], hist[2], hist[3]);
 		delete[] rgbBuf;
 		delete[] nirBuf;
+
 		return true;
 	}
 	
