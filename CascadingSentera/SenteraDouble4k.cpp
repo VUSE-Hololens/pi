@@ -4,6 +4,7 @@
 
 // includes
 #include "SenteraDouble4k.h"
+#include <fstream>
 
 SenteraDouble4k::SenteraDouble4k() : SenteraDouble4k::SenteraDouble4k(offset){}
 
@@ -532,7 +533,12 @@ int SenteraDouble4k::processImage(int cam) {
 	std::string imgContent = http_downloader.download(urlStr);
 	//DEBUG printf("Made ImgContent String of Length %d\n", imgContent.length());
 	size_t compressedImgLength = imgContent.length();
-	unsigned char* compressedImg = (unsigned char*)imgContent.c_str();
+	unsigned char *compressedImg = std::reinterpret_cast<unsigned char*>(&imgContent.c_str());
+
+	std::string outname(recent_images[cam - 1].fileName);
+	outname += ".jpg";
+	std::ofstream outfile(outname , std::ofstream::binary);
+	outfile.write(compressedImg, compressedImgLength);
 
 	// initialize variables to fill with data
 	int width, height;
