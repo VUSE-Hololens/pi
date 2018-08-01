@@ -25,6 +25,7 @@ public:
 		float nir = 0.0f, red = 0.0f, ndvi = 0.0f;
 
 		// loop camera
+		int ndvi_hist[] = { 0, 0, 0, 0, 0 };
 		float min_ndvi = 0;
 		for (int i = 0; i < size; i += 3) {
 			r_rgb_tmp = sensorData[0].pixels[i + 0];
@@ -44,9 +45,12 @@ public:
 			red = rgbBuf[i + 0]; // red band of rgb
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 
-			buf[i/3] = clamp_val(255.0f*ndvi);
+			buf[i / 3] = clamp_val(255.0f*ndvi);
+			for (int i = 1; i < 5; i++) {
+				if (buf[i / 3] < 255 / 5 * i && buf[i / 3] >= 255 / 5 * (i - 1)) ndvi_hist[i]++;
+			}
 		}
-
+		printf("NDVI data: <%d, %d, %d, %d, %d>\n", ndvi_hist[0], ndvi_hist[1], ndvi_hist[2], ndvi_hist[3], ndvi_hist[4]);
 		delete[] rgbBuf;
 		delete[] nirBuf;
 		return true;
