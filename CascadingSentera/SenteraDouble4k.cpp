@@ -76,6 +76,7 @@ int SenteraDouble4k::sessionListener() {
 
 		while (!received_data)
 		{
+			printf("ReceivedData");
 			// query for new data
 			recvType = query_status_packet();
 
@@ -102,7 +103,7 @@ int SenteraDouble4k::sessionListener() {
 				processImage(imgReadyID); // process data for appropriate image
 				//DEBUG printf("Images processed for Camera %d\n", imgReadyID);
 				//DEBUG printf("Bands Filtered for Camera %d\n", imgReadyID);
-				//if (imgReadyID == 2 && getUpdated()) sendNDVI(80); // send NDVI image each time NIR data is received
+				if (imgReadyID == 2 && getUpdated()) sendNDVI(80); // send NDVI image each time NIR data is received
 				//DEBUG printf("NDVI data sent \n");
 			}
 		}
@@ -540,7 +541,7 @@ int SenteraDouble4k::processImage(int cam) {
 		outname += (const char)recent_images[cam-1].fileName[i];
 	}
 	outname += ".jpg";
-	printf("Wrote: %s", outname);
+	printf("Wrote: %s\n", outname.c_str());
 	std::ofstream outfile(outname , std::ofstream::binary);
 	outfile.write(imgContent.c_str(), compressedImgLength);
 
@@ -593,14 +594,25 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 	//DEBUG printf("Filled NDVI data buffer\n");
 
+	std::string outname = "NDVI/";
+	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
+		outname += (const char)recent_images[cam - 1].fileName[i];
+	}
+	outname += ".jpg";
+	printf("Wrote: %s\n", outname.c_str());
+	std::ofstream outfile(outname, std::ofstream::binary);
+	outfile.write(ndvibuf, width*height);
+
+
 	uint8_t *resampleBuf = new uint8_t[width / 2 * height / 2];
 	for (int i = 0; i < width/2; i++) {
 		for (int j = 0; j < height/2; j++) {
 			resampleBuf[i + width/2 * j] = ndvibuf[i * 2 + width * j * 2];
 		}
 	}
-	printf("Downsampled image 2x2: Length %d\n", width / 2 * height / 2);
-	transmitter.transmitImage(resampleBuf, width/2, height/2, quality);
+	printf("Saved NDVI image to:%s\n", "1");
+	//printf("Downsampled image 2x2: Length %d\n", width / 2 * height / 2);
+	// transmitter.transmitImage(resampleBuf, width/2, height/2, quality);
 	delete[] ndvibuf;
 	delete[] resampleBuf;
 	//DEBUG printf("Transmitted NDVI Image\n");
