@@ -1,0 +1,4 @@
+﻿  NDVICalcTest.cpp
+c:\users\mark scherer\hololens dev\pi code\pi\ndvicalctest\ndvicalctest\dataprocessor.h(73): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\mark scherer\hololens dev\pi code\pi\ndvicalctest\ndvicalctest\dataprocessor.h(120): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  NDVICalcTest.vcxproj -> C:\Users\Mark Scherer\Hololens Dev\Pi Code\pi\NDVICalcTest\Debug\NDVICalcTest.exe

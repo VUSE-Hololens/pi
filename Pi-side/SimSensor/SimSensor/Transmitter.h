@@ -43,7 +43,7 @@ public:
 	// returns number of device registrations, NOT necessarily number of active connected devices
 	int registers() {
 		connectsLock.lock();
-		int registers =  connections.size();
+		int registers = connections.size();
 		connectsLock.unlock();
 		return registers;
 	}
