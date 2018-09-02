@@ -116,13 +116,13 @@ void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remot
 	char message[] = "test";
 	sockaddr_in dest = createSockAddr(remoteIP, remotePort);
 	int destSize = sizeof(dest);
-	resultCode = sendto(sock, message, 5, 0, (sockaddr*)&dest, (socklen_t)destSize);
-	if (resultCode == SOCKET_ERROR) {
-		std::cout << "Sendto failed with error code: " << errno << "\n";
+	for (int i = 0; i < 100; i++) {
+		resultCode = sendto(sock, message, 5, 0, (sockaddr*)&dest, (socklen_t)destSize);
+		if (resultCode == SOCKET_ERROR) {
+			std::cout << "Sendto failed with error code: " << errno << "\n";
+		}
 	}
-	else {
-		std::cout << "Successfully sent message: " << message << ", to: " << remoteIP << " - " << remotePort << "\n";
-	}
+	std::cout << "Successfully sent message: " << message << ", to: " << remoteIP << " - " << remotePort << "\n";
 
 	Listen(sock, false);
 }
