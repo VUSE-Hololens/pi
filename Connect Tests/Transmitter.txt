@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 // other dependencies
 #include <vector>
@@ -29,6 +30,7 @@
 #include "Serializer.h"
 
 const int MAX_PACKET_SIZE = 1024;
+const int SOCKET_ERROR = -1;
 
 // transmission command codes
 const int CONNECT = 1;
@@ -254,4 +256,4 @@ private:
 	}
 };
 
-#endif TRANSMITTER
+#endif // TRANSMITTER
