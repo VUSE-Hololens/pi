@@ -1,8 +1,11 @@
+// Header for Sentera Camera Class
+// Henry Bristol
+// July 25, 2018
 
 // includes
 #include "SenteraDouble4k.h"
 
-SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
+SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this->cams)
 {
 	// Assume we start without a connection
 	for (int i = 0; i<num_cameras; i++) {
@@ -10,18 +13,11 @@ SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset)
 		camera_metadata_last_update_us[i] = 0;
 	}
 
-	// Reset our circular buffer
-	/* for (int i = 0; i< num_cameras; i++) {
-		recent_images_length[i] = 0;
-		recent_images_start[i] = 0;
-	}*/
-
 	// configure send and receive sockets
 	serv_status = startServer();
 	if (serv_status) {
-		printf("Made connection with camera!\n"); //DEBUG
+		printf("Successfully Setup Sockets!\n"); //DEBUG
 	}
-
 }
 
 SenteraDouble4k::~SenteraDouble4k()
@@ -30,10 +26,118 @@ SenteraDouble4k::~SenteraDouble4k()
 	close(s_rec);
 }
 
-void SenteraDouble4k::Start() {
-	int test = initializeSession(SEND_IMAGER_TRIGGER);
-	if (test != 1) {
+int SenteraDouble4k::Start() {
+	const char currentSessionName[128] = "TestingName1";
+	if (serv_status == -1) {
+		printf("Server not initialized! Cannot start session.");
+		return -1;
+	}
+	
+	// initialize packet to fill and send
+	uint8_t buf[BUFLEN];
 
+	// make packet of still capture session data 
+	int packet_length = makeStillCapturePacket((uint8_t)0, currentSessionName, buf);
+	if (packet_length <= 0) {
+		printf("Failed to create packet");
+		return -1;
+	}
+	printf("Still Capture Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
+
+	// send packet of still capture session data
+	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
+		printf("Failed to send packet: %d", errno); //DEBUG
+		return -1;
+	}
+	printf("Sent still capture packet");
+
+	// listen for updates
+	live_session = true;
+	int recvType = 0;
+	while (live_session)
+	{
+		// havent yet received data
+		bool received_data = false;
+
+		// create timer
+		auto starttime = std::chrono::system_clock::now();
+		auto endtime = std::chrono::system_clock::now();
+
+		while (!received_data)
+		{
+			// query for new data
+			recvType = query_status_packet(); 
+
+			// received a new packet?
+			received_data = (recvType >= 1); 
+
+			endtime = std::chrono::system_clock::now();
+
+			// if no new data received
+			if (!received_data) {
+				// check if we've timed out, and send packet to stop session if so.
+				if (std::chrono::duration_cast<std::chrono::milliseconds>(endtime - starttime).count() > timeout) {
+					fprintf(stderr, "System Timeout: No UDP packets received in %d milliseconds.\n", timeout);
+					Stop();
+					return -1;
+				}
+				// else if we havent timed out, query for a new packet
+				continue;
+			}
+
+			// if new data is ready to process, do that
+			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) { 
+				processImage(imgReadyID); // process data for appropriate image
+			}
+		}
+		// when data is received, reset timer
+		starttime = endtime;
+	}
+	return 0;
+}
+
+int SenteraDouble4k::Stop() {
+	// make packet of still capture session data to stop session
+	uint8_t buf[BUFLEN];
+	int packet_length = makeStillCapturePacket((uint8_t)1, "Stop", buf); // 1 to close session
+	if (packet_length <= 0) {
+		printf("Failed to create packet");
+		return -1;
+	}
+
+	// send packet of still capture session data
+	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
+		printf("Failed to send packet: %d", errno); //DEBUG
+		return -1;
+	}
+
+	live_session = false;
+	return 0;
+}
+
+int SenteraDouble4k::UpdateTrigger() {
+	//check server
+	if (serv_status == -1) {
+		printf("Server not initialized! Cannot start session.");
+		return -1;
+	}
+
+	// initialize packet to fill and send
+	uint8_t buf[BUFLEN];
+
+	// make packet of trigger data 
+	int packet_length = makeImagerTriggerPacket((uint8_t)2, (uint32_t)1000, buf);
+	if (packet_length <= 0) {
+		printf("Failed to create packet");
+		return -1;
+	}
+	//printf("Trigger Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
+
+	//send packet of trigger data
+	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
+		printf("Failed to send packet: %d", errno); //DEBUG
+		return -1;
+		return -1;
 	}
 }
 
@@ -72,51 +176,6 @@ int SenteraDouble4k::startServer() {
 	return 1;
 }
 
-int SenteraDouble4k::initializeSession(uint8_t sessionType)
-{
-	// check if server is set up
-	if (serv_status == -1) {
-		printf("Server not initialized! Cannot start session.");
-		return -1;
-	}
-
-	// initialize packet to fill and send
-	uint8_t buf[BUFLEN];
-
-	// make packet of data 
-	int packet_length = makeSessionPacket(sessionType, buf);
-	if (packet_length <= 0) {
-		printf("Failed to create packet");
-		return -1;
-	}
-	printf("Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
-
-	//send packet of data
-	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
-		printf("Failed to send packet: %d", errno); //DEBUG
-		return -1;
-	}
-
-	// listen for updates
-	live_session = true;
-	while (live_session)
-	{
-		bool received_data = false;
-		while (!received_data)
-		{
-			received_data = (query_status_packet() == 1);
-		}
-	}
-	return 0;
-}
-
-void SenteraDouble4k::Stop() {
-	live_session = false;
-	close(s_send);
-	close(s_rec);
-	return;
-}
-
 // Configures a given socket returning a socket ID, -1 indicates failure
 int SenteraDouble4k::configure_socket(int myport, sockaddr_in& si_other, bool bind_socket)
 {
@@ -131,14 +190,6 @@ int SenteraDouble4k::configure_socket(int myport, sockaddr_in& si_other, bool bi
 		fprintf(stderr, "!! Failed to create socket !!\n");
 		return -1;
 	}
-
-	/* Dont need to be sending broadcast data 
-	// Configure socket for sending broadcast data 
-	if (setsockopt(s, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast)) == -1)
-	{
-		fprintf(stderr, "!! Failed allow broadcasts. !!\n");
-		return -1;
-	}*/ 
 
 	// Allow binding to address already in use
 	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
@@ -240,58 +291,14 @@ int SenteraDouble4k::configure_receive(int myport, sockaddr_in& si_other)
 	return s;
 }
 
-int SenteraDouble4k::makeSessionPacket(uint8_t sessionType, uint8_t *buf)
-{
-	int packet_length = -1;
-	switch (sessionType & 0xFF) {
-		case SEND_IMAGER_TRIGGER: {
-			fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask); // Construct new session packet
-			packet_length = Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
-			break;
-		}
-		case SEND_STILL_CAPTURE: {
-			fw_imager_session_t imager_session = DataPacketizer::session();
-			packet_length = Bufferizer::session(imager_session, buf);
-			break;
-		}
-		case SEND_VIDEO_CAPTURE: {
-			fw_video_session_t video_session = DataPacketizer::video();
-			packet_length = Bufferizer::video(video_session, buf);
-			break;
-		}
-		case SEND_STILL_FOCUS: {
-			fw_still_focus_session_t still_focus_session = DataPacketizer::sf();
-			packet_length = Bufferizer::sf(still_focus_session, buf);
-			break;
-		}
-		case SEND_VIDEO_ADJUST: {
-			fw_video_adjust_t video_adjust = DataPacketizer::video_adjust();
-			packet_length = Bufferizer::videoadjust(video_adjust, buf);
-			break;
-		}
-		case SEND_IMAGER_ZOOM: {
-			fw_imager_zoom_t imager_zoom = DataPacketizer::zoom(trigger_mask);
-			packet_length = Bufferizer::zoom(imager_zoom, buf);
-			break;
-		}
-		case SEND_SYSTEM_TIME: {
-			printf("SystemTime option not implemented yet.");
-			//fw_system_time_t system_time = DataPacketizer::system_time();
-			//packet_length = Bufferizer::system_time(system_time, buf);
-			break;
-		}
-		case SEND_EXPOSURE_ADJUST: {
-			fw_exposure_adjust_t exposure_adjust = DataPacketizer::exposureadjust();
-			packet_length = Bufferizer::exposureadjust(exposure_adjust, buf);
-			break;
-		}
-		default: {
-			printf("Cannot initialize session of type ");
-			return -1;
-		}
-	}
-	return packet_length;
+int SenteraDouble4k::makeStillCapturePacket(uint8_t option, const char *sessionName, uint8_t *buf) { // 0x00 to Open, 0x01 to close
+	fw_imager_session_t imager_session = DataPacketizer::session(option, sessionName); 
+	return Bufferizer::session(imager_session, buf);
+}
 
+int SenteraDouble4k::makeImagerTriggerPacket(uint8_t mode, uint32_t period, uint8_t *buf) {
+	fw_imager_trigger_t imager_trigger = DataPacketizer::trigger(trigger_mask, mode, period); // Construct new session packet
+	return Bufferizer::trigger(imager_trigger, buf); // Load the new packet into the buffer
 }
 
 int SenteraDouble4k::query_status_packet()
@@ -306,7 +313,8 @@ int SenteraDouble4k::query_status_packet()
 	// Since each packet can be from a different imagerID, we process each one
 	// old buffers will override new ones.
 	// Non-blocking receives with no data will simply not write to the buffer (tested)
-	do
+
+	do //DEBUG - test do while loop necessity
 	{
 		// Check for receiving packet; recvfrom returns length of packet
 		current_packet = recvfrom(s_rec, rec_buf, BUFLEN, MSG_DONTWAIT, (struct sockaddr *) &si_other_rec, (socklen_t*)&slen_rec);
@@ -326,10 +334,8 @@ int SenteraDouble4k::query_status_packet()
 			printf("Recv Packet Header Failure");
 			return 0;
 		}
-		else if (rec_buf[2] == RECV_PAYLOAD_METADATA) 
+		else if (rec_buf[2] == fw_packet_type_e::PAYLOAD_METADATA)
 		{
-			printf("Received Payload Metadata"); //DEBUG
-
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x19 && rec_buf[4] == 0x00)) return 0;
 
@@ -394,6 +400,8 @@ int SenteraDouble4k::query_status_packet()
 				status.videoDstPort = 0;
 			}
 
+			// 
+
 			// Get the time we received the packet (approx)
 			struct timeval currTime;
 			gettimeofday(&currTime, NULL);
@@ -405,19 +413,21 @@ int SenteraDouble4k::query_status_packet()
 			{
 				if (status.imagerID & (0x01 << i))
 				{
+					// TODO: check sensor band data stuff/ptr stuff
+					sensor_data[i].FOVx = status.imagerHFOV / 100.0;
+					sensor_data[i].FOVy = status.imagerVFOV / 100.0;
 					camera_metadata[i] = status;
 					camera_metadata_valid[i] = true;
 					camera_metadata_last_update_us[i] = timestamp;
+					printf("Camera %d FOV: (%0.2f, %0.2f)\n", i + 1, sensor_data[i].FOVx, sensor_data[i].FOVy);
 				}
 			}
 
-			newdata_received = 1;
+			newdata_received = fw_packet_type_e::PAYLOAD_METADATA;
 		}
 		// Handle new image avilable packets
-		else if (rec_buf[2] == RECV_IMAGE_DATA_READY)
+		else if (rec_buf[2] == fw_packet_type_e::IMAGER_DATA_READY)
 		{
-			printf("Receeive Data Ready\n");
-
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x21 && rec_buf[4] == 0x00)) return 0;
 
@@ -426,54 +436,32 @@ int SenteraDouble4k::query_status_packet()
 			fw_imager_data_ready_t new_image;
 			new_image.imagerID = rec_buf[n++];
 
-			printf("Filename: ");
 			for (int i = 0; i < 48; ++i)
 			{
 				new_image.fileName[i] = rec_buf[n];
-				printf("%c", new_image.fileName[i]);
 				n++;
 			}
-			printf("\n");
 
 			if (new_image.imagerID == (uint8_t)1) {
 				recent_images[0] = new_image;
+				imgReadyID = 1;
 			}
 			else if (new_image.imagerID == (uint8_t)2) {
 				recent_images[1] = new_image;
+				imgReadyID = 2;
 			}
 			else {
+				imgReadyID = 0;
 				fprintf(stderr, "Imager ID not 1 or 2: Failed to store new image data\n");
+				return -1;
 			}
-			printf("Stored new image\n");
 
-			// Store the packet in the appropriate location of the circular buffer
-			/*for (int i = 0; i < num_cameras; i++)
-			{
-				recent_images[i] = new_image;
-				if (new_image.imagerID & (0x01 << i)) 
-				{
-					// Handle circular buffer wraparound
-					recent_images_length[i]++;
-					if (recent_images_length[i] > FILE_HISTORY_SIZE)
-					{
-						recent_images_length[i] = FILE_HISTORY_SIZE;
-						recent_images_start[i]++;
-						recent_images_start[i] = recent_images_start[i] % FILE_HISTORY_SIZE;
-					}
-
-					int cur_idx = (recent_images_start[i] + recent_images_length[i] - 1) % FILE_HISTORY_SIZE;
-					recent_images[i][cur_idx] = new_image;
-				}
-			}*/
-
-			newdata_received = 1;
+			newdata_received = fw_packet_type_e::IMAGER_DATA_READY;
 
 		}
 		// Handle Time Ack Packets
-		else if (rec_buf[2] == RECV_SYSTEM_TIME_ACK)
+		else if (rec_buf[2] == fw_packet_type_e::SYSTEM_TIME_ACK)
 		{
-			printf("Receive System Time Ack"); //DEBUG
-
 			// Make sure our packet length is long enough
 			if (!(rec_buf[3] >= 0x12 && rec_buf[4] == 0x00)) return 0;
 
@@ -497,10 +485,13 @@ int SenteraDouble4k::query_status_packet()
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 40;
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 48;
 			recent_time_ack.bootTime += (unsigned long long) rec_buf[n++] << 56;
+
+			newdata_received = fw_packet_type_e::SYSTEM_TIME_ACK;
 		}
-		else if (rec_buf[2] = RECV_IMAGER_TRIGGER_ACK)
+		else if (rec_buf[2] = fw_packet_type_e::IMAGER_TRIGGER_ACK)
 		{
 			printf("Received Imager Trigger Acknowledgement\n");
+			newdata_received = fw_packet_type_e::IMAGER_TRIGGER_ACK;
 		}
 		else
 		{
@@ -512,35 +503,53 @@ int SenteraDouble4k::query_status_packet()
 	return newdata_received;
 }
 
-int retrieveCurrentData() {
-	
-	//std::string rgbStr = makeUrlStr(recent_images[0][recent_images_start[0]].fileName);
-	//std::string nirStr = makeUrlStr(recent_images[1][recent_images_start[1]].fileName);
-	//printf((const char*)rgbStr + "\n");
-	//printf((const char*)nirStr + "\n");
-
-	//http_client client(rgbStr);
-	//http_response response;
-	//response = client.request(methods::GET).get(); // unsure of arguments to this request method
-	
-
-}
-
 Frame SenteraDouble4k::Data() {
-	return *data;
+	return *sensor_data;
 }
 
-/*
-std::string makeUrlString(uint8_t *filename) {
-	//http://192.168.143.141:8080/cur_session?path=/RGB/IMG_000001.jpg
-	std::string urlStr("http://");
-	urlStr += server_ipaddr;
-	urlStr += ":";
-	urlStr += "8080";
-	urlStr += "/cur_session?path=/";
-	for (int i = 0; i < filename.Length; i++){
-		urlStr += (const char*)filename[i];
+int SenteraDouble4k::processImage(int cam) {
+	// make URL string to grab data from, then grab the data
+	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
+	std::string imgContent = http_downloader.download(urlStr);
+	size_t compressedImgLength = imgContent.length();
+	unsigned char* compressedImg = (unsigned char*)imgContent.c_str();
+
+	// initialize variables to fill with data
+	int width, height;
+	int channels = 3; // 3 channels for RGB data
+
+	// initialize decompressor and get size
+	tjhandle _jpegDecompressor = tjInitDecompress();
+	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
+	size_t size = width * height * channels; 
+
+	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
+	sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
+
+	// decompress the jpg
+	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
+	tjDestroy(_jpegDecompressor);
+																				  
+	// deal with buffer
+	sensor_data[cam - 1].width = width;
+	sensor_data[cam - 1].height = height;
+	sensor_data[cam - 1].bands = channels;
+	updated[cam - 1] = true;
+
+	return 0;
+}
+
+std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
+	// http ://192.168.143.141:8080/sdcard?cur_session&path=/RGB/IMG_000001.jpg
+	std::string outStr = "http://";
+	outStr += server_ipaddr;
+	outStr += ":";
+	outStr += "8080";
+	outStr += "/sdcard?cur_session&path=/";
+	for (int i = 0; i < 48; i++) { // filename array size 48
+		outStr += (const char)filename[i];
 	}
-	return urlStr;
-}*/
+	// outStr += "/last_img?lnk=li1&camera=2";
+	return outStr;
+}
 
