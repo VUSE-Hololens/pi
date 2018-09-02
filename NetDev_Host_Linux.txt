@@ -2,6 +2,7 @@
 // FOR pi
 
 #define SOCKET_ERROR (-1)
+#define MAX_PACKET_SIZE (1024)
 
 #include<iostream>
 #include <string>
@@ -18,10 +19,9 @@
 void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remotePort);
 
 // helpers
-void Listen(SOCKET inSocket, bool echo);
+void Listen(int inSocket, bool echo);
 std::string SockAddrToStr(sockaddr_in sa);
 sockaddr_in createSockAddr(std::string ip, int port);
-void sendMessage(Transmitter trans, char data[], int length);
 
 int main()
 {
@@ -50,7 +50,7 @@ sockaddr_in createSockAddr(std::string ip, int port) {
 	return result;
 }
 
-void Listen(SOCKET socket, bool echo) {
+void Listen(int socket, bool echo) {
 	char recvBuf[MAX_PACKET_SIZE];
 	int bufLen = MAX_PACKET_SIZE;
 	sockaddr_in sender;
