@@ -93,7 +93,7 @@ std::string SockAddrToStr(sockaddr_in sa) {
 // sets up basic socket, sends UDP packet and listens for response
 void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remotePort) {
 	// create inSocket (UDP)
-	int sock = (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (sock == SOCKET_ERROR) {
 		std::cout << "socket construction failed with error code: " << errno << "\n";
 		return;
