@@ -14,6 +14,7 @@
 
 // test methods
 void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remotePort);
+ReceiveUDP(std::string localIP, int localPort);
 
 // helpers
 void Listen(int inSocket, bool echo);
@@ -155,5 +156,5 @@ void ReceiveUDP(std::string localIP, int localPort) {
 		std::cout << "Successfully bound socket to: " << localIP << " - " << localPort << "\n";
 	}
 
-	Listen(inSocket, true);
+	Listen(sock, true);
 }
