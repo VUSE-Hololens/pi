@@ -22,14 +22,20 @@ sockaddr_in createSockAddr(std::string ip, int port);
 
 int main()
 {
-	// simple UDP send
+	// simple UDP receive & echo
+	std::string localIP = "10.67.134.150";
+	int localPort = 8888;
+	std::cout << "Testing UDP as listener...\n";
+	ReceiveUDP(localIP, localPort);
+	
+	/*// simple UDP send
 	std::string localIP = "10.67.134.150";
 	int localPort = 8889;
 	std::string remoteIP = "10.66.247.250";
 	int remotePort = 8888;
 	std::cout << "Testing UDP as sender...\n";
 	SendUDP(localIP, localPort, remoteIP, remotePort);
-	
+	*/
 
 	// hold window open
 	std::cout << "Any key to exit.\n";
@@ -125,4 +131,29 @@ void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remot
 	std::cout << "Successfully sent message: " << message << ", to: " << remoteIP << " - " << remotePort << "\n";
 
 	Listen(sock, false);
+}
+
+// basic socket setup and listen. Echos receives messages back to sender
+void ReceiveUDP(std::string localIP, int localPort) {
+	// create inSocket (UDP)
+	int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (sock == SOCKET_ERROR) {
+		std::cout << "socket construction failed with error code: " << errno << "\n";
+		return;
+	}
+	else {
+		std::cout << "Successfully constructed UDP socket\n";
+	}
+
+	// bind inSocket to local port
+	sockaddr_in inSocketAddr = createSockAddr(localIP, localPort);
+	int resultCode = bind(sock, (const sockaddr*)&inSocketAddr, (socklen_t)sizeof(inSocketAddr));
+	if (resultCode == SOCKET_ERROR) {
+		std::cout << "Socket binding failed with error code: " << errno << "\n";
+	}
+	else {
+		std::cout << "Successfully bound socket to: " << localIP << " - " << localPort << "\n";
+	}
+
+	Listen(inSocket, true);
 }
