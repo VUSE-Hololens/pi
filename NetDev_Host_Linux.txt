@@ -14,7 +14,7 @@
 
 // test methods
 void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remotePort);
-ReceiveUDP(std::string localIP, int localPort);
+void ReceiveUDP(std::string localIP, int localPort);
 
 // helpers
 void Listen(int inSocket, bool echo);
