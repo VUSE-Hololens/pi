@@ -12,9 +12,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "Transmitter.h"
-#include "Serializer.h"
-
 // test methods
 void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remotePort);
 
