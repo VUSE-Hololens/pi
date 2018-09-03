@@ -26,8 +26,8 @@ sockaddr_in createSockAddr(std::string ip, int port);
 int main()
 {
 	// simple TCP connect, send and echo
-	std::string remoteIP = "10.67.19.210";
-	int remoteTCPPort = 8888;
+	std::string localIP = "10.67.134.150";
+	int localTCPPort = 8888;
 	SendTCP(remoteIP, remoteTCPPort);
 	
 	/*// connection protocol test
