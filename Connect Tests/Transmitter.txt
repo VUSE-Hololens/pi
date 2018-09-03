@@ -4,7 +4,6 @@
 // Thread-safe: can safely transmit and manage connections on separate threads.
 // configuration: LINUX
 
-#pragma once
 #ifndef TRANSMITTER
 #define TRANSMITTER
 
@@ -51,7 +50,7 @@ public:
 		else {
 			std::cout << "Successfully constructed UDP socket (non-blocking)\n";
 		}
-		int TCPsock = socket(AF_INET, SOCK_STREAM, IPPROTO_UDP);
+		int TCPsock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		if (TCPsock == SOCKET_ERROR) {
 			std::cout << "TCP socket construction failed with error code: " << errno << "\n";
 			return;
