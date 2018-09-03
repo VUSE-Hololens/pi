@@ -244,7 +244,7 @@ void SendTCP(std::string localIP, int localPort) {
 	char buffer[256] = { 1,2,3,4,5,6,7,8,9 };
 	std::cout << "Sending test message: " << buffer << "\n";
 	try {
-		resultCode = send(TCPSocket, buffer, 255, 0);
+		resultCode = send(TCPSocket, buffer, 255, MSG_NOSIGNAL);
 		if (resultCode == SOCKET_ERROR) {
 			std::cout << "Failed to send with error: " << errno << "\n";
 			close(TCPSocket);
