@@ -260,7 +260,7 @@ void SendTCP(std::string localIP, int localPort) {
 			close(TCPSocket);
 		}
 		else {
-			std::cout << "Send succeded locally. Message: " << buffer << "\n";
+			std::cout << "Send succeded locally. Message: " << inBuf << "\n";
 		}
 	}
 	catch (std::exception ex) {
