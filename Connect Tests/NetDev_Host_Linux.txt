@@ -240,7 +240,34 @@ void SendTCP(std::string localIP, int localPort) {
 		std::cout << "Successfully accepted connection to: " << SockAddrToStr(conn) << "\n";
 	}
 
-	// send test message
+	// listen for messages
+	char inBuf[256];
+	resultCode = recv(TCPSocket, inBuf, 255, 0);
+	if (resultCode == SOCKET_ERROR) {
+		std::cout << "Failed to recv with error: " << errno << "\n";
+		close(TCPSocket);
+	}
+	else {
+		std::cout << "Recieve successful. Message: " << inBuf << ", Length: " << resultCode << "\n";
+	}
+
+	// echo message
+	std::cout << "Attempting to echo message"
+	try {
+		resultCode = send(TCPSocket, inBuf, resultCode, MSG_NOSIGNAL);
+		if (resultCode == SOCKET_ERROR) {
+			std::cout << "Failed to send with error: " << errno << "\n";
+			close(TCPSocket);
+		}
+		else {
+			std::cout << "Send succeded locally. Message: " << buffer << "\n";
+		}
+	}
+	catch (std::exception ex) {
+		std::cout << "Caught exception while sending: " << ex.what() << "\n";
+	}
+
+	/*// send test message
 	char buffer[256] = { 1,2,3,4,5,6,7,8,9 };
 	std::cout << "Sending test message: " << buffer << "\n";
 	try {
@@ -268,6 +295,7 @@ void SendTCP(std::string localIP, int localPort) {
 	else {
 		std::cout << "Recieve successful. Message: " << buffer << ", Length: " << resultCode << "\n";
 	}
+	*/
 
 	// finish test
 	std::cout << "Test complete\n";
