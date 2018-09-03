@@ -2,27 +2,35 @@
 // Class for two way transmission of serialized data with single remote client.
 // Acts as host. Continuosly listens, transmits on command.
 // Thread-safe: can safely transmit and manage connections on separate threads.
-// configuration: WINDOWS
+// configuration: LINUX
 
-#pragma once
 #ifndef TRANSMITTER
 #define TRANSMITTER
 
-#include <WinSock2.h>
-#include <ws2tcpip.h>
+// networking dependencies
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
-#pragma comment(lib, "Ws2_32.lib")
-
+// other dependencies
 #include <vector>
 #include <algorithm>
 #include <mutex>
 #include <iostream>
 #include <atomic>
 #include <thread>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <istream>
 
+// dependent classes
 #include "Serializer.h"
 
 const int MAX_PACKET_SIZE = 1024;
+const int SOCKET_ERROR = -1;
+const int WOULD_BLOCK = 11;
 
 // transmission command codes
 const int CONNECT = 1;
@@ -31,52 +39,35 @@ const int DISCONNECT = 2;
 class Transmitter {
 public:
 	// constructor
-	Transmitter(std::string _localIP, int _inPort, int _outPort) 
-		: localIP(_localIP), inPort(_inPort), outPort(_outPort)
+	Transmitter(std::string _localIP, int _UDPPort, int _TCPPort) 
+		: localIP(_localIP), UDPPort(_UDPPort), TCPPort(_TCPPort)
 	{
-		// setup Winsock
-		WSADATA wsaData;
-		int resultCode = WSAStartup(MAKEWORD(2, 2), &wsaData);
-		if (resultCode != NO_ERROR) {
-			wprintf(L"WSAStartup failed with error: %d\n", resultCode);
+		// create sockets
+		UDPSocket = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK, IPPROTO_UDP);
+		if (UDPSocket == SOCKET_ERROR) {
+			std::cout << "UDP socket construction failed with error code: " << errno << "\n";
+			return;
+		}
+		else {
+			std::cout << "Successfully constructed UDP socket (non-blocking)\n";
+		}
+		TCPSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		if (TCPSocket == SOCKET_ERROR) {
+			std::cout << "TCP socket construction failed with error code: " << errno << "\n";
+			return;
+		}
+		else {
+			std::cout << "Successfully constructed TCP socket\n";
 		}
 
-		// create inSocket & outSocket (TCP for outSocket, UDP for inSocket)
-		inSocket = outSocket = INVALID_SOCKET;
-		inSocket = socket(AF_INET, SOCK_DGRAM, 0);
-		outSocket = socket(AF_INET, SOCK_STREAM, 0);
-		if (inSocket == INVALID_SOCKET) {
-			wprintf(L"inSocket construction failed with error: %ld\n", WSAGetLastError());
-			WSACleanup();
-		}
-		if (outSocket == INVALID_SOCKET) {
-			wprintf(L"outSocket construction failed with error: %ld\n", WSAGetLastError());
-			WSACleanup();
-		}
-
-		// bind inSocket & outSocket to ports
-		sockaddr_in inSocketAddr = createSockAddr(localIP, inPort);
-		resultCode = bind(inSocket, (sockaddr*)&inSocketAddr, sizeof(inSocketAddr));
+		// bind  UDP Socket to local port
+		sockaddr_in UDPSocketAddr = createSockAddr(localIP, UDPPort);
+		int resultCode = bind(UDPSocket, (const sockaddr*)&UDPSocketAddr, (socklen_t)sizeof(UDPSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
-			wprintf(L"inSocket bind failed with error %u\n", WSAGetLastError());
-			closesocket(inSocket);
-			WSACleanup();
+			std::cout << "UDP Socket binding failed with error code: " << errno << "\n";
 		}
-		sockaddr_in outSocketAddr = createSockAddr(localIP, outPort);
-		resultCode = bind(outSocket, (sockaddr*)&outSocketAddr, sizeof(outSocketAddr));
-		if (resultCode == SOCKET_ERROR) {
-			wprintf(L"outSocket bind failed with error %u\n", WSAGetLastError());
-			closesocket(outSocket);
-			WSACleanup();
-		}
-
-		// set inSocket as non-blocking (on dedicated thread)
-		u_long blockMode = 1; // non-zero indicates non-blocking
-		resultCode = ioctlsocket(inSocket, FIONBIO, &blockMode);
-		if (resultCode == SOCKET_ERROR) {
-			wprintf(L"Configure inSocket to non-blocking failed with error %u\n", WSAGetLastError());
-			closesocket(inSocket);
-			WSACleanup();
+		else {
+			std::cout << "Successfully bound UDP socket to: " << localIP << " - " << UDPPort << "\n";
 		}
 
 		// start listening on inSocket
@@ -90,9 +81,8 @@ public:
 		listening = false;
 		listeningThread.join();
 
-		closesocket(inSocket);
-		closesocket(outSocket);
-		WSACleanup();
+		close(UDPSocket);
+		close(TCPSocket);
 	}
 
 	// connect
@@ -105,12 +95,14 @@ public:
 		// connect local outSocket
 		std::cout << "Connecting device: " << SockAddrToStr(outConnection) << "\n";
 		connected.store(true);
-		int resultCode = connect(outSocket, (sockaddr*)&outConnection, sizeof(outConnection));
+		int resultCode = connect(TCPSocket, (sockaddr*)&outConnection, sizeof(outConnection));
 		if (resultCode == SOCKET_ERROR) {
-			wprintf(L"connect function (outConnection) failed with error: %ld\n", WSAGetLastError());
-			closesocket(outSocket);
-			WSACleanup();
+			std::cout << "Failed to connect with error: " << errno << "\n";
+			close(TCPSocket);
 			connected.store(false);
+		}
+		else {
+			std::cout << "Successfully connected to: " << SockAddrToStr(outConnection) << "\n";
 		}
 
 		lock.unlock();
@@ -150,22 +142,23 @@ public:
 
 		lock.lock();
 
-		int resultCode = sendto(outSocket, data, length, 0, (sockaddr*)&outConnection, sizeof(outConnection));
+		int resultCode = sendto(TCPSocket, data, length, 0, (sockaddr*)&outConnection, sizeof(outConnection));
 		if (resultCode == SOCKET_ERROR) {
-			wprintf(L"sendto failed with error: %d\n", WSAGetLastError());
-			closesocket(outSocket);
-			WSACleanup();
+			std::cout << "sendto failed with error: " << errno << "\n";
+			close(TCPSocket);
 		}
 
 		lock.unlock();
+
+		std::cout << "Successfully sent transmission to: " << SockAddrToStr(outConnection) << "\n";
 	}
 
 private:
 	// data
 	sockaddr_in outConnection, inConnection;
-	SOCKET inSocket, outSocket;
+	int UDPSocket, TCPSocket;
 	std::string localIP;
-	int inPort, outPort;
+	int UDPPort, TCPPort;
 
 	std::atomic<bool> listening;
 	std::atomic<bool> connected;
@@ -179,17 +172,18 @@ private:
 		sockaddr_in sender;
 		int senderSize = sizeof(sender);
 
-		std::cout << "Listening begun...\n";
+		std::cout << "Listening started...\n";
 
 		while (listening.load()) {
 			// receive datagram
-			int resultCode = recvfrom(inSocket, recvBuf, bufLen, 0, (sockaddr*)&sender, &senderSize);
-			if (resultCode == SOCKET_ERROR) {
-				if (WSAGetLastError() != WSAEWOULDBLOCK) {
-					wprintf(L"recvfrom failed with error %d\n", WSAGetLastError());
-				}
+			int resultCode = recvfrom(UDPSocket, recvBuf, bufLen, 0, (sockaddr*)&sender, (socklen_t*)&senderSize);
+			if (resultCode == SOCKET_ERROR && errno != WOULD_BLOCK) {
+				std::cout << "Error in recvfrom, code: " << errno << "\n";
 			}
-			else {
+			else if (resultCode != SOCKET_ERROR) {
+				std::cout << "Received message: " << recvBuf << ", from: " <<
+					SockAddrToStr(sender).c_str() << " - " << sender.sin_port << "\n";
+
 				// check sender validity
 				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(inConnection)) {
 					std::cout << "Received packet not originating from connected device. Connected to: "
@@ -234,27 +228,19 @@ private:
 	}
 
 	// createSockAddr
-	sockaddr_in createSockAddr(std::string ip, int port) {
-		sockaddr_in result;
-		result.sin_family = AF_INET;
-
-		//result.sin_addr.s_addr = inet_addr(ip.c_str());
-		std::wstring ip_w(ip.length(), L' ');
-		std::copy(ip.begin(), ip.end(), ip_w.begin());
-		const wchar_t* _ip = ip_w.c_str();
-		int resultCode = InetPton(AF_INET, _ip, &result.sin_addr);
-		if (resultCode != 1) {
-			std::cout << "IP text to binary conversion failed with error code " << WSAGetLastError() << "\n";
-		}
-
-		result.sin_port = port;
-		return result;
-	}
 	sockaddr_in createSockAddr(in_addr ip, int port) {
 		sockaddr_in result;
 		result.sin_family = AF_INET;
 		result.sin_addr = ip;
 		result.sin_port = port;
+		return result;
+	}
+	// createSockAddr
+	sockaddr_in createSockAddr(std::string ip, int port) {
+		sockaddr_in result;
+		result.sin_family = AF_INET;
+		result.sin_addr.s_addr = inet_addr(ip.c_str());
+		result.sin_port = htons(port);
 		return result;
 	}
 
@@ -265,9 +251,9 @@ private:
 		char str[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
 		// format return
-		sprintf_s(result, 50, "%s-%d", str, sa.sin_port);
+		sprintf(result, "%s-%d", str, sa.sin_port);
 		return result;
 	}
 };
 
-#endif TRANSMITTER
+#endif // TRANSMITTER

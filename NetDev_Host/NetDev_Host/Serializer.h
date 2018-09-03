@@ -5,12 +5,17 @@
 
 // must pass uint8_t array of sufficient size 'dest' to be filled with output
 
-#pragma once
 #ifndef SERIALIZER
 #define SERIALIZER
 
 #include <cstdint>
 #include <cstring>
+#include <string>
+#include <iostream>
+
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 class Serializer {
 public:
@@ -25,18 +30,15 @@ public:
 	// IP address (4 bytes)
 	// Note: required initialized WSA
 	static void serializeIP(uint8_t* dest, std::string ip) {
-		std::wstring _ip_wide(ip.length(), L' ');
-		std::copy(ip.begin(), ip.end(), _ip_wide.begin());
-		const wchar_t* _ip_wchar = _ip_wide.c_str();
-		int resultCode = InetPton(AF_INET, _ip_wchar, dest);
+		int resultCode = inet_pton(AF_INET, ip.c_str(), dest);
 		if (resultCode != 1) {
-			std::cout << "IP wstring to binary conversion failed with error code " << WSAGetLastError() << "\n";
+			std::cout << "IP string to binary conversion failed with error code " << errno << "\n";
 		}
 	}
 	static void deserializeIP(std::string* dest, uint8_t* data) {
 		char _dest[INET_ADDRSTRLEN];
 		if (!inet_ntop(AF_INET, data, _dest, INET_ADDRSTRLEN)) {
-			std::cout << "IP binary to wstring conversion failed with error code " << WSAGetLastError() << "\n";
+			std::cout << "IP binary to wstring conversion failed with error code " << errno << "\n";
 		}
 		*dest = std::string(_dest);
 	}
