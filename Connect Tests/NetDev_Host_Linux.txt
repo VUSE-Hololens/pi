@@ -252,7 +252,7 @@ void SendTCP(std::string localIP, int localPort) {
 	}
 
 	// echo message
-	std::cout << "Attempting to echo message"
+	std::cout << "Attempting to echo message\n";
 	try {
 		resultCode = send(TCPSocket, inBuf, resultCode, MSG_NOSIGNAL);
 		if (resultCode == SOCKET_ERROR) {
