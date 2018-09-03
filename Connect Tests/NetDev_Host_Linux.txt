@@ -29,6 +29,7 @@
 #include "Serializer.h"
 
 const int MAX_PACKET_SIZE = 1024;
+const in SOCKET_ERROR = -1;
 
 // transmission command codes
 const int CONNECT = 1;
