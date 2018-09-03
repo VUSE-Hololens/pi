@@ -30,6 +30,7 @@
 
 const int MAX_PACKET_SIZE = 1024;
 const int SOCKET_ERROR = -1;
+const int WOULD_BLOCK = 11;
 
 // transmission command codes
 const int CONNECT = 1;
@@ -176,7 +177,7 @@ private:
 		while (listening.load()) {
 			// receive datagram
 			int resultCode = recvfrom(UDPSocket, recvBuf, bufLen, 0, (sockaddr*)&sender, (socklen_t*)&senderSize);
-			if (resultCode == SOCKET_ERROR) {
+			if (resultCode == SOCKET_ERROR && errno != WOULD_BLOCK) {
 				std::cout << "Error in recvfrom, code: " << errno << "\n";
 			}
 			else {
