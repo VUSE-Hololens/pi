@@ -242,13 +242,18 @@ void SendTCP(std::string localIP, int localPort) {
 	// send test message
 	char buffer[256] = { 1,2,3,4,5,6,7,8,9 };
 	std::cout << "Sending test message: " << buffer << "\n";
-	resultCode = send(TCPSocket, buffer, 255, 0);
-	if (resultCode == SOCKET_ERROR) {
-		std::cout << "Failed to send with error: " << errno << "\n";
-		close(TCPSocket);
+	try {
+		resultCode = send(TCPSocket, buffer, 255, 0);
+		if (resultCode == SOCKET_ERROR) {
+			std::cout << "Failed to send with error: " << errno << "\n";
+			close(TCPSocket);
+		}
+		else {
+			std::cout << "Send succeded locally. Message: " << buffer << "\n";
+		}
 	}
-	else {
-		std::cout << "Send succeded locally. Message: " << buffer << "\n";
+	catch (Exception ex) {
+		std::cout << "Caught exception while sending: " << e.what() << "\n";
 	}
 
 	// wait for echo
