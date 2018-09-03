@@ -242,7 +242,7 @@ void SendTCP(std::string localIP, int localPort) {
 	// send test message
 	char buffer[256];
 	std::string message = "test";
-	memccpy(buffer, message, strlen(message));
+	memccpy(buffer, message, strlen(message.c_str()));
 	std::cout << "Sending test message: " << buffer << "\n";
 	resultCode = send(TCPSocket, buffer, strlen(buffer), 0);
 	if (resultCode == SOCKET_ERROR) {
@@ -256,7 +256,7 @@ void SendTCP(std::string localIP, int localPort) {
 	// wait for echo
 	std::cout << "Waiting for echo...\n";
 	char inBuf[256];
-	resultCode = recv(TCPSocket, inBuf, bufLen, 0);
+	resultCode = recv(TCPSocket, inBuf, 255, 0);
 	if (resultCode == SOCKET_ERROR) {
 		std::cout << "Failed to recv with error: " << errno << "\n";
 		close(TCPSocket);
