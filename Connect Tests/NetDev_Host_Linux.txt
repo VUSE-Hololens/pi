@@ -230,7 +230,7 @@ void SendTCP(std::string localIP, int localPort) {
 	// accept connection request (blocking)
 	sockaddr_in conn;
 	int connSize = sizeof(conn);
-	resultCode = accept(TCPSocket, (sockaddr*)&conn, &connSize);
+	resultCode = accept(TCPSocket, (sockaddr*)&conn, (socklen_t*)&connSize);
 	if (resultCode == SOCKET_ERROR) {
 		std::cout << "Failed to accept connection to: " << SockAddrToStr(conn) << " with error: " << errno << "\n";
 		close(TCPSocket);
