@@ -1,6 +1,9 @@
 // NetDev_Host_Linux.cpp : Defines the entry point for the console application.
 // FOR pi
 
+#define SOCKET_ERROR (-1)
+#define MAX_PACKET_SIZE (1024)
+
 #include<iostream>
 #include <string>
 
@@ -8,14 +11,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <unistd.h>
-
-#include "Transmitter.h"
 
 // test methods
 void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remotePort);
-void ReceiveUDP(std::string localIP, int localPort);
-void WaitForConnects(std::string localIP, int localUDPPort, int localTCPPort);
 
 // helpers
 void Listen(int inSocket, bool echo);
@@ -24,26 +22,14 @@ sockaddr_in createSockAddr(std::string ip, int port);
 
 int main()
 {
-	// connection protocol test
-	std::string localIP = "10.67.134.150";
-	int localUDPPort = 8888; int localTCPPort = 8889;
-	WaitForConnects(localIP, localUDPPort, localTCPPort);
-	
-	/*// simple UDP receive & echo
-	std::string localIP = "10.67.134.150";
-	int localPort = 8888;
-	std::cout << "Testing UDP as listener...\n";
-	ReceiveUDP(localIP, localPort);
-	*/
-	
-	/*// simple UDP send
+	// simple UDP send
 	std::string localIP = "10.67.134.150";
 	int localPort = 8889;
 	std::string remoteIP = "10.66.247.250";
 	int remotePort = 8888;
 	std::cout << "Testing UDP as sender...\n";
 	SendUDP(localIP, localPort, remoteIP, remotePort);
-	*/
+	
 
 	// hold window open
 	std::cout << "Any key to exit.\n";
@@ -139,49 +125,4 @@ void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remot
 	std::cout << "Successfully sent message: " << message << ", to: " << remoteIP << " - " << remotePort << "\n";
 
 	Listen(sock, false);
-}
-
-// basic socket setup and listen. Echos receives messages back to sender
-void ReceiveUDP(std::string localIP, int localPort) {
-	// create inSocket (UDP)
-	int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (sock == SOCKET_ERROR) {
-		std::cout << "socket construction failed with error code: " << errno << "\n";
-		return;
-	}
-	else {
-		std::cout << "Successfully constructed UDP socket\n";
-	}
-
-	// bind inSocket to local port
-	sockaddr_in inSocketAddr = createSockAddr(localIP, localPort);
-	int resultCode = bind(sock, (const sockaddr*)&inSocketAddr, (socklen_t)sizeof(inSocketAddr));
-	if (resultCode == SOCKET_ERROR) {
-		std::cout << "Socket binding failed with error code: " << errno << "\n";
-	}
-	else {
-		std::cout << "Successfully bound socket to: " << localIP << " - " << localPort << "\n";
-	}
-
-	Listen(sock, true);
-}
-
-// setup sockets, wait for connection request. Establish connection, send simple TCP message
-void WaitForConnects(std::string localIP, int localUDPPort, int localTCPPort) {
-	// create transmitter
-	std::cout << "Tester: Created Transmitter (" << localIP << "-" << localUDPPort << "/" << localTCPPort <<
-		"). Connection status: " << trans.connectionDetails() << "\n";
-
-	// wait for async transmitter setup to finish
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-	// block until connection 
-	std::cout << "Tester: Waiting for connection request...\n";
-	while (!trans.hasConnection()) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-	}
-
-	// send dummy message to client
-	char message[10] = { 1,2,3 };
-	trans.transmit(message, 10);
 }

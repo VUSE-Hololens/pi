@@ -169,6 +169,7 @@ void ReceiveUDP(std::string localIP, int localPort) {
 // setup sockets, wait for connection request. Establish connection, send simple TCP message
 void WaitForConnects(std::string localIP, int localUDPPort, int localTCPPort) {
 	// create transmitter
+	Transmitter trans(localIP, localUDPPort, localTCPPort);
 	std::cout << "Tester: Created Transmitter (" << localIP << "-" << localUDPPort << "/" << localTCPPort <<
 		"). Connection status: " << trans.connectionDetails() << "\n";
 
