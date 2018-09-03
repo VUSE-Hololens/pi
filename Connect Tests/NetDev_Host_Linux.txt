@@ -16,7 +16,7 @@
 void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remotePort);
 void ReceiveUDP(std::string localIP, int localPort);
 void WaitForConnects(std::string localIP, int localUDPPort, int localTCPPort);
-void SendTCP(std::string remoteIP, int remotePort)
+void SendTCP(std::string remoteIP, int remotePort);
 
 // helpers
 void Listen(int inSocket, bool echo);
@@ -28,8 +28,8 @@ int main()
 	// simple TCP connect, send and echo
 	std::string localIP = "10.67.134.150";
 	int localTCPPort = 8888;
-	SendTCP(remoteIP, remoteTCPPort);
-	
+	SendTCP(localIP, localTCPPort);
+
 	/*// connection protocol test
 	std::string localIP = "10.67.134.150";
 	int localUDPPort = 8888; int localTCPPort = 8889;
@@ -42,7 +42,7 @@ int main()
 	std::cout << "Testing UDP as listener...\n";
 	ReceiveUDP(localIP, localPort);
 	*/
-	
+
 	/*// simple UDP send
 	std::string localIP = "10.67.134.150";
 	int localPort = 8889;
@@ -55,7 +55,7 @@ int main()
 	// hold window open
 	std::cout << "Any key to exit.\n";
 	std::cin.get();
-	
+
 	return 0;
 }
 
@@ -75,7 +75,7 @@ void Listen(int socket, bool echo) {
 	int senderSize = sizeof(sender);
 
 	std::cout << "Socket listening for incoming transmissions...\n";
-	
+
 	while (true) {
 		// receive datagram
 		int resultCode = recvfrom(socket, recvBuf, bufLen, 0, (sockaddr*)&sender, (socklen_t*)&senderSize);
@@ -83,7 +83,7 @@ void Listen(int socket, bool echo) {
 			std::cout << "Error in recvfrom, code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Received message: " << recvBuf << ", from: " << 
+			std::cout << "Received message: " << recvBuf << ", from: " <<
 				SockAddrToStr(sender).c_str() << " - " << sender.sin_port << "\n";
 
 			if (echo) {
@@ -207,7 +207,7 @@ void SendTCP(std::string localIP, int localPort) {
 	}
 
 	// bind TCP socket
-	sockaddr_in localAdd = createSockAddr(localIP, localPort)
+	sockaddr_in localAdd = createSockAddr(localIP, localPort);
 	int resultCode = bind(TCPSocket, (sockaddr*)&localAdd, sizeof(localAdd));
 	if (resultCode == SOCKET_ERROR) {
 		std::cout << "Failed to bind TCP socket with error: " << errno << "\n";
@@ -229,7 +229,8 @@ void SendTCP(std::string localIP, int localPort) {
 
 	// accept connection request (blocking)
 	sockaddr_in conn;
-	resultCode = accept(TCPSocket, (sockaddr*)&conn, &sizeof(conn));
+	int connSize = sizeof(conn);
+	resultCode = accept(TCPSocket, (sockaddr*)&conn, &connSize);
 	if (resultCode == SOCKET_ERROR) {
 		std::cout << "Failed to accept connection to: " << SockAddrToStr(conn) << " with error: " << errno << "\n";
 		close(TCPSocket);
@@ -239,9 +240,9 @@ void SendTCP(std::string localIP, int localPort) {
 	}
 
 	// send test message
-	std::cout << "Sending test message: " << buffer << "\n";
 	char* buffer = "test";
 	int bufLen = 5;
+	std::cout << "Sending test message: " << buffer << "\n";
 	resultCode = send(TCPSocket, buffer, bufLen, 0);
 	if (resultCode == SOCKET_ERROR) {
 		std::cout << "Failed to send with error: " << errno << "\n";
