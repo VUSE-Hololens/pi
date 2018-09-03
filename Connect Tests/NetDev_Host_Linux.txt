@@ -1,9 +1,6 @@
 // NetDev_Host_Linux.cpp : Defines the entry point for the console application.
 // FOR pi
 
-#define SOCKET_ERROR (-1)
-#define MAX_PACKET_SIZE (1024)
-
 #include<iostream>
 #include <string>
 
@@ -11,13 +8,14 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 #include "Transmitter.h"
 
 // test methods
 void SendUDP(std::string localIP, int localPort, std::string remoteIP, int remotePort);
 void ReceiveUDP(std::string localIP, int localPort);
-void WaitForConnects(std::string localIP, int localPort);
+void WaitForConnects(std::string localIP, int localUDPPort, int localTCPPort);
 
 // helpers
 void Listen(int inSocket, bool echo);
