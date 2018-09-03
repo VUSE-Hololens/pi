@@ -107,7 +107,7 @@ std::string SockAddrToStr(sockaddr_in sa) {
 	char str[INET_ADDRSTRLEN];
 	inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
 	// format return
-	sprintf(result, "%s-%d", str, sa.sin_port);
+	sprintf(result, "%s-%d", str, ntohs(sa.sin_port));
 	return result;
 }
 
@@ -240,7 +240,7 @@ void SendTCP(std::string localIP, int localPort) {
 	}
 
 	// send test message
-	char* buffer = "test";
+	char* buffer = (char*)"test";
 	int bufLen = 5;
 	std::cout << "Sending test message: " << buffer << "\n";
 	resultCode = send(TCPSocket, buffer, bufLen, 0);
