@@ -242,7 +242,7 @@ void SendTCP(std::string localIP, int localPort) {
 	// send test message
 	char buffer[256];
 	std::string message = "test";
-	memccpy(buffer, message, strlen(message.c_str()));
+	memccpy(buffer, message.c_str(), strlen(message.c_str()));
 	std::cout << "Sending test message: " << buffer << "\n";
 	resultCode = send(TCPSocket, buffer, strlen(buffer), 0);
 	if (resultCode == SOCKET_ERROR) {
