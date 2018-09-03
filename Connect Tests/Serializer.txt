@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <cstring>
 #include <string>
+#include <iostream>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -30,16 +31,15 @@ public:
 	// IP address (4 bytes)
 	// Note: required initialized WSA
 	static void serializeIP(uint8_t* dest, std::string ip) {
-		int resultCode = inet_pton(AF_INET, ip, dest);
+		int resultCode = inet_pton(AF_INET, ip.c_str(), dest);
 		if (resultCode != 1) {
 			std::cout << "IP string to binary conversion failed with error code " << errno << "\n";
 		}
 	}
 	static void deserializeIP(std::string* dest, uint8_t* data) {
 		char _dest[INET_ADDRSTRLEN];
-		int resultCode = inet_ntop(AF_INET, data, _dest, INET_ADDRSTRLEN);
-		if (resultCode != 1) {
-			std::cout << "IP binary to wstring conversion failed with error code " << WSAGetLastError() << "\n";
+		if (!inet_ntop(AF_INET, data, _dest, INET_ADDRSTRLEN)) {
+			std::cout << "IP binary to wstring conversion failed with error code " << errno << "\n";
 		}
 		*dest = std::string(_dest);
 	}
