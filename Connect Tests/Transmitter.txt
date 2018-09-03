@@ -29,7 +29,7 @@
 #include "Serializer.h"
 
 const int MAX_PACKET_SIZE = 1024;
-const int SOCKET_ERROR = -1;
+const in SOCKET_ERROR = -1;
 
 // transmission command codes
 const int CONNECT = 1;
@@ -42,16 +42,16 @@ public:
 		: localIP(_localIP), UDPPort(_UDPPort), TCPPort(_TCPPort)
 	{
 		// create sockets
-		int UDPsock = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK, IPPROTO_UDP);
-		if (UDPsock == SOCKET_ERROR) {
+		UDPSocket = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK, IPPROTO_UDP);
+		if (UDPSocket == SOCKET_ERROR) {
 			std::cout << "UDP socket construction failed with error code: " << errno << "\n";
 			return;
 		}
 		else {
 			std::cout << "Successfully constructed UDP socket (non-blocking)\n";
 		}
-		int TCPsock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		if (TCPsock == SOCKET_ERROR) {
+		TCPSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		if (TCPSocket == SOCKET_ERROR) {
 			std::cout << "TCP socket construction failed with error code: " << errno << "\n";
 			return;
 		}
@@ -61,7 +61,7 @@ public:
 
 		// bind  UDP Socket to local port
 		sockaddr_in UDPSocketAddr = createSockAddr(localIP, UDPPort);
-		int resultCode = bind(UDPsock, (const sockaddr*)&UDPSocketAddr, (socklen_t)sizeof(UDPSocketAddr));
+		int resultCode = bind(UDPSocket, (const sockaddr*)&UDPSocketAddr, (socklen_t)sizeof(UDPSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
 			std::cout << "UDP Socket binding failed with error code: " << errno << "\n";
 		}
