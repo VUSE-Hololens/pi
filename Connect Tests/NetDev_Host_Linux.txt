@@ -3,6 +3,7 @@
 
 #include<iostream>
 #include <string>
+#include <exception>
 
 // networking dependencies
 #include <sys/types.h>
@@ -252,8 +253,8 @@ void SendTCP(std::string localIP, int localPort) {
 			std::cout << "Send succeded locally. Message: " << buffer << "\n";
 		}
 	}
-	catch (Exception ex) {
-		std::cout << "Caught exception while sending: " << e.what() << "\n";
+	catch (std::exception ex) {
+		std::cout << "Caught exception while sending: " << ex.what() << "\n";
 	}
 
 	// wait for echo
