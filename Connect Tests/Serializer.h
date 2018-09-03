@@ -5,7 +5,6 @@
 
 // must pass uint8_t array of sufficient size 'dest' to be filled with output
 
-#pragma once
 #ifndef SERIALIZER
 #define SERIALIZER
 
