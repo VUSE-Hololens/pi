@@ -45,8 +45,8 @@ void testTrans() {
 	while (true) {
 		if (trans.hasConnection()) {
 			// add message length
-			char message[] = char[100];
-			int messageLength = 100
+			uint_t message[100];
+			int messageLength = 100;
 			Serializer::serializeInt(message, messageLength);
 
 			// add header
@@ -61,7 +61,7 @@ void testTrans() {
 			}
 
 			// send message
-			trans.transmit(message, messageLength);
+			trans.transmit((char*)message, messageLength);
 		}
 
 		std::this_thread::sleep_for(std::chrono::seconds(1));

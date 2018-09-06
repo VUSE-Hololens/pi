@@ -26,27 +26,28 @@
 // dependent classes
 #include "Serializer.h"
 
-// transmission paramters
-public const int MAX_PACKET_SIZE = 10000; // bytes, all inclusive max size of packets
-public const int HEADER_SIZE_PRIM = 8; // bytes, size of header of int32 of messages on primary socket
-
-// command codes
-public const int CONNECT = 1;
-public const int DISCONNECT = 2;
-
-// misc constants
-const int SOCKET_ERROR = -1;
-const int WOULD_BLOCK = 11;
-
 class Transmitter {
 public:
+	// transmission paramters
+	const int MAX_PACKET_SIZE = 10000; // bytes, all inclusive max size of packets
+	const int HEADER_SIZE_PRIM = 8; // bytes, size of header of int32 of messages on primary socket
+
+	// command codes
+	const int CONNECT = 1;
+	const int DISCONNECT = 2;
+
+	// misc constants
+	const int SOCKET_ERROR = -1;
+	const int WOULD_BLOCK = 11;
+
+	
 	// constructor
 	Transmitter(std::string _localIP, int _primPort, int _secPort) 
 		: localIP(_localIP), primPort(_primPort), secPort(_secPort)
 	{
 		// create sockets
 		primSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-		if (UDPSocket == SOCKET_ERROR) {
+		if (primSocket == SOCKET_ERROR) {
 			std::cout << "Primary socket construction failed with error code: " << errno << "\n";
 			return;
 		}
@@ -54,7 +55,7 @@ public:
 			std::cout << "Successfully constructed primary socket\n";
 		}
 		secSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-		if (UDPSocket == SOCKET_ERROR) {
+		if (secSocket == SOCKET_ERROR) {
 			std::cout << "Secondary socket construction failed with error code: " << errno << "\n";
 			return;
 		}
@@ -69,15 +70,15 @@ public:
 			std::cout << "Primary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound primary socket to: " << localIP << " - " << UDPPort << "\n";
+			std::cout << "Successfully bound primary socket to: " << localIP << " - " << primPort << "\n";
 		}
 		sockaddr_in secSocketAddr = createSockAddr(localIP, secPort);
-		int resultCode = bind(secSocket, (const sockaddr*)&secSocketAddr, (socklen_t)sizeof(secSocketAddr));
+		resultCode = bind(secSocket, (const sockaddr*)&secSocketAddr, (socklen_t)sizeof(secSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
 			std::cout << "Secondary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound secondary socket to: " << localIP << " - " << UDPPort << "\n";
+			std::cout << "Successfully bound secondary socket to: " << localIP << " - " << secPort << "\n";
 		}
 
 		// start listening on secSocket
@@ -91,8 +92,8 @@ public:
 		listening = false;
 		listeningThread.join();
 
-		close(UDPSocket);
-		close(TCPSocket);
+		close(primSocket);
+		close(secSocket);
 	}
 
 	// connect
@@ -212,7 +213,7 @@ private:
 	}
 
 	// handlePacket
-	void handlePacket(char recvBuf[MAX_PACKET_SIZE], sockaddr_in sender) {
+	void handlePacket(char recvBuf[], sockaddr_in sender) {
 		// check command
 		int command;
 		Serializer::deserializeInt(&command, (uint8_t*)recvBuf);
