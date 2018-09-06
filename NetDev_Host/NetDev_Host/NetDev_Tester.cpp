@@ -57,7 +57,7 @@ void testTrans() {
 			Serializer::serializeInt(message + 8, headerVal2);
 
 			// add body
-			for (int i = 9; i < messageLength; i++) {
+			for (int i = 12; i < messageLength; i++) {
 				message[i] = i;
 			}
 
