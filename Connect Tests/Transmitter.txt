@@ -225,7 +225,7 @@ private:
 			// parse request details
 			int port; Serializer::deserializeInt(&port, (uint8_t*)recvBuf + 4);
 			sockaddr_in newSecConn = createSockAddr(sender.sin_addr, sender.sin_port);
-			sockaddr_in newPrimConn = createSockAddr(sender.sin_addr, port);
+			sockaddr_in newPrimConn = createSockAddr(sender.sin_addr, htons(port));
 			std::cout << "Received connection request: " << SockAddrToStr(newPrimConn) << " / " 
 				<< SockAddrToStr(newSecConn) << "\n";
 
