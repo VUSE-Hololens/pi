@@ -45,7 +45,7 @@ void testTrans() {
 	while (true) {
 		if (trans.hasConnection()) {
 			// add message length
-			uint_t message[100];
+			uint8_t message[100];
 			int messageLength = 100;
 			Serializer::serializeInt(message, messageLength);
 

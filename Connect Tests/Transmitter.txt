@@ -133,7 +133,7 @@ public:
 	// connectionsDetails
 	std::string connectionDetails() {
 		if (connected.load()) {
-			return SockAddrToStr(outConnection);
+			return SockAddrToStr(primConn) + " / " + SockAddrToStr(secConn);
 		}
 		else {
 			return "Not connected.";
@@ -226,8 +226,8 @@ private:
 			int port; Serializer::deserializeInt(&port, (uint8_t*)recvBuf + 4);
 			sockaddr_in newSecConn = createSockAddr(sender.sin_addr, sender.sin_port);
 			sockaddr_in newPrimConn = createSockAddr(sender.sin_addr, port);
-			std::cout << "Received connection request: " << SockAddrToStr(newInConn) << " / " 
-				<< SockAddrToStr(newOutConn) << "\n";
+			std::cout << "Received connection request: " << SockAddrToStr(newPrimConn) << " / " 
+				<< SockAddrToStr(newSecConn) << "\n";
 
 			// connect to device
 			connectDevice(newPrimConn, newSecConn);
