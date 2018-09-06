@@ -24,6 +24,7 @@ sockaddr_in createSockAddr(std::string ip, int port);
 int main()
 {
 	// testTrans
+	testTrans();
 
 	// hold window open
 	std::cout << "Any key to exit.\n";
