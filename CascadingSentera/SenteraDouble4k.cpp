@@ -606,7 +606,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// resample and transmit uncompressed buffer
 	// create buffer
-	int resampWidth = 200;
+	int resampWidth = 20;
 	int resampHeight = ((float)height / (float)width) * (float)resampWidth;
 	int messageLen = resampWidth * resampHeight + trans.HEADER_SIZE;
 	uint8_t *transBuf = new uint8_t[messageLen];
