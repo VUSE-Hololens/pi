@@ -3,7 +3,7 @@ LIBS = #`pkg-config --libs opencv`
 
 
 main : clean.main
-	g++ $(CFLAGS) $(LIBS) -o main main.cpp transmit.cpp SenteraDouble4k.cpp compress.cpp DataPacketizer.cpp Bufferizer.cpp -l pthread -lturbojpeg -lcurl
+	g++ $(CFLAGS) $(LIBS) -o main main.cpp Transmitter.h Serializer.h  SenteraDouble4k.cpp compress.cpp DataPacketizer.cpp Bufferizer.cpp -l pthread -lturbojpeg -lcurl
 
 clean.main:
 	rm -f main
