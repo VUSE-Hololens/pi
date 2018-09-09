@@ -31,6 +31,8 @@ public:
 		num_cameras = _cams;
 		updated = new bool[num_cameras](); // initialized to false
 		sensor_data = new Frame[num_cameras]();
+
+		trans = Transmitter(PI_IP, piPrimaryPort, piSecondaryPort);
 	}
 
 	// copy constructor
@@ -99,7 +101,7 @@ protected:
 	// for transmission
 	int piPrimaryPort = 8888;
 	int piSecondaryPort = 8889;
-	Transmitter trans(PI_IP, piPrimaryPort, piSecondaryPort);
+	Transmitter trans;
 
 };
 
