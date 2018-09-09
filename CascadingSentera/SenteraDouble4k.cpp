@@ -605,7 +605,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
 
 	int resampWidth = 200;
-	int resampHeight = (height / width) * resampWidth;
+	int resampHeight = ((float)height / (float)width) * (float)resampWidth;
 	uint8_t *resampNDVI = new uint8_t[resampWidth*resampHeight];
 	DataProcessor::Resample(ndvibuf, Vector3Int(width, height, 1), Vector3Int(resampWidth, resampHeight, 1), resampNDVI);
 
