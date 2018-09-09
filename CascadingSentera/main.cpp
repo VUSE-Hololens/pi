@@ -5,7 +5,7 @@
 int main() {
 
 	SenteraDouble4k sentera;
-	//sentera.Start();
+	sentera.Start();
 
 	return 0;
 }
