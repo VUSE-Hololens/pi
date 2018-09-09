@@ -26,13 +26,11 @@ public:
 
 	// constructor
 	Sensor(Transform _offset, int _cams)
-		: offset(_offset)
+		: offset(_offset), trans(Transmitter(PI_IP, piPrimaryPort, piSecondaryPort))
 	{
 		num_cameras = _cams;
 		updated = new bool[num_cameras](); // initialized to false
 		sensor_data = new Frame[num_cameras]();
-
-		trans = Transmitter(PI_IP, piPrimaryPort, piSecondaryPort);
 	}
 
 	// copy constructor
