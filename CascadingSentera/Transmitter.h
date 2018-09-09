@@ -74,7 +74,7 @@ public:
 			std::cout << "Primary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound primary socket to: " << SockAddrToStr(primSocketAddr) "\n";
+			std::cout << "Successfully bound primary socket to: " << SockAddrToStr(primSocketAddr) << "\n";
 		}
 		sockaddr_in secSocketAddr = createSockAddr(localIP, secPort);
 		
@@ -86,7 +86,7 @@ public:
 			std::cout << "Secondary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound secondary socket to: " << SockAddrToStr(secSocketAddr) "\n";
+			std::cout << "Successfully bound secondary socket to: " << SockAddrToStr(secSocketAddr) << "\n";
 		}
 
 		// start listening on secSocket
