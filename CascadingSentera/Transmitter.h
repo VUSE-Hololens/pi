@@ -74,7 +74,7 @@ public:
 			std::cout << "Primary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound primary socket to: " << SockAddrToStr(primSocketAddr) << "\n";
+			std::cout << "Successfully bound primary socket to: " << localIP << "-" << primPort << "\n";
 		}
 		sockaddr_in secSocketAddr = createSockAddr(localIP, secPort);
 		
@@ -86,7 +86,7 @@ public:
 			std::cout << "Secondary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound secondary socket to: " << SockAddrToStr(secSocketAddr) << "\n";
+			std::cout << "Successfully bound secondary socket to: " << localIP << "-" << secPort << "\n";
 		}
 
 		// start listening on secSocket
@@ -274,7 +274,7 @@ private:
 		char str[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
 		// format return
-		sprintf(result, "%s-%d", str, sa.sin_port);
+		sprintf(result, "%s-%d", str, ntohs(sa.sin_port));
 		return result;
 	}
 };
