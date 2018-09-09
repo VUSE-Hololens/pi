@@ -613,8 +613,8 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// add in header
 	Serializer::serializeInt(transBuf, messageLen);
-	Serializer::serializeInt(transBuf + 4; resampWidth);
-	Serializer::serializeInt(transBuf + 8; resampHeight);
+	Serializer::serializeInt(transBuf + 4, resampWidth);
+	Serializer::serializeInt(transBuf + 8, resampHeight);
 
 	// fill in NDVI data
 	DataProcessor::Resample(ndvibuf, Vector3Int(width, height, 1), Vector3Int(resampWidth, resampHeight, 1), transBuf + 12);
@@ -623,7 +623,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// transmit
 	if (trans.hasConnection()) {
-		trans.transmit((char*)transBuf, messageLength);
+		trans.transmit((char*)transBuf, messageLen);
 	}
 
 	//printf("Saved NDVI image to:%s\n", "1");

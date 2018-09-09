@@ -35,7 +35,7 @@ public:
 
 	// copy constructor
 	Sensor(const Sensor &rhs)
-		: offset(rhs.offset)
+		: offset(rhs.offset), trans(PI_IP, piPrimaryPort, piSecondaryPort)
 	{
 		num_cameras = rhs.num_cameras;
 		updated = new bool[num_cameras](); // initialized to false
