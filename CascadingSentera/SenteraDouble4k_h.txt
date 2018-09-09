@@ -19,7 +19,7 @@
 #include <turbojpeg.h> // turbojpeg for decompression
 #include "DataProcessor.h" // for creating NDVI band data
 
-#include "transmit.h" // for cascading transmit
+//#include "transmit.h" // for cascading transmit
 #include "compress.h"
 
 
