@@ -26,7 +26,7 @@ public:
 
 	// constructor
 	Sensor(Transform _offset, int _cams)
-		: offset(_offset), trans(Transmitter(PI_IP, piPrimaryPort, piSecondaryPort))
+		: offset(_offset), trans(PI_IP, piPrimaryPort, piSecondaryPort)
 	{
 		num_cameras = _cams;
 		updated = new bool[num_cameras](); // initialized to false
