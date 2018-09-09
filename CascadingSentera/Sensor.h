@@ -20,7 +20,7 @@ class Sensor {
 
 protected:
 	// static IP address of Raspberry Pi
-	const std::string PI_IP = "192.168.143.130";
+	const std::string PI_IP = "10.66.134.150";
 
 public:
 

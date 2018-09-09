@@ -65,20 +65,28 @@ public:
 
 		// bind  UDP Socket to local port
 		sockaddr_in primSocketAddr = createSockAddr(localIP, primPort);
+
+		// test binding to all interfaces
+		primSocketAddr.sin_addr.s_addr = INADDR_ANY;
+
 		int resultCode = bind(primSocket, (const sockaddr*)&primSocketAddr, (socklen_t)sizeof(primSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
 			std::cout << "Primary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound primary socket to: " << localIP << " - " << primPort << "\n";
+			std::cout << "Successfully bound primary socket to: " << SockAddrToStr(primSocketAddr) "\n";
 		}
 		sockaddr_in secSocketAddr = createSockAddr(localIP, secPort);
+		
+		// test binding to all interfaces
+		secSocketAddr.sin_addr.s_addr = INADDR_ANY;
+
 		resultCode = bind(secSocket, (const sockaddr*)&secSocketAddr, (socklen_t)sizeof(secSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
 			std::cout << "Secondary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound secondary socket to: " << localIP << " - " << secPort << "\n";
+			std::cout << "Successfully bound secondary socket to: " << SockAddrToStr(secSocketAddr) "\n";
 		}
 
 		// start listening on secSocket
