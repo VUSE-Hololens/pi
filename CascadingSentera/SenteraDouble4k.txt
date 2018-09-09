@@ -607,8 +607,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	int resampWidth = 200;
 	int resampHeight = (height / width) * resampWidth;
 	uint8_t *resampNDVI = new uint8_t[resampWidth*resampHeight];
-	DataProcessor::Resample(ndvibuf, Vector3((float)width, (float)height, 1), 
-		Vector3((float)resampWidth, (float)resampHeight, 1), resampNDVI);
+	DataProcessor::Resample(ndvibuf, Vector3Int(width, height, 1), Vector3Int(resampWidth, resampHeight, 1), resampNDVI);
 
 	// debug
 	std::cout << "Resampled NDVI buf to " << resampWidth << " x " << resampHeight << ". Data length: " << resampWidth * resampHeight << " bytes.\n";
