@@ -565,8 +565,16 @@ int SenteraDouble4k::processImage(int cam) {
 	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
 	size_t size = width * height * channels; 
 
-	if (sensor_data[cam-1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
-	sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
+	std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << "\n";
+	try {
+		if (sensor_data[cam - 1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
+		sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
+	} catch (std::bad_alloc ba) {
+		std::cout << "Allocation failed, not enough space on heap...\n";
+		return -1;
+	}
+
+	
 
 	// decompress the jpg
 	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
@@ -606,7 +614,14 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	std::cout << "About to create buffer to hold NDVI... Length: " << width * height << " (" << width << " x " << height << ")\n";
 
 	// fill NDVI buffer
-	uint8_t *ndvibuf = new uint8_t[width * height];
+	std::cout << "About to attempt to allocate uint8_t buffer to hold NDVI values of size: " << width * height << "\n";
+	try {
+		uint8_t *ndvibuf = new uint8_t[width * height];
+	} catch (std::bad_alloc ba) {
+		std::cout << "Allocation failed, not enough space on heap...\n";
+		return;
+	}
+	
 
 	// debug
 	printf("Pre-downsampled NDVI Buffer made of size %d\n", width*height);
@@ -635,7 +650,15 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	int resampWidth = 20;
 	int resampHeight = ((float)height / (float)width) * (float)resampWidth;
 	int messageLen = resampWidth * resampHeight + trans.HEADER_SIZE;
-	uint8_t *transBuf = new uint8_t[messageLen];
+
+	std::cout << "About to attempt to allocate uint8_t buffer to hold outbound transmission of size: " << messageLen << "\n";
+	try {
+		uint8_t *transBuf = new uint8_t[messageLen];
+	} catch (std::bad_alloc ba) {
+		std::cout << "Allocation failed, not enough space on heap...\n";
+		return;
+	}
+	
 
 	// debug
 	std::cout << "created downsampled buffer\n";
