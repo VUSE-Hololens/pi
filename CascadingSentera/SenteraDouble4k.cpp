@@ -105,7 +105,7 @@ int SenteraDouble4k::sessionListener() {
 			// if new data is ready to process, do that
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
 				// debug
-				std::cout << " Received data from camera, processing...\n";
+				//std::cout << " Received data from camera, processing...\n";
 
 				//DEBUG printf("Images ready for Camera %d\n", imgReadyID);
 				processImage(imgReadyID); // process data for appropriate image
@@ -542,7 +542,7 @@ int SenteraDouble4k::processImage(int cam) {
 	std::string imgContent = http_downloader.download(urlStr);
 
 	// debug
-	std::cout << "Successfully downloaded sentera's .jpg from: " << urlStr << ", Length: " << imgContent.length() << "\n";
+	//std::cout << "Successfully downloaded sentera's .jpg from: " << urlStr << ", Length: " << imgContent.length() << "\n";
 
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
@@ -557,7 +557,7 @@ int SenteraDouble4k::processImage(int cam) {
 	outfile.write(imgContent.c_str(), compressedImgLength);
 
 	// debug
-	std::cout << "Successfully saved downloaded .jpg locally to " << outname << "\n";
+	//std::cout << "Successfully saved downloaded .jpg locally to " << outname << "\n";
 
 	// initialize variables to fill with data
 	int width, height;
@@ -569,12 +569,12 @@ int SenteraDouble4k::processImage(int cam) {
 	if (resultCode == -1) { std::cout << "jpeg header decompression failed.\n"; }
 	size_t size = width * height * channels; 
 
-	std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << " (" << width << " x " << height << ")\n";
+	//std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << " (" << width << " x " << height << ")\n";
 	try {
 		if (sensor_data[cam - 1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
 		sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
 	} catch (std::bad_alloc ba) {
-		std::cout << "Allocation failed, not enough space on heap...\n";
+		std::cout << "Allocation failed, not enough space on heap... tried to allocate buffer to hold uncompressed jpeg of length: " << size << "\n";
 		return -1;
 	}
 
@@ -585,7 +585,7 @@ int SenteraDouble4k::processImage(int cam) {
 	if (resultCode == -1) { std::cout << "jpeg body decompression failed.\n"; }
 
 	// debug
-	std::cout << "Successfully uncompressed .jpg\n";
+	//std::cout << "Successfully uncompressed .jpg\n";
 																				  
 	// deal with buffer
 	sensor_data[cam - 1].width = width;
@@ -615,26 +615,26 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	int height = sensor_data[0].height;
 
 	// debug
-	std::cout << "About to create buffer to hold NDVI... Length: " << width * height << " (" << width << " x " << height << ")\n";
+	//std::cout << "About to create buffer to hold NDVI... Length: " << width * height << " (" << width << " x " << height << ")\n";
 
 	// fill NDVI buffer
-	std::cout << "About to attempt to allocate uint8_t buffer to hold NDVI values of size: " << width * height << "\n";
+	//std::cout << "About to attempt to allocate uint8_t buffer to hold NDVI values of size: " << width * height << "\n";
 	uint8_t *ndvibuf;
 	try {
 		ndvibuf = new uint8_t[width * height];
 	} catch (std::bad_alloc ba) {
-		std::cout << "Allocation failed, not enough space on heap...\n";
+		std::cout << "Allocation failed, not enough space on heap... tried to allocate buffer to hold NDVI calculations of length: " << width * height << "\n";
 		return;
 	}
 	
 
 	// debug
-	printf("Pre-downsampled NDVI Buffer made of size %d\n", width*height);
+	//printf("Pre-downsampled NDVI Buffer made of size %d\n", width*height);
 
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 
 	// debug
-	printf("Filled NDVI data buffer\n");
+	//printf("Filled NDVI data buffer\n");
 
 	// save jpeg locally
 	uint8_t* jpegBuf = nullptr;
@@ -656,18 +656,18 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	int resampHeight = ((float)height / (float)width) * (float)resampWidth;
 	int messageLen = resampWidth * resampHeight + trans.HEADER_SIZE;
 
-	std::cout << "About to attempt to allocate uint8_t buffer to hold outbound transmission of size: " << messageLen << "\n";
+	//std::cout << "About to attempt to allocate uint8_t buffer to hold outbound transmission of size: " << messageLen << "\n";
 	uint8_t *transBuf;
 	try {
 		transBuf = new uint8_t[messageLen];
 	} catch (std::bad_alloc ba) {
-		std::cout << "Allocation failed, not enough space on heap...\n";
+		std::cout << "Allocation failed, not enough space on heap... tried to allocate buffer for transmission of length: " << messageLen << "\n";
 		return;
 	}
 	
 
 	// debug
-	std::cout << "created downsampled buffer\n";
+	//std::cout << "created downsampled buffer\n";
 
 	// add in header
 	Serializer::serializeInt(transBuf, messageLen);
@@ -678,7 +678,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	DataProcessor::Resample(ndvibuf, Vector3Int(width, height, 1), Vector3Int(resampWidth, resampHeight, 1), transBuf + 12);
 	
 	// debug
-	std::cout << "Resampled NDVI buf to " << resampWidth << " x " << resampHeight << ". Data length: " << resampWidth * resampHeight << " bytes.\n";
+	//std::cout << "Resampled NDVI buf to " << resampWidth << " x " << resampHeight << ". Data length: " << resampWidth * resampHeight << " bytes.\n";
 
 	// transmit
 	if (trans.hasConnection()) {
@@ -692,6 +692,6 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	delete[] transBuf;
 
 	// debug
-	printf("Transmitted downsampled NDVI Image\n");
+	//printf("Transmitted downsampled NDVI Image\n");
 }
 
