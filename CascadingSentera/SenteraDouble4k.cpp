@@ -76,7 +76,7 @@ int SenteraDouble4k::sessionListener() {
 		while (!received_data)
 		{
 			// debug
-			std::cout << "Checking if sentera sent data packet...\n";
+			//std::cout << "Checking if sentera sent data packet...\n";
 			
 			// query for new data
 			recvType = query_status_packet();
@@ -601,7 +601,10 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	//image width and height
 	int width = sensor_data[0].width; // doesnt have to be!! can choose to send any size image. will resample and scale accordingly
 	int height = sensor_data[0].height;
-	//DEBUG printf("Sensor image size (%d, %d)\n", width, height);
+
+	// debug
+	std::cout << "About to create buffer to hold NDVI... Length: " << width * height << " (" << width << " x " << height << ")\n";
+
 	// fill NDVI buffer
 	uint8_t *ndvibuf = new uint8_t[width * height];
 
