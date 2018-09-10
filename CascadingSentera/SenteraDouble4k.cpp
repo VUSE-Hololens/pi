@@ -75,6 +75,9 @@ int SenteraDouble4k::sessionListener() {
 
 		while (!received_data)
 		{
+			// debug
+			std::cout << "Checking if sentera sent data packet...\n";
+			
 			// query for new data
 			recvType = query_status_packet();
 
@@ -97,6 +100,9 @@ int SenteraDouble4k::sessionListener() {
 
 			// if new data is ready to process, do that
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
+				// debug
+				std::cout << " Received data from camera, processing...\n";
+
 				//DEBUG printf("Images ready for Camera %d\n", imgReadyID);
 				processImage(imgReadyID); // process data for appropriate image
 				//DEBUG printf("Images processed for Camera %d\n", imgReadyID);
@@ -530,6 +536,10 @@ int SenteraDouble4k::processImage(int cam) {
 	// make URL string to grab data from, then grab the data
 	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
 	std::string imgContent = http_downloader.download(urlStr);
+
+	// debug
+	std::cout << "Successfully downloaded sentera's .jpg\n";
+
 	//DEBUG printf("Made ImgContent String of Length %d\n", imgContent.length());
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
@@ -542,6 +552,9 @@ int SenteraDouble4k::processImage(int cam) {
 	//printf("Wrote: %s\n", outname.c_str());
 	std::ofstream outfile(outname , std::ofstream::binary);
 	outfile.write(imgContent.c_str(), compressedImgLength);
+
+	// debug
+	std::cout << "Successfully saved downloaded .jpg locally\n";
 
 	// initialize variables to fill with data
 	int width, height;
@@ -558,6 +571,9 @@ int SenteraDouble4k::processImage(int cam) {
 	// decompress the jpg
 	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
 	tjDestroy(_jpegDecompressor);
+
+	// debug
+	std::cout << "Successfully uncompressed .jpg\n";
 																				  
 	// deal with buffer
 	sensor_data[cam - 1].width = width;
@@ -588,9 +604,14 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	//DEBUG printf("Sensor image size (%d, %d)\n", width, height);
 	// fill NDVI buffer
 	uint8_t *ndvibuf = new uint8_t[width * height];
+
+	// debug
 	printf("Pre-downsampled NDVI Buffer made of size %d\n", width*height);
+
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
-	//DEBUG printf("Filled NDVI data buffer\n");
+
+	// debug
+	printf("Filled NDVI data buffer\n");
 
 	// save jpeg locally
 	uint8_t* jpegBuf = nullptr;
@@ -600,9 +621,11 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		outname += (const char)recent_images[1].fileName[i];
 	}
 	outname += ".jpg";
-	printf("Wrote: %s\n", outname.c_str());
 	std::ofstream outfile(outname, std::ofstream::binary);
 	outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
+
+	// debug
+	printf("Wrote: %s\n", outname.c_str());
 
 	// resample and transmit uncompressed buffer
 	// create buffer
@@ -611,6 +634,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	int messageLen = resampWidth * resampHeight + trans.HEADER_SIZE;
 	uint8_t *transBuf = new uint8_t[messageLen];
 
+	// debug
+	std::cout << "created downsampled buffer\n";
+
 	// add in header
 	Serializer::serializeInt(transBuf, messageLen);
 	Serializer::serializeInt(transBuf + 4, resampWidth);
@@ -618,6 +644,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// fill in NDVI data
 	DataProcessor::Resample(ndvibuf, Vector3Int(width, height, 1), Vector3Int(resampWidth, resampHeight, 1), transBuf + 12);
+	
 	// debug
 	std::cout << "Resampled NDVI buf to " << resampWidth << " x " << resampHeight << ". Data length: " << resampWidth * resampHeight << " bytes.\n";
 
@@ -631,6 +658,8 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	//transmitter.transmitImage(resampleBuf, width/2, height/2, quality);
 	delete[] ndvibuf;
 	delete[] transBuf;
-	//DEBUG printf("Transmitted NDVI Image\n");
+
+	// debug
+	printf("Transmitted downsampled NDVI Image\n");
 }
 
