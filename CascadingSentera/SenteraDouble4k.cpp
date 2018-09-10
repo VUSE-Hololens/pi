@@ -542,7 +542,7 @@ int SenteraDouble4k::processImage(int cam) {
 	std::string imgContent = http_downloader.download(urlStr);
 
 	// debug
-	std::cout << "Successfully downloaded sentera's .jpg. Length: " << imgContent.length() << "\n";
+	std::cout << "Successfully downloaded sentera's .jpg from: " << urlStr << ", Length: " << imgContent.length() << "\n";
 
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
