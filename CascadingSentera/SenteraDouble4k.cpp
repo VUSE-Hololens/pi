@@ -544,8 +544,6 @@ int SenteraDouble4k::processImage(int cam) {
 	// debug
 	std::cout << "Successfully downloaded sentera's .jpg from: " << urlStr << ", Length: " << imgContent.length() << "\n";
 
-	std::this_thread::sleep_for(std::chrono::seconds(1000));
-
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
 
