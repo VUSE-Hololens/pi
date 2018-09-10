@@ -1,7 +1,5 @@
 // Transmitter.h
-// Class for two way transmission of serialized data with single remote client.
-// Acts as host. Continuosly listens, transmits on command.
-// Thread-safe: can safely transmit and manage connections on separate threads.
+// Class for dual communication with client (Both UDP). Primary for sending data, secondary for two way comm
 // configuration: LINUX
 
 #ifndef TRANSMITTER
@@ -28,49 +26,62 @@
 // dependent classes
 #include "Serializer.h"
 
-const int MAX_PACKET_SIZE = 1024;
-const int SOCKET_ERROR = -1;
-const int WOULD_BLOCK = 11;
-
-// transmission command codes
-const int CONNECT = 1;
-const int DISCONNECT = 2;
-
 class Transmitter {
 public:
+	// transmission paramters
+	const int MAX_PACKET_SIZE = 10000; // bytes, all inclusive max size of packets
+	const int HEADER_SIZE_PRIM = 8; // bytes, size of header of int32 of messages on primary socket
+
+	// command codes
+	const int CONNECT = 1;
+	const int DISCONNECT = 2;
+
+	// misc constants
+	const int SOCKET_ERROR = -1;
+	const int WOULD_BLOCK = 11;
+
+	
 	// constructor
-	Transmitter(std::string _localIP, int _UDPPort, int _TCPPort) 
-		: localIP(_localIP), UDPPort(_UDPPort), TCPPort(_TCPPort)
+	Transmitter(std::string _localIP, int _primPort, int _secPort) 
+		: localIP(_localIP), primPort(_primPort), secPort(_secPort)
 	{
 		// create sockets
-		UDPSocket = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK, IPPROTO_UDP);
-		if (UDPSocket == SOCKET_ERROR) {
-			std::cout << "UDP socket construction failed with error code: " << errno << "\n";
+		primSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		if (primSocket == SOCKET_ERROR) {
+			std::cout << "Primary socket construction failed with error code: " << errno << "\n";
 			return;
 		}
 		else {
-			std::cout << "Successfully constructed UDP socket (non-blocking)\n";
+			std::cout << "Successfully constructed primary socket\n";
 		}
-		TCPSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		if (TCPSocket == SOCKET_ERROR) {
-			std::cout << "TCP socket construction failed with error code: " << errno << "\n";
+		secSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		if (secSocket == SOCKET_ERROR) {
+			std::cout << "Secondary socket construction failed with error code: " << errno << "\n";
 			return;
 		}
 		else {
-			std::cout << "Successfully constructed TCP socket\n";
+			std::cout << "Successfully constructed secondary socket\n";
 		}
 
 		// bind  UDP Socket to local port
-		sockaddr_in UDPSocketAddr = createSockAddr(localIP, UDPPort);
-		int resultCode = bind(UDPSocket, (const sockaddr*)&UDPSocketAddr, (socklen_t)sizeof(UDPSocketAddr));
+		sockaddr_in primSocketAddr = createSockAddr(localIP, primPort);
+		int resultCode = bind(primSocket, (const sockaddr*)&primSocketAddr, (socklen_t)sizeof(primSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
-			std::cout << "UDP Socket binding failed with error code: " << errno << "\n";
+			std::cout << "Primary Socket binding failed with error code: " << errno << "\n";
 		}
 		else {
-			std::cout << "Successfully bound UDP socket to: " << localIP << " - " << UDPPort << "\n";
+			std::cout << "Successfully bound primary socket to: " << localIP << " - " << primPort << "\n";
+		}
+		sockaddr_in secSocketAddr = createSockAddr(localIP, secPort);
+		resultCode = bind(secSocket, (const sockaddr*)&secSocketAddr, (socklen_t)sizeof(secSocketAddr));
+		if (resultCode == SOCKET_ERROR) {
+			std::cout << "Secondary Socket binding failed with error code: " << errno << "\n";
+		}
+		else {
+			std::cout << "Successfully bound secondary socket to: " << localIP << " - " << secPort << "\n";
 		}
 
-		// start listening on inSocket
+		// start listening on secSocket
 		connected = false;
 		listening = true;
 		listeningThread = std::thread(std::bind(&Transmitter::listen, this));
@@ -81,28 +92,29 @@ public:
 		listening = false;
 		listeningThread.join();
 
-		close(UDPSocket);
-		close(TCPSocket);
+		close(primSocket);
+		close(secSocket);
 	}
 
 	// connect
-	void connectDevice(sockaddr_in _inConn, sockaddr_in _outConn) {
+	void connectDevice(sockaddr_in _primConn, sockaddr_in _secConn) {
 		lock.lock();
 		
-		outConnection = _outConn;
-		inConnection = _inConn;
+		primConn = _primConn;
+		secConn = _secConn;
 
 		// connect local outSocket
-		std::cout << "Connecting device: " << SockAddrToStr(outConnection) << "\n";
+		std::cout << "Connecting device (primary socket): " << SockAddrToStr(primConn) << "\n";
 		connected.store(true);
-		int resultCode = connect(TCPSocket, (sockaddr*)&outConnection, sizeof(outConnection));
+		// NOTE: connect() unnecessary as transmit() uses sendto with primConn...
+		int resultCode = connect(primSocket, (sockaddr*)&primConn, sizeof(primConn));
 		if (resultCode == SOCKET_ERROR) {
-			std::cout << "Failed to connect with error: " << errno << "\n";
-			close(TCPSocket);
+			std::cout << "Failed to connect primary socket with error: " << errno << "\n";
 			connected.store(false);
 		}
 		else {
-			std::cout << "Successfully connected to: " << SockAddrToStr(outConnection) << "\n";
+			std::cout << "Successfully connected. Primary socket connection: " << SockAddrToStr(primConn) 
+				<< "Secondary socket connection: " << SockAddrToStr(secConn) << "\n";
 		}
 
 		lock.unlock();
@@ -121,7 +133,7 @@ public:
 	// connectionsDetails
 	std::string connectionDetails() {
 		if (connected.load()) {
-			return SockAddrToStr(outConnection);
+			return SockAddrToStr(primConn) + " / " + SockAddrToStr(secConn);
 		}
 		else {
 			return "Not connected.";
@@ -131,7 +143,7 @@ public:
 	// transmit
 	void transmit(char* data, int length) {
 		if (length > MAX_PACKET_SIZE) {
-			std::cout << "Data too large to send. Max packet size: " << MAX_PACKET_SIZE << "\n";
+			std::cout << "Data too large to send. Max packet size: " << MAX_PACKET_SIZE << ", length: " << length << "\n";
 			return;
 		}
 
@@ -142,23 +154,22 @@ public:
 
 		lock.lock();
 
-		int resultCode = sendto(TCPSocket, data, length, 0, (sockaddr*)&outConnection, sizeof(outConnection));
+		int resultCode = sendto(primSocket, data, length, 0, (sockaddr*)&primConn, sizeof(primConn));
 		if (resultCode == SOCKET_ERROR) {
 			std::cout << "sendto failed with error: " << errno << "\n";
-			close(TCPSocket);
 		}
 
 		lock.unlock();
 
-		std::cout << "Successfully sent transmission to: " << SockAddrToStr(outConnection) << "\n";
+		std::cout << "Successfully sent transmission to: " << SockAddrToStr(primConn) << "\n";
 	}
 
 private:
 	// data
-	sockaddr_in outConnection, inConnection;
-	int UDPSocket, TCPSocket;
+	int primSocket, secSocket;
+	sockaddr_in primConn, secConn;
 	std::string localIP;
-	int UDPPort, TCPPort;
+	int primPort, secPort;
 
 	std::atomic<bool> listening;
 	std::atomic<bool> connected;
@@ -172,22 +183,24 @@ private:
 		sockaddr_in sender;
 		int senderSize = sizeof(sender);
 
-		std::cout << "Listening started...\n";
+		// debug
+		std::cout << "Starting listening (blocking) on secondary socket on dedicated thread...\n";
 
 		while (listening.load()) {
 			// receive datagram
-			int resultCode = recvfrom(UDPSocket, recvBuf, bufLen, 0, (sockaddr*)&sender, (socklen_t*)&senderSize);
-			if (resultCode == SOCKET_ERROR && errno != WOULD_BLOCK) {
-				std::cout << "Error in recvfrom, code: " << errno << "\n";
+			int resultCode = recvfrom(secSocket, recvBuf, bufLen, 0, (sockaddr*)&sender, (socklen_t*)&senderSize);
+			if (resultCode == SOCKET_ERROR) {
+				std::cout << "Error receiving on secondary socket, code: " << errno << "\n";
 			}
-			else if (resultCode != SOCKET_ERROR) {
+			else {
+				// debug
 				std::cout << "Received message: " << recvBuf << ", from: " <<
 					SockAddrToStr(sender).c_str() << " - " << sender.sin_port << "\n";
 
 				// check sender validity
-				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(inConnection)) {
-					std::cout << "Received packet not originating from connected device. Connected to: "
-						<< SockAddrToStr(inConnection).c_str() <<
+				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(secConn)) {
+					std::cout << "Received packet not originating from connected device. Connected to (secondary socket): "
+						<< SockAddrToStr(secConn).c_str() <<
 						", received from: " << SockAddrToStr(sender).c_str() << "\n";
 				}
 				else {
@@ -200,7 +213,7 @@ private:
 	}
 
 	// handlePacket
-	void handlePacket(char recvBuf[MAX_PACKET_SIZE], sockaddr_in sender) {
+	void handlePacket(char recvBuf[], sockaddr_in sender) {
 		// check command
 		int command;
 		Serializer::deserializeInt(&command, (uint8_t*)recvBuf);
@@ -211,13 +224,13 @@ private:
 		if (command == CONNECT) {
 			// parse request details
 			int port; Serializer::deserializeInt(&port, (uint8_t*)recvBuf + 4);
-			sockaddr_in newInConn = createSockAddr(sender.sin_addr, sender.sin_port);
-			sockaddr_in newOutConn = createSockAddr(sender.sin_addr, port);
-			std::cout << "Received connection request: " << SockAddrToStr(newInConn) << " / " 
-				<< SockAddrToStr(newOutConn) << "\n";
+			sockaddr_in newSecConn = createSockAddr(sender.sin_addr, sender.sin_port);
+			sockaddr_in newPrimConn = createSockAddr(sender.sin_addr, htons(port));
+			std::cout << "Received connection request: " << SockAddrToStr(newPrimConn) << " / " 
+				<< SockAddrToStr(newSecConn) << "\n";
 
 			// connect to device
-			connectDevice(newInConn, newOutConn);
+			connectDevice(newPrimConn, newSecConn);
 		}
 		else if (command == DISCONNECT) {
 			disconnectDevice();
@@ -226,6 +239,8 @@ private:
 			std::cout << "Received unrecognized command: " << command << "\n";
 		}
 	}
+
+	// helpers
 
 	// createSockAddr
 	sockaddr_in createSockAddr(in_addr ip, int port) {
