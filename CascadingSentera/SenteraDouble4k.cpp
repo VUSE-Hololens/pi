@@ -615,8 +615,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// fill NDVI buffer
 	std::cout << "About to attempt to allocate uint8_t buffer to hold NDVI values of size: " << width * height << "\n";
+	uint8_t *ndvibuf;
 	try {
-		uint8_t *ndvibuf = new uint8_t[width * height];
+		ndvibuf = new uint8_t[width * height];
 	} catch (std::bad_alloc ba) {
 		std::cout << "Allocation failed, not enough space on heap...\n";
 		return;
@@ -652,8 +653,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	int messageLen = resampWidth * resampHeight + trans.HEADER_SIZE;
 
 	std::cout << "About to attempt to allocate uint8_t buffer to hold outbound transmission of size: " << messageLen << "\n";
+	uint8_t *transBuf;
 	try {
-		uint8_t *transBuf = new uint8_t[messageLen];
+		transBuf = new uint8_t[messageLen];
 	} catch (std::bad_alloc ba) {
 		std::cout << "Allocation failed, not enough space on heap...\n";
 		return;
