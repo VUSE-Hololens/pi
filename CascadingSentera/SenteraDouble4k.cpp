@@ -16,6 +16,9 @@ SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this->cams
 		camera_metadata_last_update_us[i] = 0;
 	}
 
+	// setup compressor/decompressor
+	_jpegDecompressor = tjInitDecompress();
+
 	// configure send and receive sockets
 	serv_status = startServer();
 	if (serv_status) {
@@ -27,6 +30,7 @@ SenteraDouble4k::~SenteraDouble4k()
 {
 	close(s_send);
 	close(s_rec);
+	tjDestroy(_jpegDecompressor);
 }
 
 int SenteraDouble4k::Start() {
@@ -538,9 +542,8 @@ int SenteraDouble4k::processImage(int cam) {
 	std::string imgContent = http_downloader.download(urlStr);
 
 	// debug
-	std::cout << "Successfully downloaded sentera's .jpg\n";
+	std::cout << "Successfully downloaded sentera's .jpg. Length: " << imgContent.length() << "\n";
 
-	//DEBUG printf("Made ImgContent String of Length %d\n", imgContent.length());
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
 
@@ -554,18 +557,19 @@ int SenteraDouble4k::processImage(int cam) {
 	outfile.write(imgContent.c_str(), compressedImgLength);
 
 	// debug
-	std::cout << "Successfully saved downloaded .jpg locally\n";
+	std::cout << "Successfully saved downloaded .jpg locally to " << outname << "\n";
 
 	// initialize variables to fill with data
 	int width, height;
 	int channels = 3; // 3 channels for RGB data
 
 	// initialize decompressor and get size
-	tjhandle _jpegDecompressor = tjInitDecompress();
-	tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
+	// tjhandle _jpegDecompressor = tjInitDecompress(); // called in constructor
+	int resultCode = tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
+	if (resultCode == -1) { std::cout << "jpeg header decompression failed.\n"; }
 	size_t size = width * height * channels; 
 
-	std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << "\n";
+	std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << " (" << width << " x " << height << ")\n";
 	try {
 		if (sensor_data[cam - 1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
 		sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
@@ -577,8 +581,8 @@ int SenteraDouble4k::processImage(int cam) {
 	
 
 	// decompress the jpg
-	tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
-	tjDestroy(_jpegDecompressor);
+	resultCode = tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
+	if (resultCode == -1) { std::cout << "jpeg body decompression failed.\n"; }
 
 	// debug
 	std::cout << "Successfully uncompressed .jpg\n";
