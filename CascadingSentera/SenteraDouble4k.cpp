@@ -544,6 +544,8 @@ int SenteraDouble4k::processImage(int cam) {
 	// debug
 	std::cout << "Successfully downloaded sentera's .jpg from: " << urlStr << ", Length: " << imgContent.length() << "\n";
 
+	std::this_thread::sleep_for(std::chrono::seconds(1000));
+
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
 
@@ -551,7 +553,7 @@ int SenteraDouble4k::processImage(int cam) {
 	for (int i = 0; i < 48; i++) { // filename array size 48
 		outname += (const char)recent_images[cam-1].fileName[i];
 	}
-	outname += ".jpg";
+	//outname += ".jpg";
 	//printf("Wrote: %s\n", outname.c_str());
 	std::ofstream outfile(outname , std::ofstream::binary);
 	outfile.write(imgContent.c_str(), compressedImgLength);
