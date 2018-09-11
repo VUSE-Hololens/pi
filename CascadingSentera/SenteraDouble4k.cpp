@@ -67,6 +67,7 @@ int SenteraDouble4k::sessionListener() {
 	// listen for updates
 	live_session = true;
 	int recvType = 0;
+	bool firstLoop = true;
 
 	while (live_session)
 	{
@@ -104,8 +105,11 @@ int SenteraDouble4k::sessionListener() {
 
 			// if new data is ready to process, do that
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
-				// debug
-				//std::cout << " Received data from camera, processing...\n";
+				if (firstLoop) {
+					// debug
+					std::cout << " Received data from camera, processing...\n";
+					firstLoop = false;
+				}
 
 				//DEBUG printf("Images ready for Camera %d\n", imgReadyID);
 				processImage(imgReadyID); // process data for appropriate image
