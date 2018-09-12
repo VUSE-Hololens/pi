@@ -74,7 +74,7 @@ public:
 			fprintf(stderr, "Primary socket binding failed with error code: %d\n", errno);
 		}
 		else {
-			fprintf("Successfully bound primary socket to %d-%d", localIP, primPort);
+			fprintf(stderr, "Successfully bound primary socket to %d-%d", localIP, primPort);
 		}
 		sockaddr_in secSocketAddr = createSockAddr(localIP, secPort);
 		
@@ -86,7 +86,7 @@ public:
 			fprintf(stderr, "Primary socket binding failed with error code: %d\n", errno);
 		}
 		else {
-			fprintf("Successfully bound secondary socket to %d-%d", localIP, secPort);
+			fprintf(stderr, "Successfully bound secondary socket to %d-%d", localIP, secPort);
 		}
 
 		// start listening on secSocket
@@ -155,7 +155,7 @@ public:
 		}
 
 		if (!connected.load()) {
-			fprintf(stderr, "Tried to transmit but no connected device.\n")
+			fprintf(stderr, "Tried to transmit but no connected device.\n");
 			return;
 		}
 
@@ -168,7 +168,7 @@ public:
 
 		lock.unlock();
 
-		fprintf("Successfully sent transmission to: %s\n", SockAddrToStr(primConn));
+		fprintf(stderr, "Successfully sent transmission to: %s\n", SockAddrToStr(primConn));
 	}
 
 private:

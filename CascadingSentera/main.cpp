@@ -1,13 +1,14 @@
 
 #include <chrono>
+#include <iomanip>
 
 #include "SenteraDouble4k.h"
 
 int main() {
+	auto now = std::chrono::system_clock::now();
 
-	fprintf(stderr, "\n\n\n\n-----------------------------------------------------------------------------------------\n" + 
-		"NDVI Configuration: new host session begun (%s)\n\n",
-		std::put_time(std::localtime(&std::chrono::system_clock::now()), "%F %T"));
+	fprintf(stderr, "\n\n\n\n-----------------------------------------------------------------------------------------\nNDVI Configuration: new host session begun (%s)\n\n",
+		std::put_time(std::localtime(&now), "%F %T"));
 
 	SenteraDouble4k sentera;
 	sentera.Start();
