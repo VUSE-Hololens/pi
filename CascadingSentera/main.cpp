@@ -12,7 +12,7 @@ int main() {
 	strftime(timeBuf, 100, "%d-%m-%Y %H:%M:%S", localtime);
 
 	fprintf(stderr, "\n\n\n\n-----------------------------------------------------------------------------------------\nNDVI Configuration: new host session begun (%s)\n\n",
-		timeBuf.c_str());
+		timeBuf);
 
 	SenteraDouble4k sentera;
 	sentera.Start();
