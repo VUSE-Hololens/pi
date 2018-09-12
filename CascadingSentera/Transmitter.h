@@ -64,10 +64,11 @@ public:
 		}
 
 		// change options
-		if (setsockopt(primSocket, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0) {
+		int enable = 1;
+		if (setsockopt(primSocket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
 			fprintf(stderr, "Primary socket option changing failed with error code: %d\n", errno);
 		}
-		if (setsockopt(secSocket, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0) {
+		if (setsockopt(secSocket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
 			fprintf(stderr, "Secondary socket option changing failed with error code: %d\n", errno);
 		}
 
