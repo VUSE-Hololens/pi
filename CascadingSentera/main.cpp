@@ -6,16 +6,13 @@
 
 int main() {
 	// get time 
-	time_t rawtime;
-	struct tm * timeinfo;
-	char buffer[80];
-	time(&rawtime);
-	timeinfo = localtime(&rawtime);
-	strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
-	std::string str(buffer);
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+	std::tm* localtime = std::localtime((const time_t*)&now), "%F %T")
+	char *timeBuf[100];
+	strftime(timeBuf, 100, "%d-%m-%Y %H:%M:%S", localtime);
 
 	fprintf(stderr, "\n\n\n\n-----------------------------------------------------------------------------------------\nNDVI Configuration: new host session begun (%s)\n\n",
-		str);
+		timeBug.c_str());
 
 	SenteraDouble4k sentera;
 	sentera.Start();
