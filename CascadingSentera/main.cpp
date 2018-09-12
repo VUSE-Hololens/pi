@@ -5,10 +5,17 @@
 #include "SenteraDouble4k.h"
 
 int main() {
-	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+	// get time 
+	time_t rawtime;
+	struct tm * timeinfo;
+	char buffer[80];
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+	std::string str(buffer);
 
 	fprintf(stderr, "\n\n\n\n-----------------------------------------------------------------------------------------\nNDVI Configuration: new host session begun (%s)\n\n",
-		std::put_time(std::localtime((const time_t*)&now), "%F %T"));
+		str);
 
 	SenteraDouble4k sentera;
 	sentera.Start();
