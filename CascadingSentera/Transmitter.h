@@ -86,7 +86,7 @@ public:
 			fprintf(stderr, "Primary socket binding failed with error code: %d\n", errno);
 		}
 		else {
-			fprintf(stderr, "Successfully bound primary socket to %d-%d", localIP, primPort);
+			fprintf(stderr, "Successfully bound primary socket to %s-%d\n", localIP, primPort);
 		}
 		sockaddr_in secSocketAddr = createSockAddr(localIP, secPort);
 		
@@ -98,7 +98,7 @@ public:
 			fprintf(stderr, "Primary socket binding failed with error code: %d\n", errno);
 		}
 		else {
-			fprintf(stderr, "Successfully bound secondary socket to %d-%d", localIP, secPort);
+			fprintf(stderr, "Successfully bound secondary socket to %s-%d\n", localIP, secPort);
 		}
 
 		// start listening on secSocket
