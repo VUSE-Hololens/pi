@@ -65,11 +65,11 @@ public:
 
 		// change options
 		int iSetOption = 1;
-		int resultCode setsockopt(primSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
+		int resultCode  = setsockopt(primSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
 		if (resultCode == SOCKET_ERROR) {
 			fprintf(stderr, "Primary socket option changing failed with error code: %d\n", errno);
 		}
-		resultCode setsockopt(secSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
+		resultCode = setsockopt(secSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
 		if (resultCode == SOCKET_ERROR) {
 			fprintf(stderr, "Secondary socket option changing failed with error code: %d\n", errno);
 		}
