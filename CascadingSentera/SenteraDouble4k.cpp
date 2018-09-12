@@ -22,7 +22,7 @@ SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this->cams
 	// configure send and receive sockets
 	serv_status = startServer();
 	if (serv_status) {
-		printf("Successfully Setup Sockets!\n"); //DEBUG
+		fprintf(stderr, "Successfully Setup Sockets!\n"); //DEBUG
 	}
 }
 
@@ -36,7 +36,7 @@ SenteraDouble4k::~SenteraDouble4k()
 int SenteraDouble4k::Start() {
 	const char currentSessionName[128] = "TestingName1";
 	if (serv_status == -1) {
-		printf("Server not initialized! Cannot start session.");
+		fprintf(stderr, "Server not initialized! Cannot start session.");
 		return -1;
 	}
 	
@@ -46,18 +46,18 @@ int SenteraDouble4k::Start() {
 	// make packet of still capture session data 
 	int packet_length = makeStillCapturePacket((uint8_t)0, currentSessionName, buf);
 	if (packet_length <= 0) {
-		printf("Failed to create packet");
+		fprintf(stderr, "Failed to create packet");
 		return -1;
 	}
-	printf("Still Capture Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
+	fprintf(stderr, "Still Capture Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
 
 	// send packet of still capture session data
 	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
-		printf("Failed to send packet: %d", errno); //DEBUG
+		fprintf(stderr, "Failed to send packet: %d", errno); //DEBUG
 		return -1;
 	}
 	//DEBUG printf("Sent still capture packet");
-	printf("Started and listening for data!\n");
+	fprintf(stderr, "Started and listening for data!\n");
 	return sessionListener();
 
 	//return 0;
@@ -107,7 +107,7 @@ int SenteraDouble4k::sessionListener() {
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
 				if (firstLoop) {
 					// debug
-					std::cout << " Received data from camera, processing...\n";
+					fprintf(stderr, "Received data from camera, processing...\n");
 					firstLoop = false;
 				}
 
@@ -130,13 +130,13 @@ int SenteraDouble4k::Stop() {
 	uint8_t buf[BUFLEN];
 	int packet_length = makeStillCapturePacket((uint8_t)1, "Stop", buf); // 1 to close session
 	if (packet_length <= 0) {
-		printf("Failed to create packet");
+		fprintf(stderr, "Failed to create packet");
 		return -1;
 	}
 
 	// send packet of still capture session data
 	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
-		printf("Failed to send packet: %d", errno); //DEBUG
+		fprintf(stderr, "Failed to send packet: %d", errno); //DEBUG
 		return -1;
 	}
 
@@ -147,7 +147,7 @@ int SenteraDouble4k::Stop() {
 int SenteraDouble4k::updateTrigger() {
 	//check server
 	if (serv_status == -1) {
-		printf("Server not initialized! Cannot start session.");
+		fprintf(stderr, "Server not initialized! Cannot start session.");
 		return -1;
 	}
 
@@ -157,14 +157,14 @@ int SenteraDouble4k::updateTrigger() {
 	// make packet of trigger data 
 	int packet_length = makeImagerTriggerPacket((uint8_t)2, (uint32_t)1000, buf);
 	if (packet_length <= 0) {
-		printf("Failed to create packet");
+		fprintf(stderr, "Failed to create packet");
 		return -1;
 	}
 	//printf("Trigger Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
 
 	//send packet of trigger data
 	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
-		printf("Failed to send packet: %d", errno); //DEBUG
+		fprintf(stderr, "Failed to send packet: %d", errno); //DEBUG
 		return -1;
 		return -1;
 	}
@@ -174,7 +174,7 @@ int SenteraDouble4k::updateTrigger() {
 int SenteraDouble4k::startServer() {
 
 	if (serv_status > -1) {
-		printf("Server already running!\n"); //DEBUG
+		fprintf(stderr, "Server already running!\n"); //DEBUG
 		return 0;
 	}
 
@@ -360,7 +360,7 @@ int SenteraDouble4k::query_status_packet()
 		// As well as FW Header check
 		else if (current_packet < 24 || !(rec_buf[0] == 0x46 && rec_buf[1] == 0x57))
 		{
-			printf("Recv Packet Header Failure");
+			fprintf(stderr, "Recv Packet Header Failure");
 			return 0;
 		}
 		else if (rec_buf[2] == fw_packet_type_e::PAYLOAD_METADATA)
@@ -518,12 +518,12 @@ int SenteraDouble4k::query_status_packet()
 		}
 		else if (rec_buf[2] = fw_packet_type_e::IMAGER_TRIGGER_ACK)
 		{
-			printf("Received Imager Trigger Acknowledgement\n");
+			fprintf(stderr, "Received Imager Trigger Acknowledgement\n");
 			newdata_received = fw_packet_type_e::IMAGER_TRIGGER_ACK;
 		}
 		else
 		{
-			printf("INCOMPLETE PACKET of Length: %d", current_packet);
+			fprintf(stderr, "INCOMPLETE PACKET of Length: %d", current_packet);
 		}
 
 	} while (current_packet > 0);
@@ -570,7 +570,7 @@ int SenteraDouble4k::processImage(int cam) {
 	// initialize decompressor and get size
 	// tjhandle _jpegDecompressor = tjInitDecompress(); // called in constructor
 	int resultCode = tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
-	if (resultCode == -1) { std::cout << "jpeg header decompression failed.\n"; }
+	if (resultCode == -1) { fprintf(stderr, "jpeg header decompression failed"); }
 	size_t size = width * height * channels; 
 
 	//std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << " (" << width << " x " << height << ")\n";
@@ -578,7 +578,7 @@ int SenteraDouble4k::processImage(int cam) {
 		if (sensor_data[cam - 1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
 		sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
 	} catch (std::bad_alloc ba) {
-		std::cout << "Allocation failed, not enough space on heap... tried to allocate buffer to hold uncompressed jpeg of length: " << size << "\n";
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold uncompressed jpeg of size %d", size);
 		return -1;
 	}
 
@@ -586,7 +586,7 @@ int SenteraDouble4k::processImage(int cam) {
 
 	// decompress the jpg
 	resultCode = tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
-	if (resultCode == -1) { std::cout << "jpeg body decompression failed.\n"; }
+	if (resultCode == -1) { fprintf(stderr, "jpeg body decompression failed"); }
 
 	// debug
 	//std::cout << "Successfully uncompressed .jpg\n";
@@ -627,7 +627,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	try {
 		ndvibuf = new uint8_t[width * height];
 	} catch (std::bad_alloc ba) {
-		std::cout << "Allocation failed, not enough space on heap... tried to allocate buffer to hold NDVI calculations of length: " << width * height << "\n";
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold NDVI data of size %d", widht * height);
 		return;
 	}
 	
@@ -652,7 +652,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
 
 	// debug
-	printf("Wrote: %s\n", outname.c_str());
+	fprintf(stderr, "Wrote: %s\n", outname.c_str());
 
 	// resample and transmit uncompressed buffer
 	// create buffer
@@ -665,7 +665,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	try {
 		transBuf = new uint8_t[messageLen];
 	} catch (std::bad_alloc ba) {
-		std::cout << "Allocation failed, not enough space on heap... tried to allocate buffer for transmission of length: " << messageLen << "\n";
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold transmission message of size %d", messageLen);
 		return;
 	}
 	
