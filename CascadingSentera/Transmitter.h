@@ -225,7 +225,7 @@ private:
 		Serializer::deserializeInt(&command, (uint8_t*)recvBuf);
 
 		// debug
-		printf(stderr, "Received packet\n");
+		fprintf(stderr, "Received packet\n");
 
 		if (command == CONNECT) {
 			// parse request details
