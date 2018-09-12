@@ -627,7 +627,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	try {
 		ndvibuf = new uint8_t[width * height];
 	} catch (std::bad_alloc ba) {
-		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold NDVI data of size %d", widht * height);
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold NDVI data of size %d", width * height);
 		return;
 	}
 	
