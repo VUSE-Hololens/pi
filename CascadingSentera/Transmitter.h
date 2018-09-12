@@ -63,7 +63,7 @@ public:
 			fprintf(stderr, "Successfully constructed secondary socket\n");
 		}
 
-		// change options
+		/*// change options
 		int iSetOption = 1;
 		int resultCode  = setsockopt(primSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
 		if (resultCode == SOCKET_ERROR) {
@@ -73,6 +73,7 @@ public:
 		if (resultCode == SOCKET_ERROR) {
 			fprintf(stderr, "Secondary socket option changing failed with error code: %d\n", errno);
 		}
+		*/
 
 		// bind  UDP Socket to local port
 		sockaddr_in primSocketAddr = createSockAddr(localIP, primPort);
