@@ -56,11 +56,22 @@ public:
 		}
 		secSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if (secSocket == SOCKET_ERROR) {
-			fprintf(stderr, "Secondar socket construction failed with error code: %d\n", errno);
+			fprintf(stderr, "Secondary socket construction failed with error code: %d\n", errno);
 			return;
 		}
 		else {
 			fprintf(stderr, "Successfully constructed secondary socket\n");
+		}
+
+		// change options
+		int iSetOption = 1;
+		int resultCode setsockopt(primSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
+		if (resultCode == SOCKET_ERROR) {
+			fprintf(stderr, "Primary socket option changing failed with error code: %d\n", errno);
+		}
+		resultCode setsockopt(secSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
+		if (resultCode == SOCKET_ERROR) {
+			fprintf(stderr, "Secondary socket option changing failed with error code: %d\n", errno);
 		}
 
 		// bind  UDP Socket to local port
@@ -69,7 +80,7 @@ public:
 		// test binding to all interfaces
 		primSocketAddr.sin_addr.s_addr = INADDR_ANY;
 
-		int resultCode = bind(primSocket, (const sockaddr*)&primSocketAddr, (socklen_t)sizeof(primSocketAddr));
+		resultCode = bind(primSocket, (const sockaddr*)&primSocketAddr, (socklen_t)sizeof(primSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
 			fprintf(stderr, "Primary socket binding failed with error code: %d\n", errno);
 		}
