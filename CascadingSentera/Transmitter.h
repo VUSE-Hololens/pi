@@ -48,19 +48,19 @@ public:
 		// create sockets
 		primSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if (primSocket == SOCKET_ERROR) {
-			std::cout << "Primary socket construction failed with error code: " << errno << "\n";
+			fprintf(stderr, "Primary socket construction failed with error code: %d\n", errno);
 			return;
 		}
 		else {
-			std::cout << "Successfully constructed primary socket\n";
+			fprintf(stderr, "Successfully constructed primary socket\n");
 		}
 		secSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if (secSocket == SOCKET_ERROR) {
-			std::cout << "Secondary socket construction failed with error code: " << errno << "\n";
+			fprintf(stderr, "Secondar socket construction failed with error code: %d\n", errno);
 			return;
 		}
 		else {
-			std::cout << "Successfully constructed secondary socket\n";
+			fprintf(stderr, "Successfully constructed secondary socket\n");
 		}
 
 		// bind  UDP Socket to local port
@@ -71,10 +71,10 @@ public:
 
 		int resultCode = bind(primSocket, (const sockaddr*)&primSocketAddr, (socklen_t)sizeof(primSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
-			std::cout << "Primary Socket binding failed with error code: " << errno << "\n";
+			fprintf(stderr, "Primary socket binding failed with error code: %d\n", errno);
 		}
 		else {
-			std::cout << "Successfully bound primary socket to: " << localIP << "-" << primPort << "\n";
+			fprintf("Successfully bound primary socket to %d-%d", localIP, primPort);
 		}
 		sockaddr_in secSocketAddr = createSockAddr(localIP, secPort);
 		
@@ -83,10 +83,10 @@ public:
 
 		resultCode = bind(secSocket, (const sockaddr*)&secSocketAddr, (socklen_t)sizeof(secSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
-			std::cout << "Secondary Socket binding failed with error code: " << errno << "\n";
+			fprintf(stderr, "Primary socket binding failed with error code: %d\n", errno);
 		}
 		else {
-			std::cout << "Successfully bound secondary socket to: " << localIP << "-" << secPort << "\n";
+			fprintf("Successfully bound secondary socket to %d-%d", localIP, secPort);
 		}
 
 		// start listening on secSocket
@@ -112,17 +112,16 @@ public:
 		secConn = _secConn;
 
 		// connect local outSocket
-		std::cout << "Connecting device (primary socket): " << SockAddrToStr(primConn) << "\n";
+		fprintf(stderr, "Connecting device (primary socket): %s\n", SockAddrToStr(primConn));
 		connected.store(true);
 		// NOTE: connect() unnecessary as transmit() uses sendto with primConn...
 		int resultCode = connect(primSocket, (sockaddr*)&primConn, sizeof(primConn));
 		if (resultCode == SOCKET_ERROR) {
-			std::cout << "Failed to connect primary socket with error: " << errno << "\n";
+			fprintf(stderr, "Failed to connect primary socket with error code: %d\n", errno);
 			connected.store(false);
 		}
 		else {
-			std::cout << "Successfully connected. Primary socket connection: " << SockAddrToStr(primConn)
-				<< "Secondary socket connection: " << SockAddrToStr(secConn) << "\n";
+			fprintf(stderr, "Succesfully connected to host: %s / %s", SockAddrToStr(primConn), SockAddrToStr(secConn));
 		}
 
 		lock.unlock();
@@ -151,12 +150,12 @@ public:
 	// transmit
 	void transmit(char* data, int length) {
 		if (length > MAX_PACKET_SIZE) {
-			std::cout << "Data too large to send. Max packet size: " << MAX_PACKET_SIZE << ", length: " << length << "\n";
+			fprintf(stderr, "Data too large to send. Max packet size: %d, length: %d\n", MAX_PACKET_SIZE, length);
 			return;
 		}
 
 		if (!connected.load()) {
-			std::cout << "Tried to transmit but no connected device.\n";
+			fprintf(stderr, "Tried to transmit but no connected device.\n")
 			return;
 		}
 
@@ -164,12 +163,12 @@ public:
 
 		int resultCode = sendto(primSocket, data, length, 0, (sockaddr*)&primConn, sizeof(primConn));
 		if (resultCode == SOCKET_ERROR) {
-			std::cout << "sendto failed with error: " << errno << "\n";
+			fprintf(stderr, "sendto failed with error: %d\n", errno);
 		}
 
 		lock.unlock();
 
-		std::cout << "Successfully sent transmission to: " << SockAddrToStr(primConn) << "\n";
+		fprintf("Successfully sent transmission to: %s\n", SockAddrToStr(primConn));
 	}
 
 private:
@@ -192,24 +191,23 @@ private:
 		int senderSize = sizeof(sender);
 
 		// debug
-		std::cout << "Starting listening (blocking) on secondary socket on dedicated thread...\n";
+		fprintf(stderr, "Starting listening (blocking) on secondary socket on dedicated thread...\n");
 
 		while (listening.load()) {
 			// receive datagram
 			int resultCode = recvfrom(secSocket, recvBuf, bufLen, 0, (sockaddr*)&sender, (socklen_t*)&senderSize);
 			if (resultCode == SOCKET_ERROR) {
-				std::cout << "Error receiving on secondary socket, code: " << errno << "\n";
+				fprintf(stderr, "Secondary socket receiving failed with error code: %d\n", errno);
 			}
 			else {
 				// debug
-				std::cout << "Received message: " << recvBuf << ", from: " <<
-					SockAddrToStr(sender).c_str() << " - " << sender.sin_port << "\n";
+				fprintf(stderr, "Received message on secondary socket: %s, from: %s - %d\n",
+					recvBuf, SockAddrToStr(sender).c_str(), sender.sin_port);
 
 				// check sender validity
 				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(secConn)) {
-					std::cout << "Received packet not originating from connected device. Connected to (secondary socket): "
-						<< SockAddrToStr(secConn).c_str() <<
-						", received from: " << SockAddrToStr(sender).c_str() << "\n";
+					fprintf(stderr, "Received packet not originating from connected device. Connected to (secondary socket): %s, received from: %s\n",
+						SockAddrToStr(secConn).c_str(), SockAddrToStr(secConn).c_str());
 				}
 				else {
 					handlePacket(recvBuf, sender);
@@ -217,7 +215,7 @@ private:
 			}
 		}
 
-		std::cout << "Listening stopped...\n";
+		fprintf(stderr, "Listening stopped...\n");
 	}
 
 	// handlePacket
@@ -227,15 +225,15 @@ private:
 		Serializer::deserializeInt(&command, (uint8_t*)recvBuf);
 
 		// debug
-		std::cout << "Recieved: " << recvBuf << "\n";
+		printf(stderr, "Received: %s\n", recvBuf);
 
 		if (command == CONNECT) {
 			// parse request details
 			int port; Serializer::deserializeInt(&port, (uint8_t*)recvBuf + 4);
 			sockaddr_in newSecConn = createSockAddr(sender.sin_addr, sender.sin_port);
 			sockaddr_in newPrimConn = createSockAddr(sender.sin_addr, htons(port));
-			std::cout << "Received connection request: " << SockAddrToStr(newPrimConn) << " / "
-				<< SockAddrToStr(newSecConn) << "\n";
+
+			fprintf(stderr, "Received connection request: %s / %s\n", SockAddrToStr(newPrimConn), SockAddrToStr(newSecConn));
 
 			// connect to device
 			connectDevice(newPrimConn, newSecConn);
@@ -244,7 +242,7 @@ private:
 			disconnectDevice();
 		}
 		else {
-			std::cout << "Received unrecognized command: " << command << "\n";
+			fprintf(stderr, "Received unrecognized command: %d\n", command);
 		}
 	}
 
