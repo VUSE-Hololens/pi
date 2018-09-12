@@ -7,7 +7,7 @@
 int main() {
 	// get time 
 	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-	std::tm* localtime = std::localtime((const time_t*)&now)
+	std::tm* localtime = std::localtime((const time_t*)&now);
 	char *timeBuf[100];
 	strftime(timeBuf, 100, "%d-%m-%Y %H:%M:%S", localtime);
 
