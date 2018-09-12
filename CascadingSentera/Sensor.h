@@ -97,8 +97,8 @@ protected:
 	int num_cameras;
 
 	// for transmission
-	int piPrimaryPort = 9000;
-	int piSecondaryPort = 9001;
+	int piPrimaryPort = 8888;
+	int piSecondaryPort = 8889;
 	Transmitter trans;
 
 };

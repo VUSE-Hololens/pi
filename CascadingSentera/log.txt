@@ -1,0 +1,100 @@
+
+
+
+
+-----------------------------------------------------------------------------------------
+NDVI Configuration: new host session begun (19-01-2000 21:51:34)
+
+Successfully constructed primary socket
+Successfully constructed secondary socket
+Successfully bound primary socket to 2125265960-9000Successfully bound secondary socket to 2125265960-9001Starting listening (blocking) on secondary socket on dedicated thread...
+Successfully Setup Sockets!
+Still Capture Packet Created. Length: 148, Type: 4
+Started and listening for data!
+
+
+
+
+-----------------------------------------------------------------------------------------
+NDVI Configuration: new host session begun (18-05-2019 11:26:34)
+
+Successfully constructed primary socket
+Successfully constructed secondary socket
+Successfully bound primary socket to 2124299304-9000Successfully bound secondary socket to 2124299304-9001Starting listening (blocking) on secondary socket on dedicated thread...
+Successfully Setup Sockets!
+Still Capture Packet Created. Length: 148, Type: 4
+Started and listening for data!
+Received data from camera, processing...
+Wrote: NDVI/IMG_05856.jpg
+Wrote: NDVI/IMG_05857.jpg
+Wrote: NDVI/IMG_05858.jpg
+Wrote: NDVI/IMG_05859.jpg
+Wrote: NDVI/IMG_05860.jpg
+Wrote: NDVI/IMG_05861.jpg
+Wrote: NDVI/IMG_05862.jpg
+Wrote: NDVI/IMG_05863.jpg
+Wrote: NDVI/IMG_05864.jpg
+Wrote: NDVI/IMG_05865.jpg
+Wrote: NDVI/IMG_05866.jpg
+Wrote: NDVI/IMG_05867.jpg
+Wrote: NDVI/IMG_05868.jpg
+Wrote: NDVI/IMG_05869.jpg
+Wrote: NDVI/IMG_05870.jpg
+Wrote: NDVI/IMG_05871.jpg
+Wrote: NDVI/IMG_05872.jpg
+Wrote: NDVI/IMG_05873.jpg
+Wrote: NDVI/IMG_05874.jpg
+Wrote: NDVI/IMG_05875.jpg
+Wrote: NDVI/IMG_05876.jpg
+Wrote: NDVI/IMG_05877.jpg
+Wrote: NDVI/IMG_05878.jpg
+
+
+
+
+-----------------------------------------------------------------------------------------
+NDVI Configuration: new host session begun (22-03-1965 00:04:13)
+
+Successfully constructed primary socket
+Successfully constructed secondary socket
+Successfully bound primary socket to 2127653928-8888Successfully bound secondary socket to 2127653928-8889Starting listening (blocking) on secondary socket on dedicated thread...
+Successfully Setup Sockets!
+Still Capture Packet Created. Length: 148, Type: 4
+Started and listening for data!
+Received data from camera, processing...
+Wrote: NDVI/IMG_05921.jpg
+Wrote: NDVI/IMG_05922.jpg
+Wrote: NDVI/IMG_05923.jpg
+Wrote: NDVI/IMG_05924.jpg
+Wrote: NDVI/IMG_05925.jpg
+Wrote: NDVI/IMG_05926.jpg
+Wrote: NDVI/IMG_05927.jpg
+Wrote: NDVI/IMG_05928.jpg
+Wrote: NDVI/IMG_05929.jpg
+Wrote: NDVI/IMG_05930.jpg
+Wrote: NDVI/IMG_05931.jpg
+Wrote: NDVI/IMG_05932.jpg
+Wrote: NDVI/IMG_05933.jpg
+Wrote: NDVI/IMG_05934.jpg
+Wrote: NDVI/IMG_05935.jpg
+Wrote: NDVI/IMG_05936.jpg
+Wrote: NDVI/IMG_05937.jpg
+Wrote: NDVI/IMG_05938.jpg
+Wrote: NDVI/IMG_05939.jpg
+Wrote: NDVI/IMG_05940.jpg
+Wrote: NDVI/IMG_05941.jpg
+Wrote: NDVI/IMG_05942.jpg
+Wrote: NDVI/IMG_05943.jpg
+Wrote: NDVI/IMG_05944.jpg
+Wrote: NDVI/IMG_05945.jpg
+Wrote: NDVI/IMG_05946.jpg
+Wrote: NDVI/IMG_05947.jpg
+Wrote: NDVI/IMG_05948.jpg
+Wrote: NDVI/IMG_05949.jpg
+Wrote: NDVI/IMG_05950.jpg
+Wrote: NDVI/IMG_05951.jpg
+Wrote: NDVI/IMG_05952.jpg
+Wrote: NDVI/IMG_05953.jpg
+Wrote: NDVI/IMG_05954.jpg
+Wrote: NDVI/IMG_05955.jpg
+Wrote: NDVI/IMG_05956.jpg
