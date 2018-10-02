@@ -76,7 +76,7 @@ public:
 		sockaddr_in primSocketAddr = createSockAddr(localIP, primPort);
 
 		// test binding to all interfaces
-		primSocketAddr.sin_addr.s_addr = INADDR_ANY;
+		//primSocketAddr.sin_addr.s_addr = INADDR_ANY;
 
 		int resultCode = bind(primSocket, (const sockaddr*)&primSocketAddr, (socklen_t)sizeof(primSocketAddr));
 		if (resultCode == SOCKET_ERROR) {
