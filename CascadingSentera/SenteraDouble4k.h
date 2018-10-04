@@ -59,7 +59,7 @@ private:
 	uint8_t trigger_mask = 0x03;											// Default Trigger Mask
 	int serv_status = -1;
 	bool live_session = false;
-	const static int timeout = 5000;										// milliseconds until timeout
+	const static int timeout = 15000;										// milliseconds until timeout
 
 	// cascading transmission
 	//transmit transmitter;													// for transmitting cascade style
