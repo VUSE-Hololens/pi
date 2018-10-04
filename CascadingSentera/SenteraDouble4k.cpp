@@ -134,6 +134,9 @@ int SenteraDouble4k::Stop() {
 		return -1;
 	}
 
+	// debug
+	fprintf(stderr, "Attempting to start Sentera still capture session: (message, to):\n%s\n", buf);
+
 	// send packet of still capture session data
 	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
 		fprintf(stderr, "Failed to send packet: %d", errno); //DEBUG
