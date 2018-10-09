@@ -582,11 +582,15 @@ int SenteraDouble4k::processImage(int cam) {
 	std::ofstream outfile(outname , std::ofstream::binary);
 	outfile.write(imgContent.c_str(), compressedImgLength);
 	// check if successful
-	if ((outfile.rdstate() & std::ofstream::failbit) != 0)
-		fprintf(stderr, "Error saving NDVI jpg locally\n");
+	if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
+		fprintf(stderr, "Error saving sentera jpg locally to %s... Camera: %d\n", outname.c_str(), cam);
+	}
+	else {
+		fprintf(stderr, "Successfully saved downloaded sentera .jpg locally to %s, Camera ID: %d\n", outname.c_str(), cam);
+	}
 
-	// debug
-	fprintf(stderr, "Successfully saved downloaded sentera .jpg locally to %s, Camera ID: %d\n", outname, cam);
+
+	
 
 	// initialize variables to fill with data
 	int width, height;
@@ -674,11 +678,14 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	std::ofstream outfile(outname, std::ofstream::binary);
 	outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
 	// check if successful
-	if ((outfile.rdstate() & std::ofstream::failbit) != 0)
-		fprintf(stderr, "Error saving NDVI jpg locally\n");
+	if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
+		fprintf(stderr, "Error saving NDVI jpg locally to %s\n", outname.c_str());
+	}
+	else {
+		fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
+	}
 
-	// debug
-	fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
+
 
 	// resample and transmit uncompressed buffer
 	// create buffer
