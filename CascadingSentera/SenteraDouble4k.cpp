@@ -578,15 +578,20 @@ int SenteraDouble4k::processImage(int cam) {
 		outname += (const char)recent_images[cam-1].fileName[i];
 	}
 	outname += ".jpg";
-	//printf("Wrote: %s\n", outname.c_str());
-	std::ofstream outfile(outname , std::ofstream::binary);
-	outfile.write(imgContent.c_str(), compressedImgLength);
-	// check if successful
-	if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
-		fprintf(stderr, "Error saving sentera jpg locally to %s... Camera: %d\n", outname.c_str(), cam);
+
+	try {
+		std::ofstream outfile(outname, std::ofstream::binary);
+		outfile.write(imgContent.c_str(), compressedImgLength);
+		// check if successful
+		if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
+			fprintf(stderr, "Error saving sentera jpg locally to %s... Camera: %d: %s\n", outname.c_str(), cam, strerror(errno));
+		}
+		else {
+			fprintf(stderr, "Successfully saved downloaded sentera .jpg locally to %s, Camera ID: %d\n", outname.c_str(), cam);
+		}
 	}
-	else {
-		fprintf(stderr, "Successfully saved downloaded sentera .jpg locally to %s, Camera ID: %d\n", outname.c_str(), cam);
+	catch (std::ofstream::failure const &ex) {
+		fprintf(stderr, "Caught exception attempting to save sentera jpg locally to %s, camera %d: %s", outname.c_str(), cam, ex.what());
 	}
 
 
@@ -675,14 +680,20 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		outname += (const char)recent_images[1].fileName[i];
 	}
 	outname += ".jpg";
-	std::ofstream outfile(outname, std::ofstream::binary);
-	outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
-	// check if successful
-	if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
-		fprintf(stderr, "Error saving NDVI jpg locally to %s\n", outname.c_str());
+	
+	try {
+		std::ofstream outfile(outname, std::ofstream::binary);
+		outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
+		// check if successful
+		if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
+			fprintf(stderr, "Error saving NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
+		}
+		else {
+			fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
+		}
 	}
-	else {
-		fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
+	catch (std::ofstream::failure const &ex) {
+		fprintf(stderr, "Caught exception attempting to save NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
 
 
