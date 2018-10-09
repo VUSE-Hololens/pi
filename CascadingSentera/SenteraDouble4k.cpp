@@ -696,8 +696,27 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		fprintf(stderr, "Caught exception attempting to save NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
 
+	// new version - transmits compressed NDVI jpg
+	int messageLen = trans.HEADER_SIZE + jpegSize;
+	//std::cout << "About to attempt to allocate uint8_t buffer to hold outbound transmission of size: " << messageLen << "\n";
+	uint8_t *transBuf;
+	try {
+		transBuf = new uint8_t[messageLen];
+	}
+	catch (std::bad_alloc ba) {
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold transmission message of size %d", messageLen);
+		return;
+	}
 
+	// add in header
+	Serializer::serializeInt(transBuf, messageLen);
+	Serializer::serializeInt(transBuf + 4, width);
+	Serializer::serializeInt(transBuf + 8, height);
 
+	// add in jpeg data
+	std::memcpy(transBuf + 12, jpegBuf, jpegSize);
+
+	/* Old version - downsamples and transmits uncompressed NDVI
 	// resample and transmit uncompressed buffer
 	// create buffer
 	int resampWidth = 200;
@@ -727,6 +746,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	
 	// debug
 	//std::cout << "Resampled NDVI buf to " << resampWidth << " x " << resampHeight << ". Data length: " << resampWidth * resampHeight << " bytes.\n";
+	*/
 
 	// transmit
 	if (trans.hasConnection()) {
@@ -740,6 +760,6 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	delete[] transBuf;
 
 	// debug
-	//printf("Transmitted downsampled NDVI Image\n");
+	printf("Transmitted NDVI Image jpg\n\n");
 }
 
