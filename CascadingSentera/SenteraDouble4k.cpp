@@ -8,6 +8,9 @@
 
 SenteraDouble4k::SenteraDouble4k() : SenteraDouble4k::SenteraDouble4k(offset){}
 
+// constructor
+// initializes compressor, runs startServer: creates, starts send and receive ethernet sockets
+// run first by main
 SenteraDouble4k::SenteraDouble4k(Transform _offset) : Sensor(_offset, this->cams)
 {
 	// Assume we start without a connection
@@ -33,8 +36,11 @@ SenteraDouble4k::~SenteraDouble4k()
 	tjDestroy(_jpegDecompressor);
 }
 
+// run second by main
 int SenteraDouble4k::Start() {
 	const char currentSessionName[128] = "TestingName1";
+
+	// ensures servers started successfuly by constructor
 	if (serv_status == -1) {
 		fprintf(stderr, "Server not initialized! Cannot start session.");
 		return -1;
@@ -49,7 +55,10 @@ int SenteraDouble4k::Start() {
 		fprintf(stderr, "Failed to create packet");
 		return -1;
 	}
-	fprintf(stderr, "Still Capture Packet Created. Length: %d, Type: %X\n", packet_length, buf[2]); 	//DEBUG
+
+	// DEBUG
+	//fprintf(stderr, "Still Capture Packet Created. Length: %d, Type: %X, Session name: %s\n", 
+		//packet_length, buf[2], currentSessionName);
 
 	// send packet of still capture session data
 	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
@@ -57,7 +66,9 @@ int SenteraDouble4k::Start() {
 		return -1;
 	}
 	//DEBUG printf("Sent still capture packet");
-	fprintf(stderr, "Started and listening for data!\n");
+	fprintf(stderr, "Started and listening for data! Session Name: %s\n", currentSessionName);
+	
+	// infinite listening and processing loop
 	return sessionListener();
 
 	//return 0;
@@ -107,15 +118,20 @@ int SenteraDouble4k::sessionListener() {
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
 				if (firstLoop) {
 					// debug
-					fprintf(stderr, "Received data from camera, processing...\n");
+					fprintf(stderr, "Received first data from camera, processing...\n");
 					firstLoop = false;
 				}
 
 				//DEBUG printf("Images ready for Camera %d\n", imgReadyID);
+
+				// prepares images
 				processImage(imgReadyID); // process data for appropriate image
+
 				//DEBUG printf("Images processed for Camera %d\n", imgReadyID);
 				//DEBUG printf("Bands Filtered for Camera %d\n", imgReadyID);
-				if (imgReadyID == 2 && getUpdated()) sendNDVI(80); // send NDVI image each time NIR data is received
+
+				// send NDVI image if ready
+				if (imgReadyID == 2 && getUpdated()) sendNDVI(80); 
 				//DEBUG printf("NDVI data sent \n");
 			}
 		}
@@ -133,9 +149,6 @@ int SenteraDouble4k::Stop() {
 		fprintf(stderr, "Failed to create packet");
 		return -1;
 	}
-
-	// debug
-	fprintf(stderr, "Attempting to start Sentera still capture session: (message, to):\n%s\n", buf);
 
 	// send packet of still capture session data
 	if (sendto(s_send, (char*)buf, packet_length, 0, (const struct sockaddr *)&si_other_send, slen_send) == -1) {
@@ -175,7 +188,7 @@ int SenteraDouble4k::updateTrigger() {
 
 // starts server by setting up send and receive sockets
 int SenteraDouble4k::startServer() {
-
+	// serv_status set to -1 in .h, returned as 1 by this method
 	if (serv_status > -1) {
 		fprintf(stderr, "Server already running!\n"); //DEBUG
 		return 0;
@@ -183,6 +196,7 @@ int SenteraDouble4k::startServer() {
 
 	// If we run locally on the camera, don't bind to the port or we fail
 	bool bind_send_socket = true;
+	// if Pi IP and serve IP (senter IP) are equal, print error and don't bind
 	if (local_ipaddr.compare(server_ipaddr) == 0)
 	{
 		fprintf(stderr, "!! Local camera running, skipping bind to %d !!", cameraPort); //DEBUG
@@ -209,6 +223,9 @@ int SenteraDouble4k::startServer() {
 }
 
 // Configures a given socket returning a socket ID, -1 indicates failure
+	// myPort: sentera's port
+	// si_other: sentera destination, updated by reference and used later
+	// bind_socket: bind created socket to specified address?
 int SenteraDouble4k::configure_socket(int myport, sockaddr_in& si_other, bool bind_socket)
 {
 	struct in_addr local_interface;
@@ -261,6 +278,8 @@ int SenteraDouble4k::configure_socket(int myport, sockaddr_in& si_other, bool bi
 }
 
 // UNIX socket-friendly function for configuring the receiving socket
+	// myport: local pi ethernet port
+	// si_other: destination address of local pi's ethernet receiving socket, updated by reference and used later
 int SenteraDouble4k::configure_receive(int myport, sockaddr_in& si_other)
 {
 	struct in_addr local_interface;
@@ -558,13 +577,16 @@ int SenteraDouble4k::processImage(int cam) {
 	for (int i = 0; i < 48; i++) { // filename array size 48
 		outname += (const char)recent_images[cam-1].fileName[i];
 	}
-	//outname += ".jpg";
+	outname += ".jpg";
 	//printf("Wrote: %s\n", outname.c_str());
 	std::ofstream outfile(outname , std::ofstream::binary);
 	outfile.write(imgContent.c_str(), compressedImgLength);
+	// check if successful
+	if ((outfile.rdstate() & std::ofstream::failbit) != 0)
+		fprintf(stderr, "Error saving NDVI jpg locally\n");
 
 	// debug
-	//std::cout << "Successfully saved downloaded .jpg locally to " << outname << "\n";
+	fprintf(stderr, "Successfully saved downloaded sentera .jpg locally to %s, Camera ID: %d\n", outname, cam);
 
 	// initialize variables to fill with data
 	int width, height;
@@ -584,8 +606,6 @@ int SenteraDouble4k::processImage(int cam) {
 		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold uncompressed jpeg of size %d", size);
 		return -1;
 	}
-
-	
 
 	// decompress the jpg
 	resultCode = tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
@@ -653,9 +673,12 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	outname += ".jpg";
 	std::ofstream outfile(outname, std::ofstream::binary);
 	outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
+	// check if successful
+	if ((outfile.rdstate() & std::ofstream::failbit) != 0)
+		fprintf(stderr, "Error saving NDVI jpg locally\n");
 
 	// debug
-	fprintf(stderr, "Wrote: %s\n", outname.c_str());
+	fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
 
 	// resample and transmit uncompressed buffer
 	// create buffer

@@ -1,0 +1,214 @@
+!!com.sentera.snapcam.settings.UserConfig
+CameraConfig:
+  Imager:
+  - CamID: 0
+    CamName: nRGB
+    Exposure:
+      AutoExposure: frame-average
+      EV: 4
+      ISO: AUTO
+    Image:
+      JpegQuality: 80
+      PostProcessing: MINIMAL
+      Size:
+        Height: 3000
+        Width: 4000
+    StartingZoomGain: 1.0
+    TriggerID: 1
+    WorldFiles:
+      Enabled: false
+  - CamID: 1
+    CamName: NDRE
+    Exposure:
+      AutoExposure: frame-average
+      EV: 5
+      ISO: AUTO
+    Image:
+      JpegQuality: 80
+      PostProcessing: MINIMAL
+      Size:
+        Height: 3000
+        Width: 4000
+    StartingZoomGain: 1.0
+    TriggerID: 2
+    WorldFiles:
+      Enabled: false
+  VideoSettings:
+    Bitrate_kbsp: 2500
+    FrameRate: 30
+    KeyframeInterval: 30
+    Recording:
+      Enabled: false
+      Format: MP4
+    Streaming:
+      Enabled: false
+      Format: H264
+      UseRTPHeaders: true
+      VideoPacketDest:
+        IP: 192.168.143.242
+        Port: 50008
+    VideoSize:
+      Height: 480
+      Width: 640
+    ViewConfig:
+      OSDConfig:
+        AngleIndicator: true
+        Background: true
+        CameraSettings: true
+        Crosshairs: true
+        Enabled: true
+        GPSStatus: true
+        PictureTaken: true
+      Position:
+      - FULL
+      - DISABLE
+      Shaders:
+      - fragshade_none.glsl
+      - fragshade_ndvi.glsl
+File:
+  ConfigName: Multispectral Camera - Commanded Session - Commanded Trigger
+  ConfigRevision: C
+  FileVersion: '1.3'
+  ModifiedDate: '2017-02-14 12:27:56'
+  SWVersion: 0.19.0
+IlsConfig:
+  Source: NONE
+  UDP:
+    MulticastIP: 239.192.143.140
+    RxPort: 60540
+  UDPBlockID: 0
+KnownHeightAGLMeters: 5.21208
+NetworkConfig:
+  Camera:
+    IP: 192.168.143.141
+  WifiAP:
+    Channel: 9
+    Enabled: true
+    IP: 192.168.43.1
+SessionConfig:
+  ForceAppendSessions: false
+  GPSFixConfig:
+    AccurateFixMeters: 5.0
+    DegradedFixMeters: 20.0
+    PreciseFixMeters: 1.0
+  SessionType: COMMAND
+SourceConfig:
+  DjiConfig:
+    Interface:
+      Protocol: UDP
+      Serial:
+        Baud: 115200
+        Port: /dev/ttyUSB0
+      UDP:
+        MulticastIP: 239.192.143.140
+        RxPort: 60550
+    PlatformType: M100
+  DjiPsdkConfig:
+    Interface:
+      Protocol: UDP
+      Serial:
+        Baud: 115200
+        Port: /dev/ttyUSB0
+      UDP:
+        MulticastIP: 239.192.143.140
+        RxPort: 60552
+        TxIP: 192.168.5.130
+        TxPort: 60553
+    IsMaster: false
+  Hg4940Config:
+    AuxAntennaPos:
+      STD: 1.0
+      X: 0.0
+      Y: 0.75
+      Z: 0.0
+    Interface:
+      Protocol: SERIAL
+      Serial:
+        Baud: 115200
+        Port: /dev/ttyUSB0
+      UDP:
+        MulticastIP: 239.192.143.140
+        RxPort: 60662
+        TxIP: 239.192.143.140
+        TxPort: 60663
+    MainAntennaPos:
+      STD: 1.0
+      X: 0.0
+      Y: -0.75
+      Z: 0.0
+  MavlinkConfig:
+    Interface:
+      Protocol: SERIAL
+      Serial:
+        Baud: 115200
+        Port: /dev/ttyUSB0
+      UDP:
+        MulticastIP: 239.192.143.140
+        RxPort: 60562
+        TxIP: 192.168.143.130
+        TxPort: 60563
+  ProcerusConfig:
+    FirmwareType: LEGACY
+    Interface:
+      Protocol: UDP
+      Serial:
+        Baud: 115200
+        Port: /dev/ttyUSB0
+      UDP:
+        MulticastIP: 239.192.143.140
+        RxPort: 60530
+        TxIP: 192.168.143.130
+        TxPort: 60531
+    UseRevRProtocol: false
+  RTCMConfig:
+    EnableForwarding: false
+    ProtocolIn: UDP
+    ProtocolOut: SERIAL
+    Serial:
+      Baud: 115200
+      Port: /dev/ttyHSL0
+    UDP:
+      MulticastIP: 239.192.143.140
+      RxPort: 60651
+      TxIP: null
+      TxPort: 0
+  SbgcConfig:
+    Interface:
+      Protocol: UDP
+      Serial:
+        Baud: 115200
+        Port: /dev/ttyUSB0
+      UDP:
+        MulticastIP: 239.192.143.140
+        RxPort: 60570
+  SbpConfig:
+    Interface:
+      Protocol: UDP
+      Serial:
+        Baud: 115200
+        Port: /dev/ttyUSB0
+      UDP:
+        MulticastIP: 239.192.143.140
+        RxPort: 60660
+  SourceType: U_BLOX
+  UbloxConfig:
+    Interface:
+      Protocol: SERIAL
+      Serial:
+        Baud: 115200
+        Port: /dev/ttyUSB0
+      UDP:
+        MulticastIP: 239.192.143.140
+        RxPort: 60590
+TriggerConfig:
+  IntervalConfig:
+    IntervalSeconds: 1.0
+  LocationTriggerConfig:
+    AutoHeightOverlapConfig:
+      MinimumTriggerHeightAGLMeters: 10.0
+      OverlapPercent: 70.0
+    DistanceConfig:
+      TriggerDistanceMeters: 10.0
+    KnownHeightOverlapConfig:
+      OverlapPercent: 70.0
+  TriggerType: INTERVAL
