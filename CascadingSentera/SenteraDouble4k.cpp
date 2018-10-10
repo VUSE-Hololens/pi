@@ -671,7 +671,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// save full quality NDVI image locally
 	uint8_t* jpegBufFull = nullptr;
-	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, 100);
+	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBufFull, width, height, 100);
 	std::string outname = "NDVI_Full/";
 	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
 		outname += (const char)recent_images[1].fileName[i];
@@ -716,7 +716,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// save jpeg locally
 	uint8_t* jpegBuf = nullptr;
-	int jpegSize = compressor.compressBandJpeg(downsampBuf, &jpegBuf, resampWidth, resampWidth, trans.COMPRESS_QUAL);
+	jpegSize = compressor.compressBandJpeg(downsampBuf, &jpegBuf, resampWidth, resampWidth, trans.COMPRESS_QUAL);
 	outname = "NDVI/";
 	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
 		outname += (const char)recent_images[1].fileName[i];
