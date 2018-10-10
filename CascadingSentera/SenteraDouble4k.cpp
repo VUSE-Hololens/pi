@@ -669,6 +669,30 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 
+	// save full quality NDVI image locally
+	uint8_t* jpegBufFull = nullptr;
+	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, 100);
+	std::string outname = "NDVI_Full/";
+	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
+		outname += (const char)recent_images[1].fileName[i];
+	}
+	outname += ".jpg";
+
+	try {
+		std::ofstream outfile(outname, std::ofstream::binary);
+		outfile.write(reinterpret_cast<const char*> (jpegBufFull), width*height);
+		// check if successful
+		if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
+			fprintf(stderr, "Error saving full NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
+		}
+		else {
+			fprintf(stderr, "Saved full NDVI image locally as: %s\n", outname.c_str());
+		}
+	}
+	catch (std::ofstream::failure const &ex) {
+		fprintf(stderr, "Caught exception attempting to save full NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
+	}
+
 	// debug
 	//printf("Filled NDVI data buffer\n");
 
@@ -693,7 +717,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// save jpeg locally
 	uint8_t* jpegBuf = nullptr;
 	int jpegSize = compressor.compressBandJpeg(downsampBuf, &jpegBuf, resampWidth, resampWidth, trans.COMPRESS_QUAL);
-	std::string outname = "NDVI/";
+	outname = "NDVI/";
 	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
 		outname += (const char)recent_images[1].fileName[i];
 	}
