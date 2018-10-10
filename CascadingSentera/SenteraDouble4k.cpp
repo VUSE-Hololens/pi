@@ -674,7 +674,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// save jpeg locally
 	uint8_t* jpegBuf = nullptr;
-	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, 100);
+	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, trans.COMPRESS_QUAL);
 	std::string outname = "NDVI/";
 	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
 		outname += (const char)recent_images[1].fileName[i];
@@ -749,6 +749,8 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	*/
 
 	// transmit
+	fprintf(stderr, "Attempting transmission of NDVI jpg to Hololens. Origally: %d x %d (%d), now %d (quality: %d)", 
+		width, height, width*height, jpegSize, trans.COMPRESS_QUAL);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}

@@ -31,6 +31,7 @@ public:
 	// transmission paramters
 	const int MAX_PACKET_SIZE = 35000; // bytes, all inclusive max size of packets
 	const int HEADER_SIZE = 12; // bytes, size of header of int32 of messages on primary socket
+	const int COMPRESS_QUAL = 75; // jpeg compression quality for NDVI images sent to hololens
 
 	// command codes
 	const int CONNECT = 1;
