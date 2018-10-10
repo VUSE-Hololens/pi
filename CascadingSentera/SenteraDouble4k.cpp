@@ -672,9 +672,27 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// debug
 	//printf("Filled NDVI data buffer\n");
 
+	// downsample
+	int resampWidth = 400;
+	int resampHeight = ((float)height / (float)width) * (float)resampWidth;
+
+	//std::cout << "About to attempt to allocate uint8_t buffer to hold outbound transmission of size: " << messageLen << "\n";
+	uint8_t *downsampBuf;
+	try {
+		downsampBuf = new uint8_t[resampHeight*resampWidth];
+	}
+	catch (std::bad_alloc ba) {
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold downsampled NDVI image of size %d", resampHeight*resampWidth);
+		return;
+	}
+
+	// downsample NDVI
+	DataProcessor::Resample(ndvibuf, Vector3Int(width, height, 1), Vector3Int(resampWidth, resampHeight, 1), downsampBuf);
+
+
 	// save jpeg locally
 	uint8_t* jpegBuf = nullptr;
-	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, trans.COMPRESS_QUAL);
+	int jpegSize = compressor.compressBandJpeg(downsampBuf, &jpegBuf, resampWidth, resampWidth, trans.COMPRESS_QUAL);
 	std::string outname = "NDVI/";
 	for (int i = 5; i < 48; i++) { // filename array size 48, ignore first folder
 		outname += (const char)recent_images[1].fileName[i];
@@ -749,8 +767,8 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	*/
 
 	// transmit
-	fprintf(stderr, "Attempting transmission of NDVI jpg to Hololens. Origally: %d x %d (%d), now %d (quality: %d)", 
-		width, height, width*height, jpegSize, trans.COMPRESS_QUAL);
+	fprintf(stderr, "Attempting transmission of NDVI jpg to Hololens. Origally: %d x %d (%d), now %d (quality: %d)\n", 
+		resampWidth, resampHeight, resampWidth*resampHeight, jpegSize, trans.COMPRESS_QUAL);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
