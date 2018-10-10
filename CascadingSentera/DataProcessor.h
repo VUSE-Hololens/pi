@@ -69,7 +69,7 @@ public:
 		{
 			for (int cy = 0; cy < newSize.y; cy++)
 			{
-				for (int cx = 0; cx < newSize.z; cx++)
+				for (int cx = 0; cx < newSize.x; cx++)
 				{
 					// bilinear interpolation approximation for resizing. 
 					int pixel = cz + (cx * newSize.z) + (cy * (newSize.y * newSize.z));
