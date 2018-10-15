@@ -656,7 +656,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Preparing NDVI image: %s", filename);
+	fprintf(stderr, "Preparing NDVI image: %s\n", filename);
 
 	// fill NDVI buffer
 	uint8_t *ndvibuf;
@@ -672,7 +672,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	uint8_t* jpegBuf = nullptr;
 	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, quality);
 	std::string filename_string(filename);
-	std::string outname = "NDVI/" + filename_string + ".jpg";
+	std::string outname = "NDVI/" + filename_string;
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
 		outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);

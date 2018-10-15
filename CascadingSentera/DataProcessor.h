@@ -51,7 +51,7 @@ public:
 			else if (buf[i / 3] <= 3 * 255 / 4) ++hist[2];
 			else if (buf[i / 3] <= 4 * 255 / 4) ++hist[3];
 		}
-		printf("NDVI data: <%d, %d, %d, %d>\n", hist[0], hist[1], hist[2], hist[3]);
+		//printf("NDVI data: <%d, %d, %d, %d>\n", hist[0], hist[1], hist[2], hist[3]);
 		delete[] rgbBuf;
 		delete[] nirBuf;
 
