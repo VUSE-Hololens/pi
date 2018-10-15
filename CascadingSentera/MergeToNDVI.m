@@ -17,23 +17,28 @@ imgName = 'img.jpg';
 recvRaw = true;
 formatCsharp = false;
 
-rgbImg = [session '/nRGB/' imgName];
-nirImg = [session '/NDRE/' imgName];
+rgbImgPath = [session '/nRGB/' imgName];
+nirImgPath = [session '/NDRE/' imgName];
 
-rgbRaw = imread(rgbImg);
-nirRaw = imread(nirImg);
+rgbRaw = imread(rgbImgPath);
+nirRaw = imread(nirImgPath);
 
 rgbRaw = imresize(rgbRaw, 1);
 nirRaw = imresize(nirRaw, 1);
 
 bandData = zeros(size(rgbRaw,1), size(rgbRaw,2), 5);
 
+% prepare band data
 if (recvRaw)
+    % remove cross-band interferance
     bandData(:,:,1) = -0.061*rgbRaw(:,:,1) - 0.182*rgbRaw(:,:,2) + 1.377*rgbRaw(:,:,3); % blue
     bandData(:,:,2) = -0.329*rgbRaw(:,:,1) + 1.420*rgbRaw(:,:,2) - 0.199*rgbRaw(:,:,3); % green
     bandData(:,:,3) = +1.150*rgbRaw(:,:,1) - 0.110*rgbRaw(:,:,2) - 0.034*rgbRaw(:,:,3); % red
     bandData(:,:,4) = +1.000*nirRaw(:,:,1) - 0.956*nirRaw(:,:,3); % red edge
     bandData(:,:,5) = -0.341*nirRaw(:,:,1) + 2.436*nirRaw(:,:,3); % NIR
+    
+    % account for camera's sensitivity difference
+    
 else
     bandData(:,:,1) = rgbRaw(:,:,3); % blue
     bandData(:,:,2) = rgbRaw(:,:,2); % green
@@ -42,15 +47,21 @@ else
     bandData(:,:,5) = nirRaw(:,:,3); % NIR
 end
 
-ndvi = (2.700*bandData(:,:,5) - bandData(:,:,3)) ./ (2.700*bandData(:,:,5) + bandData(:,:,3));
+ndvi = (2.7*bandData(:,:,5) - bandData(:,:,3)) ./ (2.7*bandData(:,:,5) + bandData(:,:,3));
 ndvi(ndvi<0) = 0;
 ndre = (bandData(:,:,5) - bandData(:,:,4)) ./ (bandData(:,:,5) + bandData(:,:,4));
 ndre(ndre<0) = 0;
 
-colorImg = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
-colorImg(:,:,1) = bandData(:,:,3);
-colorImg(:,:,2) = bandData(:,:,2);
-colorImg(:,:,3) = bandData(:,:,1);
+rgbImg = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
+rgbImg(:,:,1) = bandData(:,:,3);
+rgbImg(:,:,2) = bandData(:,:,2);
+rgbImg(:,:,3) = bandData(:,:,1);
+
+otherImg = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
+size = size(bandData);
+otherImg(:,:,1) = bandData(:,:,4);
+otherImg(:,:,2) = zeros(size(1),size(2));
+otherImg(:,:,3) = bandData(:,:,5);
 
 if (formatCsharp)
     fprintf("public static int height = %d;\n", size(ndvi,1));
@@ -69,4 +80,6 @@ if (formatCsharp)
     fprintf("};\n");
 end
 
-imshow(ndvi);
+figure(1); imshow(uint8(rgbImg));
+figure(2); imshow(uint8(otherImg));
+figure(3); imshow(ndvi);
