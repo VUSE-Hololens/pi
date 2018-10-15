@@ -650,7 +650,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// get width, height and filename
 	int width = sensor_data[0].width; // doesnt have to be!! can choose to send any size image. will resample and scale accordingly
 	int height = sensor_data[0].height;
-	const char[IMG_FILENAME_LEN] filename;
+	const char filename[IMG_FILENAME_LEN];
 	for (int i = 0; i < IMG_FILENAME_LEN - IMG_FILENAME_DIR_LEN; i++) {
 		filename[i] = (const char)recent_images[1].fileName[i + IMG_FILENAME_DIR_LEN];
 	}
@@ -674,7 +674,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	std::string outname = "NDVI/" + filename + ".jpg";
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
-		outfile.write(reinterpret_cast<const char*> (jpegBufFull), width*height);
+		outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
 		// check if successful
 		if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
 			fprintf(stderr, "Error saving full NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
