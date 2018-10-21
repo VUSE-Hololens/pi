@@ -11,11 +11,15 @@
 session = 'field_test';
 % imgName: enter name of image of interest. It will be the same in both the
 % nRGB and NDRE folders.
-imgName = 'img.jpg';
-% ----- End Input: just hit run -----
+imgName = 'cal.jpg';
+% exposure: the image exposure time (in secons) for the RGB and NIR images
+ev_rgb = 1/547;
+ev_nir = 1/130;
+% ISO: the image ISO for the RGB and NIR images
+iso_rgb = 1328;
+iso_nir = 1600;
 
-recvRaw = true;
-formatCsharp = false;
+% ----- End Input: just hit run -----
 
 rgbImgPath = [session '/nRGB/' imgName];
 nirImgPath = [session '/NDRE/' imgName];
@@ -26,60 +30,72 @@ nirRaw = imread(nirImgPath);
 rgbRaw = imresize(rgbRaw, 1);
 nirRaw = imresize(nirRaw, 1);
 
-bandData = zeros(size(rgbRaw,1), size(rgbRaw,2), 5);
+bandDataSep = zeros(size(rgbRaw,1), size(rgbRaw,2), 5);
+bandDataNorm = zeros(size(rgbRaw,1), size(rgbRaw,2), 5);
 
-% prepare band data
-if (recvRaw)
-    % remove cross-band interferance
-    bandData(:,:,1) = -0.061*rgbRaw(:,:,1) - 0.182*rgbRaw(:,:,2) + 1.377*rgbRaw(:,:,3); % blue
-    bandData(:,:,2) = -0.329*rgbRaw(:,:,1) + 1.420*rgbRaw(:,:,2) - 0.199*rgbRaw(:,:,3); % green
-    bandData(:,:,3) = +1.150*rgbRaw(:,:,1) - 0.110*rgbRaw(:,:,2) - 0.034*rgbRaw(:,:,3); % red
-    bandData(:,:,4) = +1.000*nirRaw(:,:,1) - 0.956*nirRaw(:,:,3); % red edge
-    bandData(:,:,5) = -0.341*nirRaw(:,:,1) + 2.436*nirRaw(:,:,3); % NIR
-    
-    % account for camera's sensitivity difference
-    
-else
-    bandData(:,:,1) = rgbRaw(:,:,3); % blue
-    bandData(:,:,2) = rgbRaw(:,:,2); % green
-    bandData(:,:,3) = rgbRaw(:,:,1); % red
-    bandData(:,:,4) = nirRaw(:,:,1); % red edge
-    bandData(:,:,5) = nirRaw(:,:,3); % NIR
-end
+% remove cross-band interferance
+bandDataSep(:,:,1) = -0.061*rgbRaw(:,:,1) - 0.182*rgbRaw(:,:,2) + 1.377*rgbRaw(:,:,3); % blue
+bandDataSep(:,:,2) = -0.329*rgbRaw(:,:,1) + 1.420*rgbRaw(:,:,2) - 0.199*rgbRaw(:,:,3); % green
+bandDataSep(:,:,3) = +1.150*rgbRaw(:,:,1) - 0.110*rgbRaw(:,:,2) - 0.034*rgbRaw(:,:,3); % red
+bandDataSep(:,:,4) = +1.000*nirRaw(:,:,1) - 0.956*nirRaw(:,:,3); % red edge
+bandDataSep(:,:,5) = -0.341*nirRaw(:,:,1) + 2.436*nirRaw(:,:,3); % NIR
 
-ndvi = (2.7*bandData(:,:,5) - bandData(:,:,3)) ./ (2.7*bandData(:,:,5) + bandData(:,:,3));
+% account for camera's sensitivity difference (Step 1)
+bandDataNorm(:,:,1:3) = bandDataSep(:,:,1:3) / (ev_rgb * (iso_rgb / 100));
+bandDataNorm(:,:,4:5) = bandDataSep(:,:,4:5) / (ev_nir * (iso_nir / 100));
+
+% account for camera's sensitivity difference (Step 2)
+k = 255 / max(bandDataNorm(:));
+bandDataNorm = bandDataNorm .* k;
+rgb_coef = k / (ev_rgb * (iso_rgb / 100));
+nir_coef = k / (ev_nir * (iso_nir / 100));
+
+% calculate NDVI
+ndvi = (bandDataNorm(:,:,5) - bandDataNorm(:,:,3)) ./ (bandDataNorm(:,:,5) + bandDataNorm(:,:,3));
+ndre = (bandDataNorm(:,:,5) - bandDataNorm(:,:,4)) ./ (bandDataNorm(:,:,5) + bandDataNorm(:,:,4));
+
+% clamp 0-1
 ndvi(ndvi<0) = 0;
-ndre = (bandData(:,:,5) - bandData(:,:,4)) ./ (bandData(:,:,5) + bandData(:,:,4));
 ndre(ndre<0) = 0;
 
-rgbImg = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
-rgbImg(:,:,1) = bandData(:,:,3);
-rgbImg(:,:,2) = bandData(:,:,2);
-rgbImg(:,:,3) = bandData(:,:,1);
+% grab images
+rgbSep = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
+rgbSep(:,:,1) = bandDataSep(:,:,3);
+rgbSep(:,:,2) = bandDataSep(:,:,2);
+rgbSep(:,:,3) = bandDataSep(:,:,1);
 
-otherImg = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
-size = size(bandData);
-otherImg(:,:,1) = bandData(:,:,4);
-otherImg(:,:,2) = zeros(size(1),size(2));
-otherImg(:,:,3) = bandData(:,:,5);
+nirSep = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
+nirSep(:,:,1) = bandDataSep(:,:,5); % red
+nirSep(:,:,2) = bandDataSep(:,:,5); % green
+nirSep(:,:,3) = bandDataSep(:,:,4); % blue
 
-if (formatCsharp)
-    fprintf("public static int height = %d;\n", size(ndvi,1));
-    fprintf("public static int width = %d;\n", size(ndvi,2));
-    fprintf("public static byte[] NDVI = new byte[] {\n");
-    for i = 1:size(ndvi,1)
-        fprintf("\t");
-        for j = 1:size(ndvi,2)
-            fprintf("0x%s", dec2hex(round(ndvi(i,j)*255)));
-            if ~((i == size(ndvi,1)) && (j == size(ndvi,2)))
-                fprintf(", ");
-            end
-        end
-        fprintf("\n");
-    end
-    fprintf("};\n");
-end
+rgbNorm = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
+rgbNorm(:,:,1) = bandDataNorm(:,:,3);
+rgbNorm(:,:,2) = bandDataNorm(:,:,2);
+rgbNorm(:,:,3) = bandDataNorm(:,:,1);
 
-figure(1); imshow(uint8(rgbImg));
-figure(2); imshow(uint8(otherImg));
-figure(3); imshow(ndvi);
+nirNorm = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
+nirNorm(:,:,1) = bandDataNorm(:,:,5);
+nirNorm(:,:,2) = bandDataNorm(:,:,5);
+nirNorm(:,:,3) = bandDataNorm(:,:,4);
+
+
+figure(1); 
+subplot(2,3,1); imshow(uint8(rgbSep)); title("RGB: Band Separated");
+subplot(2,3,2); imshow(uint8(rgbSep(:,:,1))); title("RGB: Band Separated, Red Only");
+subplot(2,3,3); histogram(rgbSep(:,:,1)); title("RGB: Band Separated, Red Only");
+subplot(2,3,4); imshow(uint8(nirSep)); title("NIR: Band Separated");
+subplot(2,3,5); imshow(uint8(nirSep(:,:,1))); title("NIR: Band Separated, NIR Only");
+subplot(2,3,6); histogram(nirSep(:,:,1)); title("NIR: Band Separated, NIR Only");
+figure(2); 
+subplot(2,3,1); imshow(uint8(rgbNorm)); title("RGB: Normalized");
+subplot(2,3,2); imshow(uint8(rgbNorm(:,:,1))); title("RGB: Normalized, Red Only");
+subplot(2,3,3); histogram(rgbNorm(:,:,1)); title("RGB: Normalized, Red Only");
+subplot(2,3,4); imshow(uint8(nirNorm)); title("NIR: Normalized");
+subplot(2,3,5); imshow(uint8(nirNorm(:,:,1))); title("NIR: Normalized, NIR Only");
+subplot(2,3,6); histogram(nirNorm(:,:,1)); title("NIR: Normalized, NIR Only");
+figure(3);
+subplot(2,2,1); imshow(ndvi); title("NDVI");
+subplot(2,2,2); histogram(ndvi); title("NDVI");
+subplot(2,2,3); imshow(ndre); title("NDRE");
+subplot(2,2,4); histogram(ndre); title("NDRE");

@@ -1,0 +1,21 @@
+[File]
+Version = 1.0
+
+[Hardware]
+Device = SNAPCAM
+Version = SCR-H01
+
+[Filesystem]
+Version = 0.21.1
+Date = 2018-08-06-122225
+
+[Firmware/Snapcam]
+Version = 0.21.1
+VersionCode = 2101000
+lastUpdate = 2018-08-06-122225
+
+[Firmware/Updater]
+Version = 0.21.1
+VersionCode = 2101000
+lastUpdate = 2018-08-06-122225
+

@@ -122,7 +122,7 @@ public:
 		secConn = _secConn;
 
 		// connect local outSocket
-		fprintf(stderr, "Connecting device (primary socket): %s\n", SockAddrToStr(primConn));
+		fprintf(stderr, "\nConnecting device (primary socket): %s\n", SockAddrToStr(primConn));
 		connected.store(true);
 		// NOTE: connect() unnecessary as transmit() uses sendto with primConn...
 		int resultCode = connect(primSocket, (sockaddr*)&primConn, sizeof(primConn));
@@ -131,7 +131,7 @@ public:
 			connected.store(false);
 		}
 		else {
-			fprintf(stderr, "Succesfully connected to host: %s / %s", SockAddrToStr(primConn), SockAddrToStr(secConn));
+			fprintf(stderr, "Succesfully connected to host: %s / %s\n\n", SockAddrToStr(primConn).c_str(), SockAddrToStr(secConn).c_str());
 		}
 
 		lock.unlock();
@@ -178,7 +178,7 @@ public:
 
 		lock.unlock();
 
-		fprintf(stderr, "Successfully sent transmission to: %s\n", SockAddrToStr(primConn));
+		fprintf(stderr, "Successfully sent transmission to: %s\n", SockAddrToStr(primConn).c_str());
 	}
 
 private:
@@ -212,7 +212,7 @@ private:
 			else {
 				// debug
 				fprintf(stderr, "Received message on secondary socket: %s, from: %s - %d\n",
-					recvBuf, SockAddrToStr(sender).c_str(), sender.sin_port);
+					recvBuf.c_string(), SockAddrToStr(sender).c_str(), sender.sin_port);
 
 				// check sender validity
 				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(secConn)) {

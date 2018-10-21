@@ -1,0 +1,8 @@
+File Name, Lat (decimal degrees),Lon (decimal degrees),Alt(meters MSL),Yaw (decimal degrees),Pitch (decimal degrees),Roll (decimal degrees),UTC Time (us since epoch),Validity Bit-Mask (0x01=clear 0x02=red 0x04=green 0x08=blue),Clear(ATD),Red(ATD),Green(ATD),Blue(ATD),Analog Gain, Integration Time (us),Configuration ID,Accuracy Valid, Position Accuracy(cm),Detailed Accuracy Valid, Horizontal Accuracy (cm),Vertical Accuracy (cm),Differential Status,Carrier Phase Status (0=None 1=Float 2=Fixed),Relative Valid,relPosN (cm),relPosE (cm),relPosD (cm),accRelPosN (cm),accRelPosE (cm),accRelPosD (cm)
+IMG_00001.jpg,0.00000000,0.00000000,0.0000,90.0000,0.1881,-2.2837,1538687510844000,0,0,0,0,0,0,0,0,0,0,0,0.0,0.0,0,0,0,0.00,0.00,0.00,0.00,0.00,0.00
+IMG_00002.jpg,0.00000000,0.00000000,0.0000,90.0000,0.1767,-2.2826,1538687511914000,0,0,0,0,0,0,0,0,0,0,0,0.0,0.0,0,0,0,0.00,0.00,0.00,0.00,0.00,0.00
+IMG_00003.jpg,0.00000000,0.00000000,0.0000,90.0000,0.1972,-2.2767,1538687513218000,0,0,0,0,0,0,0,0,0,0,0,0.0,0.0,0,0,0,0.00,0.00,0.00,0.00,0.00,0.00
+IMG_00004.jpg,0.00000000,0.00000000,0.0000,90.0000,0.2174,-2.2830,1538687513814000,0,0,0,0,0,0,0,0,0,0,0,0.0,0.0,0,0,0,0.00,0.00,0.00,0.00,0.00,0.00
+IMG_00005.jpg,0.00000000,0.00000000,0.0000,90.0000,0.2276,-2.2884,1538687514840000,0,0,0,0,0,0,0,0,0,0,0,0.0,0.0,0,0,0,0.00,0.00,0.00,0.00,0.00,0.00
+IMG_00006.jpg,0.00000000,0.00000000,0.0000,90.0000,0.2119,-2.2887,1538687516150000,0,0,0,0,0,0,0,0,0,0,0,0.0,0.0,0,0,0,0.00,0.00,0.00,0.00,0.00,0.00
+IMG_00007.jpg,0.00000000,0.00000000,0.0000,90.0000,0.2111,-2.2908,1538687517209000,0,0,0,0,0,0,0,0,0,0,0,0.0,0.0,0,0,0,0.00,0.00,0.00,0.00,0.00,0.00
