@@ -214,7 +214,7 @@ private:
 				//uint16_t* raw = (uint16_t*)recvBuf;
 				//uint16_t decoded = ntohs(*raw);
 				fprintf(stderr, "Received message on secondary socket (raw / decoded): %s / %s, from: %s\n",
-					recvBuf, recBuf, SockAddrToStr(sender).c_str());
+					recvBuf, recvBuf, SockAddrToStr(sender).c_str());
 
 				// check sender validity
 				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(secConn)) {
