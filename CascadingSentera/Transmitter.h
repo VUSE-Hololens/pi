@@ -211,8 +211,8 @@ private:
 			}
 			else {
 				// debug
-				fprintf(stderr, "Received message on secondary socket: %s, from: %s - %d\n",
-					recvBuf, SockAddrToStr(sender).c_str(), sender.sin_port);
+				fprintf(stderr, "Received message on secondary socket (raw / decoded): %s / %s, from: %s\n",
+					recvBuf, ntohs(*((uint16_t*)recvBuf)), SockAddrToStr(sender).c_str());
 
 				// check sender validity
 				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(secConn)) {
