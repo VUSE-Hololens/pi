@@ -212,7 +212,7 @@ private:
 			else {
 				// debug
 				fprintf(stderr, "Received message on secondary socket: %s, from: %s - %d\n",
-					recvBuf.c_string(), SockAddrToStr(sender).c_str(), sender.sin_port);
+					recvBuf, SockAddrToStr(sender).c_str(), sender.sin_port);
 
 				// check sender validity
 				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(secConn)) {
