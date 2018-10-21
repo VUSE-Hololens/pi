@@ -211,10 +211,10 @@ private:
 			}
 			else {
 				// debug
-				uint16_t* raw = (uint16_t*)recvBuf;
-				uint16_t decoded = ntohs(*raw);
+				//uint16_t* raw = (uint16_t*)recvBuf;
+				//uint16_t decoded = ntohs(*raw);
 				fprintf(stderr, "Received message on secondary socket (raw / decoded): %s / %s, from: %s\n",
-					recvBuf, decoded, SockAddrToStr(sender).c_str());
+					recvBuf, recBuf, SockAddrToStr(sender).c_str());
 
 				// check sender validity
 				if (connected.load() && SockAddrToStr(sender) != SockAddrToStr(secConn)) {
