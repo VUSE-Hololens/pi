@@ -668,11 +668,12 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 
-	// save NDVI image locally
+	// save un-processed NDVI image locally
+	int unprocessedQuality = 100;
 	uint8_t* jpegBuf = nullptr;
-	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, quality);
+	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
 	std::string filename_string(filename);
-	std::string outname = "NDVI/" + filename_string;
+	std::string outname = "NDVI_FULL/" + filename_string;
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
 		outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
@@ -688,10 +689,50 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		fprintf(stderr, "Caught exception attempting to save full NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
 
-	// transmits NDVI jpg filename
+	// process NDVI img
+	uint8_t *processed_ndvibuf;
+	Vector3Int processedSize;
+	Vector3Int unprocessSize(width, height, 1);
+	switch (PROCESS_MODE) {
+		case none: 
+			processedSize = unprocessSize;
+			processed_ndvibuf = ndvibuf; 
+			break;
+		case halfSample: 
+			processed_ndvibuf = new uint8_t[width/2 * height/2];
+			DataProcessor::HalfSample(ndvibuf, processed_ndvibuf, unprocessSize, processedSize);  
+			break;
+	}
+
+	// save processed jpg locally
+	uint8_t* processed_jpegBuf = nullptr;
+	int processed_jpegSize = compressor.compressBandJpeg(processed_ndvibuf, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
+	std::string filename_string(filename);
+	outname = "NDVI/" + filename_string;
+	try {
+		std::ofstream outfile2(outname, std::ofstream::binary);
+		outfile2.write(reinterpret_cast<const char*> (processed_jpegBuf), processedSize.x * processedSize.y);
+		// check if successful
+		if ((outfile2.rdstate() & std::ofstream::failbit) != 0) {
+			fprintf(stderr, "Error saving processed NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
+		}
+		else {
+			//fprintf(stderr, "Saved processed NDVI image locally as: %s\n", outname.c_str());
+		}
+	}
+	catch (std::ofstream::failure const &ex) {
+		fprintf(stderr, "Caught exception attempting to save processed NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
+	}
+
+	// debug
+	fprintf(stderr, "Processed ndvi img (%s), process mode: %s. Was %d bytes: %dx%d, q: %d, Now %d bytes: %dx%d, q: %d\n", 
+		fileName, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
+		processed_jpegSize, processedSize.x, processedSize.y, quality);
+
+	// transmit processed NDVI jpg
 	int messageLen;
-	switch (MODE) {
-		case fullFile: messageLen = trans.HEADER_SIZE + jpegSize; break;
+	switch (TRANS_MODE) {
+		case fullFile: messageLen = trans.HEADER_SIZE + processed_jpegSize; break;
 		case fileName: messageLen = trans.HEADER_SIZE + IMG_FILENAME_LEN; break;
 	}
 	 
@@ -710,22 +751,20 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	Serializer::serializeInt(transBuf + 8, height);
 
 	// add in data
-	switch (MODE) {
-		case fullFile: std::memcpy(transBuf + 12, jpegBuf, jpegSize); break;
+	switch (TRANS_MODE) {
+		case fullFile: std::memcpy(transBuf + 12, processed_jpegBuf, processed_jpegSize); break;
 		case fileName: std::memcpy(transBuf + 12, filename, IMG_FILENAME_LEN); break;
 	}
 
 	// transmit
-	fprintf(stderr, "Saved NDVI jpg, attempting transmission to Hololens... MODE: %s, trans. size (bytes): %d. Image: %s (%dx%d, q:%d)\n", 
-		MODE_NAMES[MODE], messageLen, filename, width, height, quality);
+	fprintf(stderr, "Attempting transmission to Hololens... Trans. mode: %s, Trans. size (bytes): %d. Image: %s\n\n", 
+		TRANS_MODE_NAMES[MODE], messageLen, filename);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
 
-	//printf("Saved NDVI image to:%s\n", "1");
-	//printf("Downsampled image 2x2: Length %d\n", width / 2 * height / 2);
-	//transmitter.transmitImage(resampleBuf, width/2, height/2, quality);
 	delete[] ndvibuf;
+	delete[] processed_jpegBuf;
 	delete[] transBuf;
 
 	// debug

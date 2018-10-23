@@ -27,11 +27,16 @@ class SenteraDouble4k : public Sensor // implements sensor
 {
 	// Pi -> Hololens NDVI jpg transmission control
 	enum TransmitMode { fullFile, fileName }; // full file in single UDP packet or file name for download
-	const char *MODE_NAMES[2] = { "Full File", "File Name" };
+	const char *TRANS_MODE_NAMES[2] = { "Full File", "File Name" };
+
+	// Pi NDVI jpg processing control
+	enum ProcessMode { none, halfSample }; // no downsample, downsample height, width in half once
+	const char *PROCESS_MODE_NAMES[2] = { "None", "Half-Sampled" };
 
 	// Variables
 public:
-	static const TransmitMode MODE = fullFile;
+	static const TransmitMode TRANS_MODE = fullFile;
+	static const ProcessMode PROCESS_MODE = halfSample;
 private:
 	// class variables
 	static const int BUFLEN = 512;											// Buffer length
