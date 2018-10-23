@@ -691,8 +691,8 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// transmits NDVI jpg filename
 	int messageLen;
 	switch (MODE) {
-		case fullFile: messageLen = = trans.HEADER_SIZE + jpegSize; break;
-		case fileName: messageLen = = trans.HEADER_SIZE + IMG_FILENAME_LEN; break;
+		case fullFile: messageLen = trans.HEADER_SIZE + jpegSize; break;
+		case fileName: messageLen = trans.HEADER_SIZE + IMG_FILENAME_LEN; break;
 	}
 	 
 	uint8_t *transBuf;
@@ -717,7 +717,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// transmit
 	fprintf(stderr, "Attempting transmission of NDVI jpg to Hololens, MODE: %s, size: %d. Image: %s (%dx%d)\n", 
-		ModeNames[MODE], messageLen, filename, width, height);
+		MODE_NAMES[MODE], messageLen, filename, width, height);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
