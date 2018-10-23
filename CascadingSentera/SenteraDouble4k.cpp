@@ -607,7 +607,7 @@ int SenteraDouble4k::processImage(int cam) {
 	if (resultCode == -1) { fprintf(stderr, "jpeg header decompression failed"); }
 	size_t size = width * height * channels; 
 
-	//std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << " (" << width << " x " << height << ")\n";
+	std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << " (" << width << " x " << height << ")\n";
 	try {
 		if (sensor_data[cam - 1].pixels)	delete[] sensor_data[cam - 1].pixels; // free up memory from old image
 		sensor_data[cam - 1].pixels = new unsigned char[size]; // allocate new memory for incoming data
@@ -621,7 +621,7 @@ int SenteraDouble4k::processImage(int cam) {
 	if (resultCode == -1) { fprintf(stderr, "jpeg body decompression failed"); }
 
 	// debug
-	//std::cout << "Successfully uncompressed .jpg\n";
+	std::cout << "Successfully decompressed .jpg\n";
 																				  
 	// deal with buffer
 	sensor_data[cam - 1].width = width;
@@ -656,7 +656,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	//fprintf(stderr, "Preparing NDVI image: %s\n", filename);
+	fprintf(stderr, "Preparing NDVI image: %s\n", filename);
 
 	// fill NDVI buffer
 	uint8_t *ndvibuf;
