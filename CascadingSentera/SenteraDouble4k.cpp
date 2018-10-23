@@ -656,7 +656,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Preparing NDVI image: %s\n", filename);
+	//fprintf(stderr, "Preparing NDVI image: %s\n", filename);
 
 	// fill NDVI buffer
 	uint8_t *ndvibuf;
@@ -669,7 +669,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 
 	// debug
-	fprintf(stderr, "Got unprocessed NDVI data: %s\n", filename);
+	//fprintf(stderr, "Got unprocessed NDVI data: %s\n", filename);
 
 	// save un-processed NDVI image locally
 	int unprocessedQuality = 100;
@@ -683,7 +683,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
+	//fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
 
 	std::string filename_string(filename);
 	std::string outname = "NDVI_FULL/" + filename_string;
@@ -703,7 +703,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
+	//fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
 
 	// process NDVI img
 	uint8_t *processed_ndvibuf;
@@ -726,7 +726,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Processed NDVI data: %s\n", filename);
+	//fprintf(stderr, "Processed NDVI data: %s\n", filename);
 
 	// save processed jpg locally
 	uint8_t* processed_jpegBuf = nullptr;
@@ -739,10 +739,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
+	//fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
 	
 	outname = "NDVI/" + filename_string;
-	fprintf(stderr, "Attempting to save processed NDVI jpg as: %s\n", outname.c_str());
 	try {
 		std::ofstream outfile2(outname, std::ofstream::binary);
 		fprintf(stderr, "about to write...\n");
@@ -752,16 +751,15 @@ void SenteraDouble4k::sendNDVI(int quality) {
 			fprintf(stderr, "Error saving processed NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
 		}
 		else {
-			fprintf(stderr, "Saved processed NDVI image locally as: %s\n", outname.c_str());
+			//fprintf(stderr, "Saved processed NDVI image locally as: %s\n", outname.c_str());
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
 		fprintf(stderr, "Caught exception attempting to save processed NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
-	fprintf(stderr, "wrote...\n");
 
 	// debug
-	fprintf(stderr, "Processed ndvi img (%s), process mode: %s. Was %d bytes: %dx%d, q: %d, Now %d bytes: %dx%d, q: %d\n", 
+	fprintf(stderr, "Processed ndvi img (%s), Process mode: %s. Was %d bytes (%dx%d, q=%d), Now %d bytes (%dx%d, q=%d)\n", 
 		filename, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
 		processed_jpegSize, processedSize.x, processedSize.y, quality);
 
@@ -799,8 +797,8 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	
 
 	// transmit
-	fprintf(stderr, "Attempting transmission to Hololens... Trans. mode: %s, Trans. size (bytes): %d. Image: %s\n\n", 
-		TRANS_MODE_NAMES[TRANS_MODE], messageLen, filename);
+	fprintf(stderr, "Attempting transmission to Hololens (%s)... Trans. mode: %s, Trans. size (bytes): %d\n\n", 
+		filename, TRANS_MODE_NAMES[TRANS_MODE], messageLen);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
