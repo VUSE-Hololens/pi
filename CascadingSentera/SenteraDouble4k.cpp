@@ -671,7 +671,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// save un-processed NDVI image locally
 	int unprocessedQuality = 100;
 	uint8_t* jpegBuf = nullptr;
-	int jpgSize;
+	int jpegSize;
 	try {
 		jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
 	}
