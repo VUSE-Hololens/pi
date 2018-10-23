@@ -81,15 +81,15 @@ public:
 		}
 	}
 
-	private int Coords2Index(int i, int j, Vector3Int size) {
+	static int Coords2Index(int i, int j, Vector3Int size) {
 		return j * size.x + i;
 	}
 
-	private Index2I(int index, Vector3Int size) {
+	static int Index2I(int index, Vector3Int size) {
 		return index % size.x;
 	}
 
-	private Index2J(int index, Vector3Int size) {
+	static int Index2J(int index, Vector3Int size) {
 		return index / size.x;
 	}
 	

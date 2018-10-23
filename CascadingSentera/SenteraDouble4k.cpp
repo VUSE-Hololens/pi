@@ -700,14 +700,14 @@ void SenteraDouble4k::sendNDVI(int quality) {
 			break;
 		case halfSample: 
 			processed_ndvibuf = new uint8_t[width/2 * height/2];
-			DataProcessor::HalfSample(ndvibuf, processed_ndvibuf, unprocessSize, processedSize);  
+			DataProcessor::HalfSample(ndvibuf, processed_ndvibuf, unprocessSize, &processedSize);  
 			break;
 	}
 
 	// save processed jpg locally
 	uint8_t* processed_jpegBuf = nullptr;
 	int processed_jpegSize = compressor.compressBandJpeg(processed_ndvibuf, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
-	std::string filename_string(filename);
+	filename_string(filename);
 	outname = "NDVI/" + filename_string;
 	try {
 		std::ofstream outfile2(outname, std::ofstream::binary);
@@ -758,7 +758,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// transmit
 	fprintf(stderr, "Attempting transmission to Hololens... Trans. mode: %s, Trans. size (bytes): %d. Image: %s\n\n", 
-		TRANS_MODE_NAMES[MODE], messageLen, filename);
+		TRANS_MODE_NAMES[TRANS_MODE], messageLen, filename);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
