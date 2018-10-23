@@ -742,7 +742,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
 	
 	outname = "NDVI/" + filename_string;
-	fprintf(stderr, "Attempting to save processed NDVI jpg as: %s\n", outname);
+	fprintf(stderr, "Attempting to save processed NDVI jpg as: %s\n", outname.c_str());
 	try {
 		std::ofstream outfile2(outname, std::ofstream::binary);
 		fprintf(stderr, "about to write...\n");
@@ -762,7 +762,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	// debug
 	fprintf(stderr, "Processed ndvi img (%s), process mode: %s. Was %d bytes: %dx%d, q: %d, Now %d bytes: %dx%d, q: %d\n", 
-		fileName, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
+		filename, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
 		processed_jpegSize, processedSize.x, processedSize.y, quality);
 
 	// transmit processed NDVI jpg
