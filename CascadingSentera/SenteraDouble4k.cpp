@@ -742,20 +742,23 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
 	
 	outname = "NDVI/" + filename_string;
+	fprintf(stderr, "Attempting to save processed NDVI jpg as: %s\n", outname);
 	try {
 		std::ofstream outfile2(outname, std::ofstream::binary);
+		fprintf(stderr, "about to write...\n");
 		outfile2.write(reinterpret_cast<const char*> (processed_jpegBuf), processedSize.x * processedSize.y);
 		// check if successful
 		if ((outfile2.rdstate() & std::ofstream::failbit) != 0) {
 			fprintf(stderr, "Error saving processed NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
 		}
 		else {
-			//fprintf(stderr, "Saved processed NDVI image locally as: %s\n", outname.c_str());
+			fprintf(stderr, "Saved processed NDVI image locally as: %s\n", outname.c_str());
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
 		fprintf(stderr, "Caught exception attempting to save processed NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
+	fprintf(stderr, "wrote...\n");
 
 	// debug
 	fprintf(stderr, "Processed ndvi img (%s), process mode: %s. Was %d bytes: %dx%d, q: %d, Now %d bytes: %dx%d, q: %d\n", 
