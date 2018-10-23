@@ -707,7 +707,6 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// save processed jpg locally
 	uint8_t* processed_jpegBuf = nullptr;
 	int processed_jpegSize = compressor.compressBandJpeg(processed_ndvibuf, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
-	filename_string(filename);
 	outname = "NDVI/" + filename_string;
 	try {
 		std::ofstream outfile2(outname, std::ofstream::binary);

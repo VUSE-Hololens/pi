@@ -76,7 +76,7 @@ public:
 				uint8_t p2 = old_data[Coords2Index(2 * i + 1, 2 * j, oldSize)];
 				uint8_t p3 = old_data[Coords2Index(2 * i, 2 * j + 1, oldSize)];
 				uint8_t p4 = old_data[Coords2Index(2 * i + 1, 2 * j + 1, oldSize)];
-				newSize[Coords2Index(i, j, *newSize)] = (p1 + p2 + p3 + p4) / 4;
+				new_data[Coords2Index(i, j, *newSize)] = (p1 + p2 + p3 + p4) / 4;
 			}
 		}
 	}
