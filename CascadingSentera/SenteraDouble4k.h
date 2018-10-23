@@ -37,6 +37,8 @@ private:
 	static const int BUFLEN = 512;											// Buffer length
 	static const int IMG_FILENAME_LEN = 48;
 	static const int IMG_FILENAME_DIR_LEN = 4;								// length of leading directory in img filepath
+	int jpg_quality = 75;														// jpg compression quality
+
 	struct sockaddr_in si_other_send;										// Socket address of camera
 	struct sockaddr_in si_other_rec;										// Socket address receiving
 	int slen_send = sizeof(si_other_send);

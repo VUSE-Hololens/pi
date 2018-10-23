@@ -131,7 +131,7 @@ int SenteraDouble4k::sessionListener() {
 				//DEBUG printf("Bands Filtered for Camera %d\n", imgReadyID);
 
 				// send NDVI image if ready
-				if (imgReadyID == 2 && getUpdated()) sendNDVI(80); 
+				if (imgReadyID == 2 && getUpdated()) sendNDVI(jpg_quality); 
 				//DEBUG printf("NDVI data sent \n");
 			}
 		}
@@ -656,7 +656,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Preparing NDVI image: %s\n", filename);
+	//fprintf(stderr, "Preparing NDVI image: %s\n", filename);
 
 	// fill NDVI buffer
 	uint8_t *ndvibuf;
@@ -681,7 +681,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 			fprintf(stderr, "Error saving full NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
 		}
 		else {
-			fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
+			//fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
@@ -716,8 +716,8 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// transmit
-	fprintf(stderr, "Attempting transmission of NDVI jpg to Hololens, MODE: %s, size: %d. Image: %s (%dx%d)\n", 
-		MODE_NAMES[MODE], messageLen, filename, width, height);
+	fprintf(stderr, "Saved NDVI jpg, attempting transmission to Hololens... MODE: %s, trans. size (bytes): %d. Image: %s (%dx%d, q:%d)\n", 
+		MODE_NAMES[MODE], messageLen, filename, width, height, quality);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
@@ -729,6 +729,6 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	delete[] transBuf;
 
 	// debug
-	printf("Transmitted NDVI Image jpg\n\n");
+	//printf("Transmitted NDVI Image jpg\n\n");
 }
 
