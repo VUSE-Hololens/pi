@@ -671,7 +671,13 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// save un-processed NDVI image locally
 	int unprocessedQuality = 100;
 	uint8_t* jpegBuf = nullptr;
-	int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
+	try {
+		int jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
+	}
+	catch(std::exception ex) {
+		fprintf(stderr, "Caught exception attempting to compress full-size NDVI to jpg: %s", ex.what());
+	}
+
 	std::string filename_string(filename);
 	std::string outname = "NDVI_FULL/" + filename_string;
 	try {
@@ -699,14 +705,25 @@ void SenteraDouble4k::sendNDVI(int quality) {
 			processed_ndvibuf = ndvibuf; 
 			break;
 		case halfSample: 
-			processed_ndvibuf = new uint8_t[width/2 * height/2];
-			DataProcessor::HalfSample(ndvibuf, processed_ndvibuf, unprocessSize, &processedSize);  
+			try {
+				processed_ndvibuf = new uint8_t[width / 2 * height / 2];
+				DataProcessor::HalfSample(ndvibuf, processed_ndvibuf, unprocessSize, &processedSize);
+			}
+			catch (std::exception ex) {
+				fprintf(stderr, "Caught exception attempting to halfSample ndvi: %s", ex.what());
+			} 
 			break;
 	}
 
 	// save processed jpg locally
 	uint8_t* processed_jpegBuf = nullptr;
-	int processed_jpegSize = compressor.compressBandJpeg(processed_ndvibuf, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
+	try {
+		int processed_jpegSize = compressor.compressBandJpeg(processed_ndvibuf, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
+	}
+	catch (std::exception ex) {
+		fprintf(stderr, "Caught exception attempting to compress processed NDVI to jpg: %s", ex.what());
+	}
+	
 	outname = "NDVI/" + filename_string;
 	try {
 		std::ofstream outfile2(outname, std::ofstream::binary);
@@ -750,10 +767,16 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	Serializer::serializeInt(transBuf + 8, height);
 
 	// add in data
-	switch (TRANS_MODE) {
-		case fullFile: std::memcpy(transBuf + 12, processed_jpegBuf, processed_jpegSize); break;
-		case fileName: std::memcpy(transBuf + 12, filename, IMG_FILENAME_LEN); break;
+	try {
+		switch (TRANS_MODE) {
+			case fullFile: std::memcpy(transBuf + 12, processed_jpegBuf, processed_jpegSize); break;
+			case fileName: std::memcpy(transBuf + 12, filename, IMG_FILENAME_LEN); break;
+		}
 	}
+	catch (std::exception ex) {
+		fprintf(stderr, "Caught exception attempting to copy processed jpg to transmission buffer: %s", ex.what());
+	}
+	
 
 	// transmit
 	fprintf(stderr, "Attempting transmission to Hololens... Trans. mode: %s, Trans. size (bytes): %d. Image: %s\n\n", 
