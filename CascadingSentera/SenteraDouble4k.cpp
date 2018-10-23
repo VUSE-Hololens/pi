@@ -689,7 +689,12 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// transmits NDVI jpg filename
-	int messageLen = trans.HEADER_SIZE + IMG_FILENAME_LEN;
+	int messageLen;
+	switch (MODE) {
+		case fullFile: messageLen = = trans.HEADER_SIZE + jpegSize; break;
+		case fileName: messageLen = = trans.HEADER_SIZE + IMG_FILENAME_LEN; break;
+	}
+	 
 	uint8_t *transBuf;
 	try {
 		transBuf = new uint8_t[messageLen];
@@ -704,12 +709,15 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	Serializer::serializeInt(transBuf + 4, width);
 	Serializer::serializeInt(transBuf + 8, height);
 
-	// add in data: img filename
-	std::memcpy(transBuf + 12, filename, IMG_FILENAME_LEN);
+	// add in data
+	switch (MODE) {
+		case fullFile: std::memcpy(transBuf + 12, jpegBuf, jpegSize); break;
+		case fileName: std::memcpy(transBuf + 12, filename, IMG_FILENAME_LEN); break;
+	}
 
 	// transmit
-	fprintf(stderr, "Attempting transmission of NDVI jpg filename to Hololens. Image: %s (%dx%d)\n", 
-		filename, width, height);
+	fprintf(stderr, "Attempting transmission of NDVI jpg to Hololens, MODE: %s, size: %d. Image: %s (%dx%d)\n", 
+		ModeNames[MODE], messageLen, filename, width, height);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}

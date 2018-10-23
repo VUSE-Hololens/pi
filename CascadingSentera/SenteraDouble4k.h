@@ -25,9 +25,13 @@
 
 class SenteraDouble4k : public Sensor // implements sensor
 {
-// Variables
-public:
+	// Pi -> Hololens NDVI jpg transmission control
+	enum TransmitMode { fullFile, fileName }; // full file in single UDP packet or file name for download
+	char *ModeNames[] = { "Full File", "File Name" };
 
+	// Variables
+public:
+	static const TransmitMode MODE = fullFile;
 private:
 	// class variables
 	static const int BUFLEN = 512;											// Buffer length
