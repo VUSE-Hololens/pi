@@ -668,6 +668,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
 
+	// debug
+	fprintf(stderr, "Got unprocessed NDVI data: %s\n", filename);
+
 	// save un-processed NDVI image locally
 	int unprocessedQuality = 100;
 	uint8_t* jpegBuf = nullptr;
@@ -678,6 +681,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	catch(std::exception ex) {
 		fprintf(stderr, "Caught exception attempting to compress full-size NDVI to jpg: %s", ex.what());
 	}
+
+	// debug
+	fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
 
 	std::string filename_string(filename);
 	std::string outname = "NDVI_FULL/" + filename_string;
@@ -695,6 +701,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	catch (std::ofstream::failure const &ex) {
 		fprintf(stderr, "Caught exception attempting to save full NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
+
+	// debug
+	fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
 
 	// process NDVI img
 	uint8_t *processed_ndvibuf;
@@ -716,6 +725,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 			break;
 	}
 
+	// debug
+	fprintf(stderr, "Processed NDVI data: %s\n", filename);
+
 	// save processed jpg locally
 	uint8_t* processed_jpegBuf = nullptr;
 	int processed_jpegSize;
@@ -725,6 +737,9 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	catch (std::exception ex) {
 		fprintf(stderr, "Caught exception attempting to compress processed NDVI to jpg: %s", ex.what());
 	}
+
+	// debug
+	fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
 	
 	outname = "NDVI/" + filename_string;
 	try {
