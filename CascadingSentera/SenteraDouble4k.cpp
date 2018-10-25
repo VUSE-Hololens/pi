@@ -624,7 +624,7 @@ int SenteraDouble4k::processImage(int cam) {
 	// get relevant exif data
 	easyexif::EXIFInfo result;
 	result.parseFrom(compressedImg, compressedImgLength);
-	fprintf(stderr, "Parsed jpg EXIF data (%s): ISO: %d, EV: 1/%d\n", outname.c_str(), result.ISOSpeedRatings, (unsigned)(1.0 / result.ExposureTime));
+	//fprintf(stderr, "Parsed jpg EXIF data (%s): ISO: %d, EV: 1/%d\n", outname.c_str(), result.ISOSpeedRatings, (unsigned)(1.0 / result.ExposureTime));
 
 	// debug
 	//std::cout << "Successfully decompressed .jpg\n";
