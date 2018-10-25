@@ -622,7 +622,7 @@ int SenteraDouble4k::processImage(int cam) {
 	if (resultCode == -1) { fprintf(stderr, "jpeg body decompression failed"); }
 
 	// get relevant exif data
-	EXIFInfo result;
+	easyexif::EXIFInfo result;
 	result.parseFrom(compressedImg, compressedImgLength);
 	fprintf(stderr, "Parsed jpg EXIF data (%s): ISO: %d, EV: %d\n", outname, result.ISOSpeedRatings, result.ExposureBiasValue);
 
