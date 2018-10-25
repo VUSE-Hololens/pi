@@ -12,12 +12,6 @@ session = 'field_test';
 % imgName: enter name of image of interest. It will be the same in both the
 % nRGB and NDRE folders.
 imgName = 'cal.jpg';
-% exposure: the image exposure time (in secons) for the RGB and NIR images
-ev_rgb = 1/547;
-ev_nir = 1/130;
-% ISO: the image ISO for the RGB and NIR images
-iso_rgb = 1328;
-iso_nir = 1600;
 
 % ----- End Input: just hit run -----
 
@@ -29,6 +23,19 @@ nirRaw = imread(nirImgPath);
 
 rgbRaw = imresize(rgbRaw, 1);
 nirRaw = imresize(nirRaw, 1);
+
+rgbInfo = imfinfo(rgbImgPath);
+nirInfo = imfinfo(nirImgPath);
+
+rgbCamInfo = rgbInfo.DigitalCamera;
+nirCamInfo = nirInfo.DigitalCamera;
+
+% exposure: the image exposure time (in secons) for the RGB and NIR images
+ev_rgb = rgbCamInfo.ExposureTime;
+ev_nir = nirCamInfo.ExposureTime;
+% ISO: the image ISO for the RGB and NIR images
+iso_rgb = rgbCamInfo.ISOSpeedRatings;
+iso_nir = nirCamInfo.ISOSpeedRatings;
 
 bandDataSep = zeros(size(rgbRaw,1), size(rgbRaw,2), 5);
 bandDataNorm = zeros(size(rgbRaw,1), size(rgbRaw,2), 5);
@@ -42,7 +49,7 @@ bandDataSep(:,:,5) = -0.341*nirRaw(:,:,1) + 2.436*nirRaw(:,:,3); % NIR
 
 % account for camera's sensitivity difference (Step 1)
 bandDataNorm(:,:,1:3) = bandDataSep(:,:,1:3) / (ev_rgb * (iso_rgb / 100));
-bandDataNorm(:,:,4:5) = bandDataSep(:,:,4:5) / (ev_nir * (iso_nir / 100));
+bandDataNorm(:,:,4:5) = 2.7 .* bandDataSep(:,:,4:5) / (ev_nir * (iso_nir / 100));
 
 % account for camera's sensitivity difference (Step 2)
 k = 255 / max(bandDataNorm(:));
@@ -50,13 +57,13 @@ bandDataNorm = bandDataNorm .* k;
 rgb_coef = k / (ev_rgb * (iso_rgb / 100));
 nir_coef = k / (ev_nir * (iso_nir / 100));
 
+
+
 % calculate NDVI
 ndvi = (bandDataNorm(:,:,5) - bandDataNorm(:,:,3)) ./ (bandDataNorm(:,:,5) + bandDataNorm(:,:,3));
-ndre = (bandDataNorm(:,:,5) - bandDataNorm(:,:,4)) ./ (bandDataNorm(:,:,5) + bandDataNorm(:,:,4));
 
 % clamp 0-1
-ndvi(ndvi<0) = 0;
-ndre(ndre<0) = 0;
+%ndvi(ndvi<0) = 0;
 
 % grab images
 rgbSep = zeros(size(rgbRaw,1), size(rgbRaw,2), 3);
@@ -95,7 +102,7 @@ subplot(2,3,4); imshow(uint8(nirNorm)); title("NIR: Normalized");
 subplot(2,3,5); imshow(uint8(nirNorm(:,:,1))); title("NIR: Normalized, NIR Only");
 subplot(2,3,6); histogram(nirNorm(:,:,1)); title("NIR: Normalized, NIR Only");
 figure(3);
-subplot(2,2,1); imshow(ndvi); title("NDVI");
-subplot(2,2,2); histogram(ndvi); title("NDVI");
-subplot(2,2,3); imshow(ndre); title("NDRE");
-subplot(2,2,4); histogram(ndre); title("NDRE");
+subplot(1,2,1); imshow(ndvi); title("NDVI");
+subplot(1,2,2); histogram(ndvi); title("NDVI");
+% subplot(2,2,3); imshow(ndre); title("NDRE");
+% subplot(2,2,4); histogram(ndre); title("NDRE");

@@ -765,7 +765,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// transmit processed NDVI jpg
 	int messageLen;
 	switch (TRANS_MODE) {
-		case fullFile: messageLen = trans.HEADER_SIZE + processed_jpegSize; break;
+		case fullFile: messageLen = trans.HEADER_SIZE + IMG_FILENAME_LEN + processed_jpegSize; break;
 		case fileName: messageLen = trans.HEADER_SIZE + IMG_FILENAME_LEN; break;
 	}
 	 
@@ -786,7 +786,10 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// add in data
 	try {
 		switch (TRANS_MODE) {
-			case fullFile: std::memcpy(transBuf + 12, processed_jpegBuf, processed_jpegSize); break;
+			case fullFile: 
+				std::memcpy(transBuf + trans.HEADER_SIZE, filename, IMG_FILENAME_LEN); // filename
+				std::memcpy(transBuf + trans.HEADER_SIZE + IMG_FILENAME_LEN, processed_jpegBuf, processed_jpegSize); // jpg data
+				break;
 			case fileName: std::memcpy(transBuf + 12, filename, IMG_FILENAME_LEN); break;
 		}
 	}
