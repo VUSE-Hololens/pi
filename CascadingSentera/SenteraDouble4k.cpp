@@ -5,6 +5,7 @@
 // includes
 #include "SenteraDouble4k.h"
 #include <fstream>
+#include "exif.h" // to read iso, ev of jpegs
 
 SenteraDouble4k::SenteraDouble4k() : SenteraDouble4k::SenteraDouble4k(offset){}
 
@@ -620,6 +621,11 @@ int SenteraDouble4k::processImage(int cam) {
 	resultCode = tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
 	if (resultCode == -1) { fprintf(stderr, "jpeg body decompression failed"); }
 
+	// get relevant exif data
+	EXIFInfo result;
+	result.parseFrom(compressedImg, compressedImgLength);
+	fprintf(stderr, "Parsed jpg EXIF data (%s): ISO: %d, EV: %d\n", outname, result.ISOSpeedRatings, result.ExposureBiasValue);
+
 	// debug
 	//std::cout << "Successfully decompressed .jpg\n";
 																				  
@@ -627,6 +633,8 @@ int SenteraDouble4k::processImage(int cam) {
 	sensor_data[cam - 1].width = width;
 	sensor_data[cam - 1].height = height;
 	sensor_data[cam - 1].bands = channels;
+	sensor_data[cam - 1].iso = ;
+	sensor_data[cam - 1].ev = ;
 	updated[cam - 1] = true;
 	return 0;
 }
