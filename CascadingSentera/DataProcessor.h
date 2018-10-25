@@ -52,8 +52,8 @@ public:
 			red = rgbBuf[i + 0]; // red band of rgb
 
 			// normalize images
-			nir = nir / ((sensorData[1].iso / 100f) * (1f / sensorData[1].inv_ev));
-			red = red / ((sensorData[0].iso / 100f) * (1f / sensorData[0].inv_ev));
+			nir = nir / ((sensorData[1].iso / 100.0f) * (1.0f / sensorData[1].inv_ev));
+			red = red / ((sensorData[0].iso / 100.0f) * (1.0f / sensorData[0].inv_ev));
 
 			// calc ndvi
 			// 2.7 scalar on ndvi accounts for camera differences
