@@ -633,8 +633,8 @@ int SenteraDouble4k::processImage(int cam) {
 	sensor_data[cam - 1].width = width;
 	sensor_data[cam - 1].height = height;
 	sensor_data[cam - 1].bands = channels;
-	sensor_data[cam - 1].iso = ;
-	sensor_data[cam - 1].ev = ;
+	sensor_data[cam - 1].iso = result.ISOSpeedRatings;
+	sensor_data[cam - 1].ev = result.ExposureBiasValue;
 	updated[cam - 1] = true;
 	return 0;
 }
