@@ -49,26 +49,26 @@ struct Frame {
 	uint8_t *pixels;
 	int height, width, bands;
 	float FOVx, FOVy;
-	float iso, ev;
+	float iso, inv_ev;
 
 	// default constructor
 	Frame() {
 		pixels = nullptr;
 		height = width = bands = 1;
 		FOVx = FOVy = 0;
-		iso = ev = 0;
+		iso = inv_ev = 0;
 	}
 
 	// constructor: blank frame
-	Frame(int _height, int _width, int _bands, float _FOVx, float _FOVy, float _iso, float _ev)
-		: height(_height), width(_width), bands(_bands), FOVx(_FOVx), FOVy(_FOVy), iso(_iso), ev(_ev)
+	Frame(int _height, int _width, int _bands, float _FOVx, float _FOVy, float _iso, float _inv_ev)
+		: height(_height), width(_width), bands(_bands), FOVx(_FOVx), FOVy(_FOVy), iso(_iso), inv_ev(_inv_ev)
 	{
 		pixels = new uint8_t[height*width*bands];
 	}
 
 	// copy constructor: deep copy
 	Frame(const Frame & rhs)
-		: height(rhs.height), width(rhs.width), bands(rhs.bands), FOVx(rhs.FOVx), FOVy(rhs.FOVy), iso(rhs.iso), ev(rhs.ev)
+		: height(rhs.height), width(rhs.width), bands(rhs.bands), FOVx(rhs.FOVx), FOVy(rhs.FOVy), iso(rhs.iso), inv_ev(rhs.inv_ev)
 	{
 		pixels = new uint8_t[height*width*bands];
 		for (int i = 0; i < height*width*bands; i++) {
