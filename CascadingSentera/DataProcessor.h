@@ -59,7 +59,8 @@ public:
 			// 2.7 scalar on ndvi accounts for camera differences
 			ndvi = (2.700 * nir - red) / (2.700 * nir + red);
 
-			buf[i / 3] = clamp_val(255.0f*ndvi);
+			//buf[i / 3] = clamp_val(255.0f*ndvi);
+			buf[i / 3] = (ndvi + 1.0f) / 2.0f * 255.0f;
 			if (buf[i / 3] <= 1 * 255 / 4) ++hist[0];
 			else if (buf[i / 3] <= 2 * 255 / 4) ++hist[1];
 			else if (buf[i / 3] <= 3 * 255 / 4) ++hist[2];

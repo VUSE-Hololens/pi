@@ -8,15 +8,17 @@
 
 % ----- INPUT -----
 % session: enter name of session. This will also be the directory name.
-session = 'field_test';
+session = 'Grass_2';
 % imgName: enter name of image of interest. It will be the same in both the
 % nRGB and NDRE folders.
-imgName = 'hallway.jpg';
+imgName = 'IMG_00010.jpg';
 
 % ----- End Input: just hit run -----
 
-rgbImgPath = [session '/nRGB/' imgName];
-nirImgPath = [session '/NDRE/' imgName];
+%rgbImgPath = [session '/RGB/' imgName];
+%nirImgPath = [session '/NIR/' imgName];
+rgbImgPath = 'rgb.jpg';
+nirImgPath = 'nir.jpg';
 
 rgbRaw = imread(rgbImgPath);
 nirRaw = imread(nirImgPath);
@@ -49,18 +51,18 @@ bandDataSep(:,:,5) = -0.341*nirRaw(:,:,1) + 2.436*nirRaw(:,:,3); % NIR
 
 % account for camera's sensitivity difference (Step 1)
 bandDataNorm(:,:,1:3) = bandDataSep(:,:,1:3) / (ev_rgb * (iso_rgb / 100));
-bandDataNorm(:,:,4:5) = 2.7 .* bandDataSep(:,:,4:5) / (ev_nir * (iso_nir / 100));
+bandDataNorm(:,:,4:5) = bandDataSep(:,:,4:5) / (ev_nir * (iso_nir / 100));
 
 % account for camera's sensitivity difference (Step 2)
-k = 255 / max(bandDataNorm(:));
-bandDataNorm = bandDataNorm .* k;
-rgb_coef = k / (ev_rgb * (iso_rgb / 100));
-nir_coef = k / (ev_nir * (iso_nir / 100));
+% k = 255 / max(bandDataNorm(:));
+% bandDataNorm = bandDataNorm .* k;
+% rgb_coef = k / (ev_rgb * (iso_rgb / 100));
+% nir_coef = k / (ev_nir * (iso_nir / 100));
 
 
 
 % calculate NDVI
-ndvi = (bandDataNorm(:,:,5) - bandDataNorm(:,:,3)) ./ (bandDataNorm(:,:,5) + bandDataNorm(:,:,3));
+ndvi = (2.7 .* bandDataNorm(:,:,5) - bandDataNorm(:,:,3)) ./ (2.7 .* bandDataNorm(:,:,5) + bandDataNorm(:,:,3));
 
 % clamp 0-1
 %ndvi(ndvi<0) = 0;
