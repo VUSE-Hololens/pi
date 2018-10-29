@@ -20,9 +20,9 @@ public:
 		}
 
 		// init data
-		float *rgbBuf = new float[size], *nirBuf = new float[size];
-		float r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
-		float nir = 0.0f, red = 0.0f, ndvi = 0.0f;
+		double *rgbBuf = new double[size], *nirBuf = new double[size];
+		double r_rgb_tmp = 0.0f, g_rgb_tmp = 0.0f, b_rgb_tmp = 0.0f, r_nir_tmp = 0.0f, b_nir_tmp;
+		double nir = 0.0f, red = 0.0f, ndvi = 0.0f;
 
 		// loop camera
 		int hist[] = { 0, 0, 0, 0};
@@ -61,10 +61,10 @@ public:
 
 			//buf[i / 3] = clamp_val(255.0f*ndvi);
 			buf[i / 3] = (ndvi + 1.0f) / 2.0f * 255.0f;
-			if (buf[i / 3] <= 1 * 255 / 4) ++hist[0];
+			/*if (buf[i / 3] <= 1 * 255 / 4) ++hist[0];
 			else if (buf[i / 3] <= 2 * 255 / 4) ++hist[1];
 			else if (buf[i / 3] <= 3 * 255 / 4) ++hist[2];
-			else if (buf[i / 3] <= 4 * 255 / 4) ++hist[3];
+			else if (buf[i / 3] <= 4 * 255 / 4) ++hist[3];*/
 		}
 		//printf("NDVI data: <%d, %d, %d, %d>\n", hist[0], hist[1], hist[2], hist[3]);
 		delete[] rgbBuf;
