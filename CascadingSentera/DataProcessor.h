@@ -18,15 +18,15 @@ public:
 			return false;
 		}
 
-		uint32_t r_norm = new uint32_t[height * width];
-		uint32_t nir_norm = new uint32_t[height * width];
+		uint32_t* r_norm = new uint32_t[height * width];
+		uint32_t* nir_norm = new uint32_t[height * width];
 
 		// separate & normalize R & NIR bands, find k
 		uint8_t r, g, b, nir1, nir2;
 		uint32_t r_sep, nir_sep;
 		uint32_t max = 0;
 		double k;
-		for (i = 0; i < width * height; i++) {
+		for (int i = 0; i < width * height; i++) {
 			// grab data
 			r = sensorData[0].pixels[3*i + 0];
 			g = sensorData[0].pixels[3*i + 1];
@@ -53,7 +53,7 @@ public:
 		uint32_t r_pix, nir_pix;
 		double ndvi;
 		uint8_t r_byte, nir_byte, ndvi_byte;
-		for (i = 0; i < width * height; i++) {
+		for (int i = 0; i < width * height; i++) {
 			// grab data
 			r_pix = r_norm[i];
 			nir_pix = nir_norm[i];
