@@ -685,7 +685,21 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold NDVI data of size %d", width * height * 3);
 		return;
 	}
+
+	// test getSenteraData: baseline
+	uint8_t t1 = data[width*height * 3 - 3]; 
+	uint8_t t2 = data[width*height * 3 - 2];
+	uint8_t t3 = data[width*height * 3 - 1];
+
 	DataProcessor::getSenteraData(sensor_data, width, height, data);
+
+	// test getSenteraData: baseline
+	uint8_t r1 = data[width*height * 3 - 3];
+	uint8_t r2 = data[width*height * 3 - 2];
+	uint8_t r3 = data[width*height * 3 - 1];
+
+	// debug
+	fprintf(stderr, "Got Sentera Data... Last pixel: was: (%d, %d, %d), now: (%d, %d, %d)\n", t1,t2,t3, r1,r2,r3);
 
 	// debug
 	//fprintf(stderr, "Got unprocessed NDVI data: %s\n", filename);
@@ -703,7 +717,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	//fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
+	fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
 
 	std::string filename_string(filename);
 	std::string outname = "NDVI_FULL/" + filename_string;
