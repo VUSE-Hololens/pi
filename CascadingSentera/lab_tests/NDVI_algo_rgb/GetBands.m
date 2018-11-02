@@ -1,15 +1,28 @@
 % GetBands
 % pulls R, G, B bands from rgb image
 
-filepath = 'img.jpg';
+rgb_filepath = 'img3_rgb.jpg';
+nir_filepath = 'img3_nir.jpg';
+ndvi_filepath = 'img3_ndvi.jpg';
 
-img = imread(filepath);
-band1 = img(:,:,1);
-band2 = img(:,:,2);
-band3 = img(:,:,3);
+rgb = imread(rgb_filepath);
+nir = imread(nir_filepath);
+ndvi = imread(ndvi_filepath);
+
+red_rgb = rgb(:,:,1);
+nir_nir = nir(:,:,3);
+red_ndvi = ndvi(:,:,1);
+nir_ndvi = ndvi(:,:,2);
+ndvi_ndvi = ndvi(:,:,3);
 
 figure(1);
-subplot(2,2,1); imshow(img); title('All Bands');
-subplot(2,2,2); imshow(band1); title('Band1');
-subplot(2,2,3); imshow(band2); title('Band2');
-subplot(2,2,4); imshow(band3); title('Band3');
+subplot(3,3,1); imshow(rgb); title('RGB');
+subplot(3,3,2); imshow(nir); title('NIR');
+subplot(3,3,3); imshow(ndvi); title('NDVI');
+subplot(3,3,4); imshow(red_rgb); title('RGB: Red');
+subplot(3,3,5); imshow(nir_nir); title('NIR: nir');
+subplot(3,3,6); imshow(ndvi_ndvi); title('NDVI: NDVI');
+subplot(3,3,7); imshow(red_ndvi); title('NDVI: red');
+subplot(3,3,8); imshow(nir_ndvi); title('NDVI: nir');
+
+

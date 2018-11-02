@@ -723,7 +723,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	std::string outname = "NDVI_FULL/" + filename_string;
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
-		outfile.write(reinterpret_cast<const char*> (jpegBuf), width*height);
+		outfile.write(reinterpret_cast<const char*> (jpegBuf), jpegSize);
 		// check if successful
 		if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
 			fprintf(stderr, "Error saving full NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
@@ -781,7 +781,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	outname = "NDVI/" + filename_string;
 	try {
 		std::ofstream outfile2(outname, std::ofstream::binary);
-		outfile2.write(reinterpret_cast<const char*> (processed_jpegBuf), processedSize.x * processedSize.y);
+		outfile2.write(reinterpret_cast<const char*> (processed_jpegBuf), processed_jpegSize);
 		// check if successful
 		if ((outfile2.rdstate() & std::ofstream::failbit) != 0) {
 			fprintf(stderr, "Error saving processed NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
