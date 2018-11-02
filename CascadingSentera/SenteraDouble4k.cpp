@@ -666,7 +666,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// debug
 	//fprintf(stderr, "Preparing NDVI image: %s\n", filename);
 
-	// fill NDVI buffer
+	/*// fill NDVI buffer
 	uint8_t *ndvibuf;
 	try {
 		ndvibuf = new uint8_t[width * height];
@@ -674,7 +674,18 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold NDVI data of size %d", width * height);
 		return;
 	}
-	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf);
+	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf); */
+
+	// fill data buffer
+	uint8_t *data;
+	try {
+		data = new uint8_t[width * height * 3];
+	}
+	catch (std::bad_alloc ba) {
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold NDVI data of size %d", width * height * 3);
+		return;
+	}
+	DataProcessor::getSenteraData(sensor_data, width, height, data);
 
 	// debug
 	//fprintf(stderr, "Got unprocessed NDVI data: %s\n", filename);
@@ -684,7 +695,8 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	uint8_t* jpegBuf = nullptr;
 	int jpegSize;
 	try {
-		jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
+		//jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
+		jpegSize = compressor.compressRGBJpeg(data, &jpegBuf, width, height, unprocessedQuality);
 	}
 	catch(std::exception ex) {
 		fprintf(stderr, "Caught exception attempting to compress full-size NDVI to jpg: %s", ex.what());
@@ -714,18 +726,20 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	//fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
 
 	// process NDVI img
-	uint8_t *processed_ndvibuf;
+	uint8_t *processed_data;
 	Vector3Int processedSize;
 	Vector3Int unprocessSize(width, height, 1);
 	switch (PROCESS_MODE) {
 		case none: 
 			processedSize = unprocessSize;
-			processed_ndvibuf = ndvibuf; 
+			//processed_data = ndvibuf; 
+			processed_data = data;
 			break;
 		case halfSample: 
 			try {
-				processed_ndvibuf = new uint8_t[width / 2 * height / 2];
-				DataProcessor::HalfSample(ndvibuf, processed_ndvibuf, unprocessSize, &processedSize);
+				processed_data = new uint8_t[width / 2 * height / 2];
+				//DataProcessor::HalfSample(ndvibuf, processed_data, unprocessSize, &processedSize);
+				DataProcessor::HalfSample(data, processed_data, unprocessSize, &processedSize);
 			}
 			catch (std::exception ex) {
 				fprintf(stderr, "Caught exception attempting to halfSample ndvi: %s", ex.what());
@@ -740,10 +754,11 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	uint8_t* processed_jpegBuf = nullptr;
 	int processed_jpegSize;
 	try {
-		processed_jpegSize = compressor.compressBandJpeg(processed_ndvibuf, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
+		//processed_jpegSize = compressor.compressBandJpeg(processed_data, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
+		processed_jpegSize = compressor.compressRGBJpeg(processed_data, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
 	}
 	catch (std::exception ex) {
-		fprintf(stderr, "Caught exception attempting to compress processed NDVI to jpg: %s", ex.what());
+		fprintf(stderr, "Caught exception attempting to compress processed data to jpg: %s", ex.what());
 	}
 
 	// debug
@@ -813,10 +828,12 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
 
-	delete[] ndvibuf;
+	//delete[] ndvibuf;
+	delete[] data;
+	switch (PROCESS_MODE) { case halfSample: delete[] processed_data; }
 	delete[] processed_jpegBuf;
 	delete[] transBuf;
-
+	
 	// debug
 	//printf("Transmitted NDVI Image jpg\n\n");
 }

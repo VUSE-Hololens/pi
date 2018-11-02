@@ -16,6 +16,7 @@ compress::~compress()
 }
 
 /* This method compresses 3-channel RGB matrices to JPEG*/
+// compressed allocated by tjCompress2
 long unsigned int compress::compressRGBJpeg(uint8_t* frame, uint8_t **compressed, int width, int height, int quality) {
 
 	long unsigned int jpegSize = 0;
