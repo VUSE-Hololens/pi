@@ -143,35 +143,28 @@ public:
 		// old_data / new_data: buffers to holding old data / to hold new data. new_data NOT initialized in method
 		// oldSize: size of old buffer (width, height, bands)
 		// newSize: ptr to obj to hold new size, set by this method
-	// NOTE: currently only supports single band data
 	static void HalfSample(uint8_t* old_data, uint8_t* new_data, Vector3Int oldSize, Vector3Int* newSize) {
 		// find new size
 		newSize->x = oldSize.x / 2;
 		newSize->y = oldSize.y / 2;
-		newSize->z = 1;
-		
+		newSize->z = oldSize.z;
+
 		// fill in new data
 		for (int i = 0; i < newSize->x; i++) {
 			for (int j = 0; j < newSize->y; j++) {
-				uint8_t p1 = old_data[Coords2Index(2 * i, 2 * j, oldSize)];
-				uint8_t p2 = old_data[Coords2Index(2 * i + 1, 2 * j, oldSize)];
-				uint8_t p3 = old_data[Coords2Index(2 * i, 2 * j + 1, oldSize)];
-				uint8_t p4 = old_data[Coords2Index(2 * i + 1, 2 * j + 1, oldSize)];
-				new_data[Coords2Index(i, j, *newSize)] = (p1 + p2 + p3 + p4) / 4;
+				for (int k = 0; k < newSize->z; k++) {
+					uint8_t p1 = old_data[Coords2Index(2 * i, 2 * j, k, oldSize)];
+					uint8_t p2 = old_data[Coords2Index(2 * i + 1, 2 * j, k, oldSize)];
+					uint8_t p3 = old_data[Coords2Index(2 * i, 2 * j + 1, k, oldSize)];
+					uint8_t p4 = old_data[Coords2Index(2 * i + 1, 2 * j + 1, k, oldSize)];
+					new_data[Coords2Index(i, j, k, *newSize)] = (p1 + p2 + p3 + p4) / 4;
+				}
 			}
 		}
 	}
 
-	static int Coords2Index(int i, int j, Vector3Int size) {
-		return j * size.x + i;
-	}
-
-	static int Index2I(int index, Vector3Int size) {
-		return index % size.x;
-	}
-
-	static int Index2J(int index, Vector3Int size) {
-		return index / size.x;
+	static int Coords2Index(int i, int j, int k, Vector3Int size) {
+		return j * size.z * size.x + i * size.z + k;
 	}
 	
 	static bool Resample(uint8_t *old_data, Vector3Int oldSize, Vector3Int newSize, uint8_t *newDataBuf)

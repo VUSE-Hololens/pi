@@ -742,7 +742,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// process NDVI img
 	uint8_t *processed_data;
 	Vector3Int processedSize;
-	Vector3Int unprocessSize(width, height, 1);
+	Vector3Int unprocessSize(width, height, 3);
 	switch (PROCESS_MODE) {
 		case none: 
 			processedSize = unprocessSize;
@@ -751,7 +751,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 			break;
 		case halfSample: 
 			try {
-				processed_data = new uint8_t[width / 2 * height / 2];
+				processed_data = new uint8_t[width / 2 * height / 2 * 3];
 				//DataProcessor::HalfSample(ndvibuf, processed_data, unprocessSize, &processedSize);
 				DataProcessor::HalfSample(data, processed_data, unprocessSize, &processedSize);
 			}

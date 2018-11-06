@@ -1,9 +1,9 @@
 % GetBands
 % pulls R, G, B bands from rgb image
 
-rgb_filepath = 'img3_rgb.jpg';
-nir_filepath = 'img3_nir.jpg';
-ndvi_filepath = 'img3_ndvi.jpg';
+rgb_filepath = 'img4_rgb.jpg';
+nir_filepath = 'img4_nir.jpg';
+ndvi_filepath = 'img4_ndvi.jpg';
 
 rgb = imread(rgb_filepath);
 nir = imread(nir_filepath);
@@ -15,7 +15,7 @@ red_ndvi = ndvi(:,:,1);
 nir_ndvi = ndvi(:,:,2);
 ndvi_ndvi = ndvi(:,:,3);
 
-figure(1);
+figure;
 subplot(3,3,1); imshow(rgb); title('RGB');
 subplot(3,3,2); imshow(nir); title('NIR');
 subplot(3,3,3); imshow(ndvi); title('NDVI');
@@ -25,4 +25,7 @@ subplot(3,3,6); imshow(ndvi_ndvi); title('NDVI: NDVI');
 subplot(3,3,7); imshow(red_ndvi); title('NDVI: red');
 subplot(3,3,8); imshow(nir_ndvi); title('NDVI: nir');
 
+figure;
+subplot(1,2,1); imshow(ndvi_ndvi, []); title('NDVI: Pi');
+subplot(1,2,2); histogram(ndvi_ndvi);
 
