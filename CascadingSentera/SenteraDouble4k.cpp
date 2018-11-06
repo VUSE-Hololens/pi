@@ -759,6 +759,17 @@ void SenteraDouble4k::sendNDVI(int quality) {
 				fprintf(stderr, "Caught exception attempting to halfSample ndvi: %s", ex.what());
 			} 
 			break;
+		case quarterSample:
+			try {
+				processed_data_tmp = new uint8_t[width / 2 * height / 2 * 3];
+				DataProcessor::HalfSample(data, processed_data_tmp, unprocessSize, &processedSize);
+				processed_data = new uint8_t[processedSize.x / 2 * processedSize.y / 2 * 3];
+				Vector3Int tmp_size = processedSize;
+				DataProcessor::HalfSample(processed_data_tmp, processed_data, tmp_size, &processedSize);
+			}
+			catch (std::exception ex) {
+				fprintf(stderr, "Caught exception attempting to quarterSample ndvi: %s", ex.what());
+			}
 	}
 
 	// debug
@@ -844,7 +855,15 @@ void SenteraDouble4k::sendNDVI(int quality) {
 
 	//delete[] ndvibuf;
 	delete[] data;
-	switch (PROCESS_MODE) { case halfSample: delete[] processed_data; }
+	switch (PROCESS_MODE) { 
+	case halfSample: 
+		delete[] processed_data; 
+		break;
+	case quarterSample:
+		delete[] processed_data;
+		delete[] processed_data_tmp;
+		break;
+	}
 	delete[] processed_jpegBuf;
 	delete[] transBuf;
 	

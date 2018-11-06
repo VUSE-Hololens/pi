@@ -30,13 +30,13 @@ class SenteraDouble4k : public Sensor // implements sensor
 	const char *TRANS_MODE_NAMES[2] = { "Full File", "File Name" };
 
 	// Pi NDVI jpg processing control
-	enum ProcessMode { none, halfSample }; // no downsample, downsample height, width in half once
-	const char *PROCESS_MODE_NAMES[2] = { "None", "Half-Sampled" };
+	enum ProcessMode { none, halfSample, quarterSample }; // no downsample, downsample height, width in half once
+	const char *PROCESS_MODE_NAMES[2] = { "None", "Half-Sampled", "Quarter-Sampled" };
 
 	// Variables
 public:
 	static const TransmitMode TRANS_MODE = fullFile;
-	static const ProcessMode PROCESS_MODE = halfSample;
+	static const ProcessMode PROCESS_MODE = quarterSample;
 private:
 	// class variables
 	static const int BUFLEN = 512;											// Buffer length
