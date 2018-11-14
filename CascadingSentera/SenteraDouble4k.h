@@ -9,6 +9,9 @@
 #include <time.h>
 #include <errno.h>
 #include <chrono>
+#include <string>
+#include <streambuf>
+#include <fstream>
 
 // user includes
 #include "Bufferizer.h" // bufferizes packets of data
