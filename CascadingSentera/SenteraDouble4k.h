@@ -33,10 +33,18 @@ class SenteraDouble4k : public Sensor // implements sensor
 	enum ProcessMode { none, halfSample, quarterSample }; // no downsample, downsample height, width in half once
 	const char *PROCESS_MODE_NAMES[2] = { "None", "Half-Sampled", "Quarter-Sampled" };
 
+	// debug mode control
+	// Debug mode allows pi to test behavior without sentera attached
+	enum Toggle {on, off};
+	const char *TOGGLE_NAMES = { "On", "Off" };
+	const char *DUMMY_PATH_1 = "dummy_img_1.jpg";
+	const char *DUMMY_PATH_2 = "dummy_img_2.jpg";
+
 	// Variables
 public:
 	static const TransmitMode TRANS_MODE = fullFile;
 	static const ProcessMode PROCESS_MODE = quarterSample;
+	static const Toggle DEBUG_MODE = on;
 private:
 	// class variables
 	static const int BUFLEN = 512;											// Buffer length

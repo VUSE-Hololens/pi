@@ -6,6 +6,7 @@
 #include "SenteraDouble4k.h"
 #include <fstream>
 #include "exif.h" // to read iso, ev of jpegs
+#include <unistd.h> // for sleeping
 
 SenteraDouble4k::SenteraDouble4k() : SenteraDouble4k::SenteraDouble4k(offset){}
 
@@ -70,17 +71,21 @@ int SenteraDouble4k::Start() {
 	fprintf(stderr, "Started and listening for data! Session Name: %s\n", currentSessionName);
 	
 	// infinite listening and processing loop
-	return sessionListener();
-
-	//return 0;
+	switch (DEBUG_MODE)
+	{
+	case off: return sessionListener(); break;
+	case on: return sessionListener_DEBUG(); break;
+	}
 }
 
+// infinite listening, processing loop
 int SenteraDouble4k::sessionListener() {
 	// listen for updates
 	live_session = true;
 	int recvType = 0;
 	bool firstLoop = true;
 
+	// infinite loop
 	while (live_session)
 	{
 		// havent yet received data
@@ -90,6 +95,7 @@ int SenteraDouble4k::sessionListener() {
 		auto starttime = std::chrono::system_clock::now();
 		auto endtime = std::chrono::system_clock::now();
 
+		// waiting loop
 		while (!received_data)
 		{
 			// debug
@@ -115,7 +121,7 @@ int SenteraDouble4k::sessionListener() {
 				continue;
 			}
 
-			// if new data is ready to process, do that
+			// if new data is ready to process, do that, exit loop
 			if (recvType == fw_packet_type_e::IMAGER_DATA_READY) {
 				if (firstLoop) {
 					// debug
@@ -123,23 +129,34 @@ int SenteraDouble4k::sessionListener() {
 					firstLoop = false;
 				}
 
-				//DEBUG printf("Images ready for Camera %d\n", imgReadyID);
-
 				// prepares images
 				processImage(imgReadyID); // process data for appropriate image
 
-				//DEBUG printf("Images processed for Camera %d\n", imgReadyID);
-				//DEBUG printf("Bands Filtered for Camera %d\n", imgReadyID);
-
 				// send NDVI image if ready
 				if (imgReadyID == 2 && getUpdated()) sendNDVI(jpg_quality); 
-				//DEBUG printf("NDVI data sent \n");
 			}
 		}
 		// when data is received, reset timer
 		starttime = endtime;
 	}
 	return 0;
+}
+
+// infinite listening, processing loop for DEBUG mode...
+// mimics regular method but does not require sentera
+int SenteraDouble4k::sessionListener_DEBUG() {
+	// infinite loop
+	while (true) {
+		// process image (both cameras)
+		processImage(1);
+		processImage(2);
+
+		// send NDVI
+		sendNDVI(jpg_quality);
+
+		// sleep
+		usleep(1000);
+	}
 }
 
 int SenteraDouble4k::Stop() {
@@ -563,13 +580,33 @@ std::vector<Frame> SenteraDouble4k::Data() {
 	return outFrames;
 }
 
+// Downloads img from Sentera, updates class data
 int SenteraDouble4k::processImage(int cam) {
-	// make URL string to grab data from, then grab the data
-	std::string urlStr = makeUrlPath(recent_images[cam-1].fileName);
-	std::string imgContent = http_downloader.download(urlStr);
+	// grab compressed image data
+	std::string imgContent;
+	int dummy_counter = 0;
+	switch (DEBUG_MODE)
+	{
+	case off:
+		std::string urlStr = makeUrlPath(recent_images[cam - 1].fileName);
+		imgContent = http_downloader.download(urlStr);
+		break;
+	case on:
+		// get dummy file content
+		const char *path;
+		if (cam == 1) { path = DUMMY_PATH_1; }
+		else { path = DUMMY_PATH_1; }
+		std::ifstream t(path);
+		imgContent((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-	// debug
-	//std::cout << "Successfully downloaded sentera's .jpg from: " << urlStr << ", Length: " << imgContent.length() << "\n";
+		// set dummy file name
+		if (cam == 1) { recent_images[cam - 1].fileName = "RGB/Dummy_" + std::to_string(dummy_counter); }
+		else {
+			recent_images[cam - 1].fileName = "NIR/Dummy_" + std::to_string(dummy_counter);
+			dummy_counter++;
+		}
+		break;
+	}
 
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
@@ -594,9 +631,6 @@ int SenteraDouble4k::processImage(int cam) {
 	catch (std::ofstream::failure const &ex) {
 		fprintf(stderr, "Caught exception attempting to save sentera jpg locally to %s, camera %d: %s", outname.c_str(), cam, ex.what());
 	}
-
-
-	
 
 	// initialize variables to fill with data
 	int width, height;
@@ -663,9 +697,6 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		filename[i] = (const char)recent_images[1].fileName[i + IMG_FILENAME_DIR_LEN];
 	}
 
-	// debug
-	//fprintf(stderr, "Preparing NDVI image: %s\n", filename);
-
 	/*// fill NDVI buffer
 	uint8_t *ndvibuf;
 	try {
@@ -686,23 +717,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		return;
 	}
 
-	// test getSenteraData: baseline
-	uint8_t t1 = data[width*height * 3 - 3]; 
-	uint8_t t2 = data[width*height * 3 - 2];
-	uint8_t t3 = data[width*height * 3 - 1];
-
 	DataProcessor::getSenteraData(sensor_data, width, height, data);
-
-	// test getSenteraData: baseline
-	uint8_t r1 = data[width*height * 3 - 3];
-	uint8_t r2 = data[width*height * 3 - 2];
-	uint8_t r3 = data[width*height * 3 - 1];
-
-	// debug
-	fprintf(stderr, "Got Sentera Data... Last pixel: was: (%d, %d, %d), now: (%d, %d, %d)\n", t1,t2,t3, r1,r2,r3);
-
-	// debug
-	//fprintf(stderr, "Got unprocessed NDVI data: %s\n", filename);
 
 	// save un-processed NDVI image locally
 	int unprocessedQuality = 100;
