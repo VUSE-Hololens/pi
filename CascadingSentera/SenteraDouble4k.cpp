@@ -610,14 +610,15 @@ int SenteraDouble4k::processImage(int cam) {
 		result.clear();
 
 		// set dummy file name
-		uint8_t dummy_path[48];
+		std::string dummy_path;
 		if (cam == 1) { dummy_path = std::string("RGB/Dummy_" + std::to_string(dummy_counter)).c_str(); }
 		else {
 			dummy_path = std::string("NIR/Dummy_" + std::to_string(dummy_counter)).c_str();
 			dummy_counter++;
 		}
 		//recent_images[cam - 1].fileName = dummy_path;
-		std::copy(std::begin(dummy_path), std::end(dummy_path), recent_images[cam - 1].fileName));
+		strncpy(recent_images[cam - 1].fileName, dummy_path.c_str(), 47);
+		recent_images[cam - 1].fileName[47] = 0;
 		break;
 	}
 
