@@ -10,6 +10,8 @@
 #include <string>
 #include <streambuf>
 #include <ios>
+#include <thread>
+#include <chrono> 
 
 SenteraDouble4k::SenteraDouble4k() : SenteraDouble4k::SenteraDouble4k(offset){}
 
@@ -161,7 +163,7 @@ int SenteraDouble4k::sessionListener_DEBUG() {
 		sendNDVI(jpg_quality);
 
 		// sleep
-		usleep(1000);
+		std::this_thread::sleep_for(std::chrono::seconds(1))
 	}
 }
 
@@ -601,7 +603,7 @@ int SenteraDouble4k::processImage(int cam) {
 		// get dummy file content
 		const char *path;
 		if (cam == 1) { path = DUMMY_PATH_1; }
-		else { path = DUMMY_PATH_1; }
+		else { path = DUMMY_PATH_2; }
 
 		std::ifstream ifs(path, std::ios::binary | std::ios::ate);
 		std::ifstream::pos_type pos = ifs.tellg();
