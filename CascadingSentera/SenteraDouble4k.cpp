@@ -617,7 +617,7 @@ int SenteraDouble4k::processImage(int cam) {
 			dummy_counter++;
 		}
 		//recent_images[cam - 1].fileName = dummy_path;
-		strncpy(recent_images[cam - 1].fileName, dummy_path.c_str(), 47);
+		strncpy(recent_images[cam - 1].fileName, (unsigned char*)dummy_path.c_str(), 47);
 		recent_images[cam - 1].fileName[47] = 0;
 		break;
 	}
