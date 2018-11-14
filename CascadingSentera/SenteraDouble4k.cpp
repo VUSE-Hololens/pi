@@ -599,8 +599,14 @@ int SenteraDouble4k::processImage(int cam) {
 		const char *path;
 		if (cam == 1) { path = DUMMY_PATH_1; }
 		else { path = DUMMY_PATH_1; }
-		std::ifstream t(path);
-		imgContent((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+
+		ifstream ifs(path, ios::binary | ios::ate);
+		ifstream::pos_type pos = ifs.tellg();
+		std::vector<char> result(pos);
+		ifs.seekg(0, ios::beg);
+		ifs.read(&result[0], pos);
+		imgContent(result.begin(), result.end());
+		result.clear();
 
 		// set dummy file name
 		if (cam == 1) { recent_images[cam - 1].fileName = (uint8_t*)(std::string("RGB/Dummy_" + std::to_string(dummy_counter)).c_str()); }
@@ -758,7 +764,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	//fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
 
 	// process NDVI img
-	uint8_t *processed_data, processed_data_tmp;
+	uint8_t *processed_data, *processed_data_tmp;
 	Vector3Int processedSize;
 	Vector3Int unprocessSize(width, height, 3);
 	switch (PROCESS_MODE) {
