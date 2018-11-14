@@ -600,20 +600,22 @@ int SenteraDouble4k::processImage(int cam) {
 		if (cam == 1) { path = DUMMY_PATH_1; }
 		else { path = DUMMY_PATH_1; }
 
-		ifstream ifs(path, ios::binary | ios::ate);
-		ifstream::pos_type pos = ifs.tellg();
+		std::ifstream ifs(path, ios::binary | ios::ate);
+		std::ifstream::pos_type pos = ifs.tellg();
 		std::vector<char> result(pos);
-		ifs.seekg(0, ios::beg);
+		ifs.seekg(0, std::ios::beg);
 		ifs.read(&result[0], pos);
-		imgContent(result.begin(), result.end());
+		imgContent = std::string(result.begin(), result.end());
 		result.clear();
 
 		// set dummy file name
-		if (cam == 1) { recent_images[cam - 1].fileName = (uint8_t*)(std::string("RGB/Dummy_" + std::to_string(dummy_counter)).c_str()); }
+		uint8_t dummy_path[48];
+		if (cam == 1) { dummy_path = std::string("RGB/Dummy_" + std::to_string(dummy_counter).c_str(); }
 		else {
-			recent_images[cam - 1].fileName = (uint8_t*)(std::string("NIR/Dummy_" + std::to_string(dummy_counter)).c_str());;
+			dummy_path = std::string("NIR/Dummy_" + std::to_string(dummy_counter).c_str();
 			dummy_counter++;
 		}
+		recent_images[cam - 1].fileName = dummy_path;
 		break;
 	}
 
