@@ -54,6 +54,7 @@ private:
 	static const int IMG_FILENAME_LEN = 48;
 	static const int IMG_FILENAME_DIR_LEN = 4;								// length of leading directory in img filepath
 	int jpg_quality = 80;														// jpg compression quality
+	int dummy_counter = 0;													// for debug mode
 
 	struct sockaddr_in si_other_send;										// Socket address of camera
 	struct sockaddr_in si_other_rec;										// Socket address receiving

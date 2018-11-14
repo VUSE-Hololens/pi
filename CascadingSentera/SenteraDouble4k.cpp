@@ -148,6 +148,9 @@ int SenteraDouble4k::sessionListener() {
 // infinite listening, processing loop for DEBUG mode...
 // mimics regular method but does not require sentera
 int SenteraDouble4k::sessionListener_DEBUG() {
+	// output
+	fprintf(stderr, "\n\nRunning in DEBUG MODE! Simulates Sentera images...\n\n");
+	
 	// infinite loop
 	while (true) {
 		// process image (both cameras)
@@ -587,7 +590,6 @@ std::vector<Frame> SenteraDouble4k::Data() {
 int SenteraDouble4k::processImage(int cam) {
 	// grab compressed image data
 	std::string imgContent;
-	int dummy_counter = 0;
 	std::string urlStr;
 	switch (DEBUG_MODE)
 	{
@@ -611,9 +613,9 @@ int SenteraDouble4k::processImage(int cam) {
 
 		// set dummy file name
 		std::string dummy_path;
-		if (cam == 1) { dummy_path = std::string("RGB/Dummy_" + std::to_string(dummy_counter)).c_str(); }
+		if (cam == 1) { dummy_path = std::string("RGB/Dummy_" + std::to_string(dummy_counter) + ".jpg").c_str(); }
 		else {
-			dummy_path = std::string("NIR/Dummy_" + std::to_string(dummy_counter)).c_str();
+			dummy_path = std::string("NIR/Dummy_" + std::to_string(dummy_counter) + ".jpg").c_str();
 			dummy_counter++;
 		}
 		//recent_images[cam - 1].fileName = dummy_path;
