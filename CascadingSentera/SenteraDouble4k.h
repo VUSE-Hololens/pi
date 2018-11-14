@@ -31,12 +31,12 @@ class SenteraDouble4k : public Sensor // implements sensor
 
 	// Pi NDVI jpg processing control
 	enum ProcessMode { none, halfSample, quarterSample }; // no downsample, downsample height, width in half once
-	const char *PROCESS_MODE_NAMES[2] = { "None", "Half-Sampled", "Quarter-Sampled" };
+	const char *PROCESS_MODE_NAMES[3] = { "None", "Half-Sampled", "Quarter-Sampled" };
 
 	// debug mode control
 	// Debug mode allows pi to test behavior without sentera attached
 	enum Toggle {on, off};
-	const char *TOGGLE_NAMES = { "On", "Off" };
+	const char *TOGGLE_NAMES[2] = { "On", "Off" };
 	const char *DUMMY_PATH_1 = "dummy_img_1.jpg";
 	const char *DUMMY_PATH_2 = "dummy_img_2.jpg";
 
@@ -99,6 +99,7 @@ private:
 
 	// listener to receive and process data
 	int sessionListener();
+	int sessionListener_DEBUG();
 
 	//receiving data
 	int query_status_packet();

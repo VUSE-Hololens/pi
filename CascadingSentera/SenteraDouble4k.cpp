@@ -7,6 +7,8 @@
 #include <fstream>
 #include "exif.h" // to read iso, ev of jpegs
 #include <unistd.h> // for sleeping
+#include <string>
+#include <streambuf>
 
 SenteraDouble4k::SenteraDouble4k() : SenteraDouble4k::SenteraDouble4k(offset){}
 
@@ -585,10 +587,11 @@ int SenteraDouble4k::processImage(int cam) {
 	// grab compressed image data
 	std::string imgContent;
 	int dummy_counter = 0;
+	std::string urlStr; std::ifstream t;
 	switch (DEBUG_MODE)
 	{
 	case off:
-		std::string urlStr = makeUrlPath(recent_images[cam - 1].fileName);
+		urlStr = makeUrlPath(recent_images[cam - 1].fileName);
 		imgContent = http_downloader.download(urlStr);
 		break;
 	case on:
@@ -596,13 +599,13 @@ int SenteraDouble4k::processImage(int cam) {
 		const char *path;
 		if (cam == 1) { path = DUMMY_PATH_1; }
 		else { path = DUMMY_PATH_1; }
-		std::ifstream t(path);
+		t(path);
 		imgContent((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
 		// set dummy file name
-		if (cam == 1) { recent_images[cam - 1].fileName = "RGB/Dummy_" + std::to_string(dummy_counter); }
+		if (cam == 1) { recent_images[cam - 1].fileName = std::string("RGB/Dummy_" + std::to_string(dummy_counter)).c_str(); }
 		else {
-			recent_images[cam - 1].fileName = "NIR/Dummy_" + std::to_string(dummy_counter);
+			recent_images[cam - 1].fileName = std::string("NIR/Dummy_" + std::to_string(dummy_counter)).c_str();
 			dummy_counter++;
 		}
 		break;
@@ -755,7 +758,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	//fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
 
 	// process NDVI img
-	uint8_t *processed_data;
+	uint8_t *processed_data, process_data_tmp;
 	Vector3Int processedSize;
 	Vector3Int unprocessSize(width, height, 3);
 	switch (PROCESS_MODE) {
