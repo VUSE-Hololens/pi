@@ -16,7 +16,8 @@ y = Matrix(:,3);
 z = Matrix(:,4);
 
 % adjust ndvi readings
-value = TrimScale(orig_value, 0, 255, 0, 255, -1, 1);
+%value = TrimScale(orig_value, 0, 255, 0, 255, -1, 1);
+value = orig_value;
 
 % plot results
 figure(1);
@@ -51,3 +52,6 @@ title ('Mound Bottom - Region 2'); xlabel('Left-Right (m)'); ylabel('Forward-Bac
 daspect([1 1 1]);
 [cmap]=buildcmap('ryg'); colormap(cmap); cbar = colorbar; ylabel(cbar, 'NDVI');
 %colormap(flipud(summer)); colorbar;
+
+figure(4);
+histogram(value);

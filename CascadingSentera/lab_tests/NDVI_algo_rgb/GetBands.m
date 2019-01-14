@@ -1,9 +1,9 @@
 % GetBands
 % pulls R, G, B bands from rgb image
 
-rgb_filepath = 'img4_rgb.jpg';
-nir_filepath = 'img4_nir.jpg';
-ndvi_filepath = 'img4_ndvi.jpg';
+rgb_filepath = 'mb_rgb.jpg';
+nir_filepath = 'mb_nir.jpg';
+ndvi_filepath = 'mb_ndvi.jpg';
 
 rgb = imread(rgb_filepath);
 nir = imread(nir_filepath);

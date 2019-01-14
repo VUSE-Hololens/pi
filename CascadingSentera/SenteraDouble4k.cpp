@@ -629,7 +629,7 @@ int SenteraDouble4k::processImage(int cam) {
 	size_t compressedImgLength = imgContent.length();
 	unsigned char *compressedImg = (unsigned char*)imgContent.c_str();
 
-	std::string outname = "";
+	std::string outname = "/home/pi/pi-transmit/CascadingSentera/";
 	for (int i = 0; i < 48; i++) { // filename array size 48
 		outname += (const char)recent_images[cam-1].fileName[i];
 	}
@@ -753,7 +753,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
 
 	std::string filename_string(filename);
-	std::string outname = "NDVI_FULL/" + filename_string;
+	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI_FULL/" + filename_string;
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
 		outfile.write(reinterpret_cast<const char*> (jpegBuf), jpegSize);
@@ -822,7 +822,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// debug
 	//fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
 	
-	outname = "NDVI/" + filename_string;
+	outname = "/home/pi/pi-transmit/CascadingSentera/NDVI/" + filename_string;
 	try {
 		std::ofstream outfile2(outname, std::ofstream::binary);
 		outfile2.write(reinterpret_cast<const char*> (processed_jpegBuf), processed_jpegSize);
