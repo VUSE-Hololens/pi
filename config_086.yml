@@ -12,8 +12,8 @@ CameraConfig:
       JpegQuality: 80
       PostProcessing: MINIMAL
       Size:
-        Height: 3000
-        Width: 4000
+        Height: 600
+        Width: 800
     PositionOffsetMM:
       Z: 0.0
     StartingZoomGain: 1.0
@@ -31,8 +31,8 @@ CameraConfig:
       JpegQuality: 80
       PostProcessing: MINIMAL
       Size:
-        Height: 3000
-        Width: 4000
+        Height: 600
+        Width: 800
     PositionOffsetMM:
       Z: 0.0
     StartingZoomGain: 1.0
@@ -72,7 +72,7 @@ CameraConfig:
       - fragshade_none.glsl
       - fragshade_ndvi.glsl
 File:
-  ConfigName: Multispectral Camera - Raw RGB - Stitching
+  ConfigName: Multispectral Camera - Commanded Session - Commanded Trigger
   ConfigRevision: C
   FileVersion: '1.4'
   ModifiedDate: '2017-02-14 12:27:56'
@@ -97,7 +97,7 @@ SessionConfig:
     AccurateFixMeters: 5.0
     DegradedFixMeters: 20.0
     PreciseFixMeters: 1.0
-  SessionType: GPS_FIX
+  SessionType: COMMAND
 SourceConfig:
   DjiConfig:
     Interface:
@@ -174,7 +174,7 @@ SourceConfig:
       UDP:
         MulticastIP: 239.192.143.140
         RxPort: 60530
-        TxIP: 192.168.143.130
+        TxIP: 192.168.143.140
         TxPort: 60531
     UseRevRProtocol: false
   RTCMConfig:

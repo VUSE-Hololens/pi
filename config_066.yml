@@ -2,7 +2,7 @@
 CameraConfig:
   Imager:
   - CamID: 0
-    CamName: nRGB
+    CamName: RGB
     Exposure:
       AutoExposure: frame-average
       EV: 4
@@ -11,14 +11,14 @@ CameraConfig:
       JpegQuality: 80
       PostProcessing: MINIMAL
       Size:
-        Height: 3000
-        Width: 4000
+        Height: 600
+        Width: 800
     StartingZoomGain: 1.0
     TriggerID: 1
     WorldFiles:
       Enabled: false
   - CamID: 1
-    CamName: NDRE
+    CamName: NIR
     Exposure:
       AutoExposure: frame-average
       EV: 5
@@ -27,8 +27,8 @@ CameraConfig:
       JpegQuality: 80
       PostProcessing: MINIMAL
       Size:
-        Height: 3000
-        Width: 4000
+        Height: 600
+        Width: 800
     StartingZoomGain: 1.0
     TriggerID: 2
     WorldFiles:
@@ -157,7 +157,7 @@ SourceConfig:
       UDP:
         MulticastIP: 239.192.143.140
         RxPort: 60530
-        TxIP: 192.168.143.130
+        TxIP: 192.168.143.140
         TxPort: 60531
     UseRevRProtocol: false
   RTCMConfig:

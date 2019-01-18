@@ -1,5 +1,5 @@
 // Header for Sentera Camera Class
-// Henry Bristol
+// Mark & Keegan
 // July 25, 2018
 
 // includes
@@ -657,7 +657,7 @@ int SenteraDouble4k::processImage(int cam) {
 	// initialize decompressor and get size
 	// tjhandle _jpegDecompressor = tjInitDecompress(); // called in constructor
 	int resultCode = tjDecompressHeader(_jpegDecompressor, compressedImg, compressedImgLength, &width, &height);
-	if (resultCode == -1) { fprintf(stderr, "jpeg header decompression failed"); }
+	if (resultCode == -1) { fprintf(stderr, "jpeg header decompression failed\n"); }
 	size_t size = width * height * channels; 
 
 	//std::cout << "About to attempt to allocate unsigned char array to hold decompressed .jpg of size: " << size << " (" << width << " x " << height << ")\n";
