@@ -10,18 +10,69 @@ class DataProcessor {
 
 public:
 	// sets buf to (R, NIR, NDVI) for each pixel in Frame
-	static bool getSenteraData(Frame* sensorData, int width, int height, uint8_t *buf) {
+	static bool getSenteraData(Frame* sensorData, int width, int height, uint8_t *buf, int cam) {
 		std::size_t size = width * height * 3;
 
-		if (sensorData[0].width != sensorData[1].width || sensorData[0].height != sensorData[1].height || sensorData[0].bands != sensorData[1].bands) {
-			printf("Error: Sentera RGB and NIR Image Dimension do not match!");
-			return false;
+		switch (cam)
+		{
+			uint32_t* sep_band = new uint32_t[height*width];
+			//RGB
+			case 1:
+				for (int i = 0; i < width * height; i++) {
+					// grab data
+					r = sensorData[0].pixels[3 * i + 0];
+					g = sensorData[0].pixels[3 * i + 1];
+					b = sensorData[0].pixels[3 * i + 2];
+
+					// separate bands
+					sep_band[i] = 1.150*r - 0.110*g - 0.034*b;
+				}
+
+				// fill in buf
+				uint8_t pix_byte;
+
+				for (int i = 0; i < width * height; i++) {
+					// rescale to one bit
+					pix_byte = (uint8_t)((sep_band[i]+(36.72))*(255.0)/(329.97));
+
+					// fill in buf
+					buf[i] = pix_byte;
+				}
+				break;
+			//NIR
+			case 2:
+				uint8_t nir1, nir2;
+				for (int i = 0; i < width * height; i++) {
+					// grab data
+					nir1 = sensorData[1].pixels[3 * i + 0];
+					nir2 = sensorData[1].pixels[3 * i + 2];
+
+					// separate bands
+					sep_band[i] = -0.341*nir1 + 2.436*nir2;
+				}
+
+				// fill in buf
+				uint8_t pix_byte;
+
+				for (int i = 0; i < width * height; i++) {
+					// rescale to one bit
+					pix_byte = (uint8_t)((sep_band[i] + (86.955))*(255.0) / (708.135));
+
+					// fill in buf
+					buf[i] = pix_byte;
+				}
+				break;
+				break;
+			default:
+				return false;
+				//Throw an error?
+				break;
 		}
-
-		uint32_t* r_norm = new uint32_t[height * width];
-		uint32_t* nir_norm = new uint32_t[height * width];
-
+		//End new code
+		//--------------------------------------------
 		// separate & normalize R & NIR bands, find k
+		
+		/*
 		uint8_t r, g, b, nir1, nir2;
 		uint32_t r_sep, nir_sep;
 		uint32_t max = 0;
@@ -49,28 +100,7 @@ public:
 
 		k = 255.0 / (double)max;
 
-		// fill in buf
-		uint32_t r_pix, nir_pix;
-		double ndvi;
-		uint8_t r_byte, nir_byte, ndvi_byte;
-		for (int i = 0; i < width * height; i++) {
-			// grab data
-			r_pix = r_norm[i];
-			nir_pix = nir_norm[i];
-
-			// calc NDVI
-			ndvi = (2.700*nir_pix - r_pix) / (2.700*nir_pix + r_pix);
-
-			// rescale
-			r_byte = (uint8_t)((double)r_pix * k);
-			nir_byte = (uint8_t)((double)nir_pix * k);
-			ndvi_byte = (uint8_t)((ndvi + 1.0) * (255.0/2.0));
-
-			// fill in buf
-			buf[3*i + 0] = r_byte;
-			buf[3*i + 1] = nir_byte;
-			buf[3*i + 2] = ndvi_byte;
-		}
+		*/
 
 		return true;
 	}

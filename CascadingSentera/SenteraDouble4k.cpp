@@ -138,7 +138,10 @@ int SenteraDouble4k::sessionListener() {
 				processImage(imgReadyID); // process data for appropriate image
 
 				// send NDVI image if ready
-				if (imgReadyID == 2 && getUpdated()) sendNDVI(jpg_quality); 
+
+				//if (imgReadyID == 2 && getUpdated()) 
+					
+				sendImage(jpg_quality); 
 			}
 		}
 		// when data is received, reset timer
@@ -706,7 +709,7 @@ std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
 
 // sendNDVI
 // calculates NDVI, saves locally as jpg and sends location to hololens
-void SenteraDouble4k::sendNDVI(int quality) {
+void SenteraDouble4k::sendImage(int quality) {
 	// get width, height and filename
 	int width = sensor_data[0].width; // doesnt have to be!! can choose to send any size image. will resample and scale accordingly
 	int height = sensor_data[0].height;
@@ -728,16 +731,17 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	// fill data buffer
 	uint8_t *data;
 	try {
-		data = new uint8_t[width * height * 3];
+		data = new uint8_t[width * height];
 	}
 	catch (std::bad_alloc ba) {
-		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold NDVI data of size %d", width * height * 3);
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold Image data of size %d", width * height * 3);
 		return;
 	}
 
-	DataProcessor::getSenteraData(sensor_data, width, height, data);
+	//Fill data with the NIR or R values
+	DataProcessor::getSenteraData(sensor_data, width, height, data, imgReadyID);
 
-	// save un-processed NDVI image locally
+	// save un-processed image locally
 	int unprocessedQuality = 100;
 	uint8_t* jpegBuf = nullptr;
 	int jpegSize;
@@ -746,27 +750,27 @@ void SenteraDouble4k::sendNDVI(int quality) {
 		jpegSize = compressor.compressRGBJpeg(data, &jpegBuf, width, height, unprocessedQuality);
 	}
 	catch(std::exception ex) {
-		fprintf(stderr, "Caught exception attempting to compress full-size NDVI to jpg: %s", ex.what());
+		fprintf(stderr, "Caught exception attempting to compress full-size R/NIR image to jpg: %s", ex.what());
 	}
 
 	// debug
-	fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
+	fprintf(stderr, "Compressed unprocessed R/NIR image data to jpg: %s\n", filename);
 
 	std::string filename_string(filename);
-	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI_FULL/" + filename_string;
+	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI_FULL/" + filename_string; 
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
 		outfile.write(reinterpret_cast<const char*> (jpegBuf), jpegSize);
 		// check if successful
 		if ((outfile.rdstate() & std::ofstream::failbit) != 0) {
-			fprintf(stderr, "Error saving full NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
+			fprintf(stderr, "Error saving full image jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
 		}
 		else {
 			//fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
-		fprintf(stderr, "Caught exception attempting to save full NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
+		fprintf(stderr, "Caught exception attempting to save full image jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
 
 	// debug

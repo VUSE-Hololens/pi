@@ -113,7 +113,7 @@ private:
 	std::string makeUrlPath(uint8_t *filename);
 
 	// for transmitting cascade style
-	void sendNDVI(int quality);
+	void sendImage(int quality);
 
 
 public:
