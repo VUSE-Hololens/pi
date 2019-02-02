@@ -847,6 +847,7 @@ void SenteraDouble4k::sendImage(int quality) {
 		filename, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
 		processed_jpegSize, processedSize.x, processedSize.y, quality);
 
+	/*
 	// transmit processed NDVI jpg
 	int messageLen;
 	switch (TRANS_MODE) {
@@ -889,6 +890,8 @@ void SenteraDouble4k::sendImage(int quality) {
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
+
+	*/
 
 	//delete[] ndvibuf;
 	delete[] data;

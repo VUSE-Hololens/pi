@@ -62,11 +62,14 @@ public:
 					buf[i] = pix_byte;
 				}
 				break;
-				break;
+				
 			default:
 				return false;
 				//Throw an error?
 				break;
+			delete[] sep_band;
+			return true;
+
 		}
 		//End new code
 		//--------------------------------------------
