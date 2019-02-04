@@ -847,7 +847,8 @@ void SenteraDouble4k::sendImage(int quality) {
 		filename, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
 		processed_jpegSize, processedSize.x, processedSize.y, quality);
 
-	/*
+	
+	
 	// transmit processed NDVI jpg
 	int messageLen;
 	switch (TRANS_MODE) {
@@ -868,6 +869,9 @@ void SenteraDouble4k::sendImage(int quality) {
 	Serializer::serializeInt(transBuf, messageLen);
 	Serializer::serializeInt(transBuf + 4, width);
 	Serializer::serializeInt(transBuf + 8, height);
+	Serializer::serializeFloat(transBuf + 12, sensor_data[imgReadyID - 1].inv_ev); //Serialize float to 4 bytes inverter ev
+	Serializer::serializeFloat(transBuf + 16, sensor_data[imgReadyID - 1].iso);  //Serialize float to 4 bytes iso
+	std::memcpy(transBuf + 20, (uint8_t*)(&imgReadyID), 1); //Marker for camera type
 
 	// add in data
 	try {
@@ -905,7 +909,7 @@ void SenteraDouble4k::sendImage(int quality) {
 		break;
 	}
 	delete[] processed_jpegBuf;
-	delete[] transBuf;
+	//delete[] transBuf;
 	
 	// debug
 	//printf("Transmitted NDVI Image jpg\n\n");

@@ -27,6 +27,11 @@ public:
 		memcpy(dest, data, 4);
 	}
 
+	//float (4 bytes)
+	static void serializeFloat(uint8_t* dest, float data) {
+		memcpy(dest, &data, 4);
+	}
+
 	// IP address (4 bytes)
 	// Note: required initialized WSA
 	static void serializeIP(uint8_t* dest, std::string ip) {
