@@ -163,7 +163,7 @@ int SenteraDouble4k::sessionListener_DEBUG() {
 		processImage(2);
 
 		// send NDVI
-		sendNDVI(jpg_quality);
+		sendImage(jpg_quality);
 
 		// sleep
 		std::this_thread::sleep_for(std::chrono::seconds(1));
