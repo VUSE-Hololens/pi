@@ -13,10 +13,10 @@ public:
 	static bool getSenteraData(Frame* sensorData, int width, int height, uint8_t *buf, int cam) {
 		std::size_t size = width * height * 3;
 
+		uint8_t r, g, b, nir1, nir2;
+		uint32_t* sep_band = new uint32_t[height*width];
 		switch (cam)
 		{
-			uint8_t r, g, b, nir1, nir2;
-			uint32_t* sep_band = new uint32_t[height*width];
 			//RGB
 			case 1:
 				for (int i = 0; i < width * height; i++) {
