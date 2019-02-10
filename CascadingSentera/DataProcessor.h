@@ -15,6 +15,7 @@ public:
 
 		uint8_t r, g, b, nir1, nir2;
 		uint32_t* sep_band = new uint32_t[height*width];
+		uint8_t pix_byte;
 		switch (cam)
 		{
 			//RGB
@@ -29,9 +30,7 @@ public:
 					sep_band[i] = 1.150*r - 0.110*g - 0.034*b;
 				}
 
-				// fill in buf
-				uint8_t pix_byte;
-
+				// fill in buf				
 				for (int i = 0; i < width * height; i++) {
 					// rescale to one bit
 					pix_byte = (uint8_t)((sep_band[i]+(36.72))*(255.0)/(329.97));
@@ -42,7 +41,6 @@ public:
 				break;
 			//NIR
 			case 2:
-				uint8_t nir1, nir2;
 				for (int i = 0; i < width * height; i++) {
 					// grab data
 					nir1 = sensorData[1].pixels[3 * i + 0];
@@ -53,8 +51,6 @@ public:
 				}
 
 				// fill in buf
-				uint8_t pix_byte;
-
 				for (int i = 0; i < width * height; i++) {
 					// rescale to one bit
 					pix_byte = (uint8_t)((sep_band[i] + (86.955))*(255.0) / (708.135));
