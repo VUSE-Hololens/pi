@@ -20,6 +20,7 @@ public:
 		{
 			//RGB
 			case 1:
+				std::cout << "place 1" << std::endl;
 				for (int i = 0; i < width * height; i++) {
 					// grab data
 					r = sensorData[0].pixels[3 * i + 0];
@@ -29,6 +30,7 @@ public:
 					// separate bands
 					sep_band[i] = 1.150*r - 0.110*g - 0.034*b;
 				}
+				std::cout << "place 2" << std::endl;
 
 				// fill in buf				
 				for (int i = 0; i < width * height; i++) {
@@ -38,9 +40,11 @@ public:
 					// fill in buf
 					buf[i] = pix_byte;
 				}
+				std::cout << "place 3" << std::endl;
 				break;
 			//NIR
 			case 2:
+				std::cout << "place 4" << std::endl;
 				for (int i = 0; i < width * height; i++) {
 					// grab data
 					nir1 = sensorData[1].pixels[3 * i + 0];
@@ -58,13 +62,16 @@ public:
 					// fill in buf
 					buf[i] = pix_byte;
 				}
+				std::cout << "place 5" << std::endl;
 				break;
 				
 			default:
 				return false;
 				//Throw an error?
 				break;
+			std::cout << "place 4" << std::endl;
 			delete[] sep_band;
+			std::cout << "end data processor" << std::endl;
 			return true;
 
 		}
