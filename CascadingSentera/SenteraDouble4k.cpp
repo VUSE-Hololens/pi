@@ -746,8 +746,8 @@ void SenteraDouble4k::sendImage(int quality) {
 	uint8_t* jpegBuf = nullptr;
 	int jpegSize;
 	try {
-		//jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
-		jpegSize = compressor.compressRGBJpeg(data, &jpegBuf, width, height, unprocessedQuality);
+		jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
+		//jpegSize = compressor.compressRGBJpeg(data, &jpegBuf, width, height, unprocessedQuality);
 	}
 	catch(std::exception ex) {
 		fprintf(stderr, "Caught exception attempting to compress full-size R/NIR image to jpg: %s", ex.what());
@@ -816,8 +816,8 @@ void SenteraDouble4k::sendImage(int quality) {
 	uint8_t* processed_jpegBuf = nullptr;
 	int processed_jpegSize;
 	try {
-		//processed_jpegSize = compressor.compressBandJpeg(processed_data, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
-		processed_jpegSize = compressor.compressRGBJpeg(processed_data, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
+		processed_jpegSize = compressor.compressBandJpeg(processed_data, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
+		//processed_jpegSize = compressor.compressRGBJpeg(processed_data, &processed_jpegBuf, processedSize.x, processedSize.y, quality);
 	}
 	catch (std::exception ex) {
 		fprintf(stderr, "Caught exception attempting to compress processed data to jpg: %s", ex.what());
