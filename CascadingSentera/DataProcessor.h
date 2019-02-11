@@ -11,7 +11,6 @@ class DataProcessor {
 public:
 	// sets buf to (R, NIR, NDVI) for each pixel in Frame
 	static bool getSenteraData(Frame* sensorData, int width, int height, uint8_t *buf, int cam) {
-		std::cout << "data processor start" << std::endl;
 		std::size_t size = width * height * 3;
 
 		uint8_t r, g, b, nir1, nir2;
@@ -21,7 +20,6 @@ public:
 		{
 		//RGB
 		case 1:
-			std::cout << "place 1" << std::endl;
 			for (int i = 0; i < width * height; i++) {
 				// grab data
 				r = sensorData[0].pixels[3 * i + 0];
@@ -31,7 +29,6 @@ public:
 				// separate bands
 				sep_band[i] = 1.150*r - 0.110*g - 0.034*b;
 			}
-			std::cout << "place 2" << std::endl;
 				
 			for (int i = 0; i < width * height; i++) {
 				// rescale to one bit
@@ -59,7 +56,6 @@ public:
 					// fill in buf
 					buf[i] = pix_byte;
 				}
-				std::cout << "place 3" << std::endl;
 			break;
 		default:
 			return false;
@@ -67,7 +63,6 @@ public:
 			break;
 		}
 		delete[] sep_band;
-		std::cout << "data processor end" << std::endl;
 		return true;
 		
 		//End new code
