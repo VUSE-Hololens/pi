@@ -19,8 +19,9 @@ public:
 		uint8_t pix_byte;
 		switch (cam)
 		{
-			//RGB
+		//RGB
 		case 1:
+			std::cout << "place 1" << std::endl;
 			for (int i = 0; i < width * height; i++) {
 				// grab data
 				r = sensorData[0].pixels[3 * i + 0];
@@ -30,8 +31,8 @@ public:
 				// separate bands
 				sep_band[i] = 1.150*r - 0.110*g - 0.034*b;
 			}
-
-			// fill in buf				
+			std::cout << "place 2" << std::endl;
+				
 			for (int i = 0; i < width * height; i++) {
 				// rescale to one bit
 				pix_byte = (uint8_t)((sep_band[i] + (36.72))*(255.0) / (329.97));
@@ -40,7 +41,7 @@ public:
 				buf[i] = pix_byte;
 			}
 			break;
-			//NIR
+		//NIR
 		case 2:
 			for (int i = 0; i < width * height; i++) {
 				// grab data
@@ -55,20 +56,19 @@ public:
 			for (int i = 0; i < width * height; i++) {
 				// rescale to one bit
 				pix_byte = (uint8_t)((sep_band[i] + (86.955))*(255.0) / (708.135));
-
-				// fill in buf
-				buf[i] = pix_byte;
-			}
+					// fill in buf
+					buf[i] = pix_byte;
+				}
+				std::cout << "place 3" << std::endl;
 			break;
-
 		default:
 			return false;
 			//Throw an error?
 			break;
 		}
 		delete[] sep_band;
-		return true;
 		std::cout << "data processor end" << std::endl;
+		return true;
 		
 		//End new code
 		//--------------------------------------------
@@ -103,8 +103,6 @@ public:
 		k = 255.0 / (double)max;
 
 		*/
-
-		return true;
 	}
 	
 	// currently: sets buf (pre-allocated) to array holding NDVI
