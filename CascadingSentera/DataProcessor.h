@@ -20,55 +20,56 @@ public:
 		switch (cam)
 		{
 			//RGB
-			case 1:
-				for (int i = 0; i < width * height; i++) {
-					// grab data
-					r = sensorData[0].pixels[3 * i + 0];
-					g = sensorData[0].pixels[3 * i + 1];
-					b = sensorData[0].pixels[3 * i + 2];
+		case 1:
+			for (int i = 0; i < width * height; i++) {
+				// grab data
+				r = sensorData[0].pixels[3 * i + 0];
+				g = sensorData[0].pixels[3 * i + 1];
+				b = sensorData[0].pixels[3 * i + 2];
 
-					// separate bands
-					sep_band[i] = 1.150*r - 0.110*g - 0.034*b;
-				}
+				// separate bands
+				sep_band[i] = 1.150*r - 0.110*g - 0.034*b;
+			}
 
-				// fill in buf				
-				for (int i = 0; i < width * height; i++) {
-					// rescale to one bit
-					pix_byte = (uint8_t)((sep_band[i]+(36.72))*(255.0)/(329.97));
-
-					// fill in buf
-					buf[i] = pix_byte;
-				}
-				break;
-			//NIR
-			case 2:
-				for (int i = 0; i < width * height; i++) {
-					// grab data
-					nir1 = sensorData[1].pixels[3 * i + 0];
-					nir2 = sensorData[1].pixels[3 * i + 2];
-
-					// separate bands
-					sep_band[i] = -0.341*nir1 + 2.436*nir2;
-				}
+			// fill in buf				
+			for (int i = 0; i < width * height; i++) {
+				// rescale to one bit
+				pix_byte = (uint8_t)((sep_band[i] + (36.72))*(255.0) / (329.97));
 
 				// fill in buf
-				for (int i = 0; i < width * height; i++) {
-					// rescale to one bit
-					pix_byte = (uint8_t)((sep_band[i] + (86.955))*(255.0) / (708.135));
+				buf[i] = pix_byte;
+			}
+			break;
+			//NIR
+		case 2:
+			for (int i = 0; i < width * height; i++) {
+				// grab data
+				nir1 = sensorData[1].pixels[3 * i + 0];
+				nir2 = sensorData[1].pixels[3 * i + 2];
 
-					// fill in buf
-					buf[i] = pix_byte;
-				}
-				break;
-				
-			default:
-				return false;
-				//Throw an error?
-				break;
-			delete[] sep_band;
-			return true;
-			std::cout << "data processor end" << std::endl;
+				// separate bands
+				sep_band[i] = -0.341*nir1 + 2.436*nir2;
+			}
+
+			// fill in buf
+			for (int i = 0; i < width * height; i++) {
+				// rescale to one bit
+				pix_byte = (uint8_t)((sep_band[i] + (86.955))*(255.0) / (708.135));
+
+				// fill in buf
+				buf[i] = pix_byte;
+			}
+			break;
+
+		default:
+			return false;
+			//Throw an error?
+			break;
 		}
+		delete[] sep_band;
+		return true;
+		std::cout << "data processor end" << std::endl;
+		
 		//End new code
 		//--------------------------------------------
 		// separate & normalize R & NIR bands, find k
