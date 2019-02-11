@@ -11,6 +11,7 @@ class DataProcessor {
 public:
 	// sets buf to (R, NIR, NDVI) for each pixel in Frame
 	static bool getSenteraData(Frame* sensorData, int width, int height, uint8_t *buf, int cam) {
+		std::cout << "data processor start" << std::endl;
 		std::size_t size = width * height * 3;
 
 		uint8_t r, g, b, nir1, nir2;
@@ -66,7 +67,7 @@ public:
 				break;
 			delete[] sep_band;
 			return true;
-
+			std::cout << "data processor end" << std::endl;
 		}
 		//End new code
 		//--------------------------------------------
