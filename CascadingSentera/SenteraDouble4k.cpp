@@ -746,7 +746,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	uint8_t* jpegBuf = nullptr;
 	int jpegSize;
 	try {
-		jpegSize = compressor.compressBandJpeg(ndvibuf, &jpegBuf, width, height, unprocessedQuality);
+		jpegSize = compressor.compressBandJpeg(data, &jpegBuf, width, height, unprocessedQuality);
 		//jpegSize = compressor.compressRGBJpeg(data, &jpegBuf, width, height, unprocessedQuality);
 	}
 	catch(std::exception ex) {
