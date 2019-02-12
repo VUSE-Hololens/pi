@@ -752,7 +752,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	fprintf(stderr, "Compressed unprocessed %s image data to jpg: %s\n", dirname, filename);
 
 	
-	std::string outname = "/home/pi/pi-transmit/CascadingSentera/Compressed/" + dirname_string + "/" + filename_string; //TODO - make a new folder for R and NIR
+	std::string outname = "/home/pi/pi-transmit/CascadingSentera/Compressed/" + dirname_string + filename_string; //TODO - make a new folder for R and NIR
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
 		outfile.write(reinterpret_cast<const char*> (jpegBuf), jpegSize);
