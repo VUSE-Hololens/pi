@@ -754,7 +754,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Compressed unprocessed R/NIR image data to jpg: %s\n", filename);
+	fprintf(stderr, "Compressed unprocessed R/NIR image data to jpg: %s\n", filename); //TODO: This is printing but the file does not get saved, segmentation fault seems to be here
 
 	std::string filename_string(filename);
 	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI_FULL/" + filename_string; 
@@ -779,7 +779,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	// process NDVI img
 	uint8_t *processed_data, *processed_data_tmp;
 	Vector3Int processedSize;
-	Vector3Int unprocessSize(width, height, 3);
+	Vector3Int unprocessSize(width, height, 1); //TODO: z based on number of bands in image
 	switch (PROCESS_MODE) {
 		case none: 
 			processedSize = unprocessSize;
@@ -788,7 +788,7 @@ void SenteraDouble4k::sendImage(int quality) {
 			break;
 		case halfSample: 
 			try {
-				processed_data = new uint8_t[width / 2 * height / 2 * 3];
+				processed_data = new uint8_t[width / 2 * height / 2];
 				//DataProcessor::HalfSample(ndvibuf, processed_data, unprocessSize, &processedSize);
 				DataProcessor::HalfSample(data, processed_data, unprocessSize, &processedSize);
 			}
@@ -798,9 +798,9 @@ void SenteraDouble4k::sendImage(int quality) {
 			break;
 		case quarterSample:
 			try {
-				processed_data_tmp = new uint8_t[width / 2 * height / 2 * 3];
+				processed_data_tmp = new uint8_t[width / 2 * height / 2];
 				DataProcessor::HalfSample(data, processed_data_tmp, unprocessSize, &processedSize);
-				processed_data = new uint8_t[processedSize.x / 2 * processedSize.y / 2 * 3];
+				processed_data = new uint8_t[processedSize.x / 2 * processedSize.y / 2];
 				Vector3Int tmp_size = processedSize;
 				DataProcessor::HalfSample(processed_data_tmp, processed_data, tmp_size, &processedSize);
 			}
