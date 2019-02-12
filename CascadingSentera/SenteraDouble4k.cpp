@@ -137,8 +137,6 @@ int SenteraDouble4k::sessionListener() {
 				// prepares images
 				processImage(imgReadyID); // process data for appropriate image
 
-				// send NDVI image if ready
-
 				//if (imgReadyID == 2 && getUpdated()) 
 					
 				sendImage(jpg_quality); 
@@ -162,7 +160,7 @@ int SenteraDouble4k::sessionListener_DEBUG() {
 		processImage(1);
 		processImage(2);
 
-		// send NDVI
+		// send Image
 		sendImage(jpg_quality);
 
 		// sleep
@@ -707,26 +705,20 @@ std::string SenteraDouble4k::makeUrlPath(uint8_t *filename) {
 	return outStr;
 }
 
-// sendNDVI
-// calculates NDVI, saves locally as jpg and sends location to hololens
+// sendImage
+// Separated R and NIR bands, saves locally as jpg and sends location to hololens
 void SenteraDouble4k::sendImage(int quality) {
 	// get width, height and filename
 	int width = sensor_data[0].width; // doesnt have to be!! can choose to send any size image. will resample and scale accordingly
 	int height = sensor_data[0].height;
 	char filename[IMG_FILENAME_LEN];
+	char dirname[IMG_FILENAME_DIR_LEN];
 	for (int i = 0; i < IMG_FILENAME_LEN - IMG_FILENAME_DIR_LEN; i++) {
 		filename[i] = (const char)recent_images[1].fileName[i + IMG_FILENAME_DIR_LEN];
 	}
-
-	/*// fill NDVI buffer
-	uint8_t *ndvibuf;
-	try {
-		ndvibuf = new uint8_t[width * height];
-	} catch (std::bad_alloc ba) {
-		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold NDVI data of size %d", width * height);
-		return;
+	for (int i = 0; i < IMG_FILENAME_DIR_LEN; i++) {
+		dirname[i] = (const char)recent_images[1].fileName[i];
 	}
-	DataProcessor::getSenteraNDVI(sensor_data, width, height, ndvibuf); */
 
 	// fill data buffer
 	uint8_t *data;
@@ -753,11 +745,14 @@ void SenteraDouble4k::sendImage(int quality) {
 		fprintf(stderr, "Caught exception attempting to compress full-size R/NIR image to jpg: %s", ex.what());
 	}
 
-	// debug
-	fprintf(stderr, "Compressed unprocessed R/NIR image data to jpg: %s\n", filename); //TODO: This is printing but the file does not get saved, segmentation fault seems to be here
-
 	std::string filename_string(filename);
-	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI_FULL/" + filename_string; 
+	std::string dirname_string(dirname);
+
+	// debug
+	fprintf(stderr, "Compressed unprocessed %s image data to jpg: %s\n", dirname, filename);
+
+	
+	std::string outname = "/home/pi/pi-transmit/CascadingSentera/Compressed/" + dir_string + "/" + filename_string; //TODO - make a new folder for R and NIR
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
 		outfile.write(reinterpret_cast<const char*> (jpegBuf), jpegSize);
@@ -770,13 +765,13 @@ void SenteraDouble4k::sendImage(int quality) {
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
-		fprintf(stderr, "Caught exception attempting to save full image jpg locally to %s: %s", outname.c_str(), ex.what());
+		fprintf(stderr, "Caught exception attempting to save full %s image jpg locally to %s: %s", dirname, outname.c_str(), ex.what());
 	}
 
 	// debug
 	//fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
 
-	// process NDVI img
+	// process RGB/NIR img
 	uint8_t *processed_data, *processed_data_tmp;
 	Vector3Int processedSize;
 	Vector3Int unprocessSize(width, height, 1); //TODO: z based on number of bands in image
@@ -793,7 +788,7 @@ void SenteraDouble4k::sendImage(int quality) {
 				DataProcessor::HalfSample(data, processed_data, unprocessSize, &processedSize);
 			}
 			catch (std::exception ex) {
-				fprintf(stderr, "Caught exception attempting to halfSample ndvi: %s", ex.what());
+				fprintf(stderr, "Caught exception attempting to halfSample ndvi: %s", ex.what()); 
 			} 
 			break;
 		case quarterSample:
