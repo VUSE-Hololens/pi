@@ -714,10 +714,10 @@ void SenteraDouble4k::sendImage(int quality) {
 	char filename[IMG_FILENAME_LEN];
 	char dirname[IMG_FILENAME_DIR_LEN];
 	for (int i = 0; i < IMG_FILENAME_LEN - IMG_FILENAME_DIR_LEN; i++) {
-		filename[i] = (const char)recent_images[cam-1].fileName[i + IMG_FILENAME_DIR_LEN];
+		filename[i] = (const char)recent_images[imgReadyID-1].fileName[i + IMG_FILENAME_DIR_LEN];
 	}
 	for (int i = 0; i < 1; i++) {
-		dirname[i] = (const char)recent_images[cam-1].fileName[i];
+		dirname[i] = (const char)recent_images[imgReadyID-1].fileName[i];
 	}
 	fprintf(stderr, "filename is: %s \n dirname is: %s", filename, dirname);
 
