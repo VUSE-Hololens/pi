@@ -137,7 +137,7 @@ int SenteraDouble4k::sessionListener() {
 				// prepares images
 				processImage(imgReadyID); // process data for appropriate image
 
-				if (imgReadyID == 2 && getUpdated()) 
+				//if (imgReadyID == 2 && getUpdated()) 
 					
 				sendImage(jpg_quality); 
 			}
