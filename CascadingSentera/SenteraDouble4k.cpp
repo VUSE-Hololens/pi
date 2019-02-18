@@ -747,7 +747,7 @@ void SenteraDouble4k::sendImage(int quality) {
 		fprintf(stderr, "Caught exception attempting to compress full-size R/NIR image to jpg: %s", ex.what());
 	}
 
-	//std::string filename_string(filename);
+	std::string filename_string(filename);
 	//std::string dirname_string(dirname);
 
 	// debug
