@@ -841,8 +841,8 @@ void SenteraDouble4k::sendImage(int quality) {
 
 	// debug
 	//fprintf(stderr, "Processed ndvi img (%s), Process mode: %s. Was %d bytes (%dx%d, q=%d), Now %d bytes (%dx%d, q=%d)\n", 
-		filename, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
-		processed_jpegSize, processedSize.x, processedSize.y, quality);
+	//	filename, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
+	//	processed_jpegSize, processedSize.x, processedSize.y, quality);
 
 	
 	
