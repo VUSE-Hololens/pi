@@ -644,7 +644,7 @@ int SenteraDouble4k::processImage(int cam) {
 			fprintf(stderr, "Error saving sentera jpg locally to %s... Camera: %d: %s\n", outname.c_str(), cam, strerror(errno));
 		}
 		else {
-			fprintf(stderr, "Successfully saved downloaded sentera .jpg locally to %s, Camera ID: %d\n", outname.c_str(), cam);
+			//fprintf(stderr, "Successfully saved downloaded sentera .jpg locally to %s, Camera ID: %d\n", outname.c_str(), cam);
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
@@ -751,7 +751,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	//std::string dirname_string(dirname);
 
 	// debug
-	fprintf(stderr, "Compressed unprocessed image data to jpg: %s\n", filename);
+	//fprintf(stderr, "Compressed unprocessed image data to jpg: %s\n", filename);
 
 	
 	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI_FULL/" + filename_string; //TODO - make a new folder for R and NIR
@@ -840,7 +840,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Processed ndvi img (%s), Process mode: %s. Was %d bytes (%dx%d, q=%d), Now %d bytes (%dx%d, q=%d)\n", 
+	//fprintf(stderr, "Processed ndvi img (%s), Process mode: %s. Was %d bytes (%dx%d, q=%d), Now %d bytes (%dx%d, q=%d)\n", 
 		filename, PROCESS_MODE_NAMES[PROCESS_MODE], jpegSize, unprocessSize.x, unprocessSize.y, unprocessedQuality, 
 		processed_jpegSize, processedSize.x, processedSize.y, quality);
 
