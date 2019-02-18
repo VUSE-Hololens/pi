@@ -137,7 +137,7 @@ int SenteraDouble4k::sessionListener() {
 				// prepares images
 				processImage(imgReadyID); // process data for appropriate image
 
-				//if (imgReadyID == 2 && getUpdated()) 
+				if (imgReadyID == 2 && getUpdated()) 
 					
 				sendImage(jpg_quality); 
 			}
@@ -713,14 +713,19 @@ void SenteraDouble4k::sendImage(int quality) {
 	int height = sensor_data[0].height;
 	char filename[IMG_FILENAME_LEN];
 	//char dirname[IMG_FILENAME_DIR_LEN];
+	/*
 	for (int i = 0; i < IMG_FILENAME_LEN - IMG_FILENAME_DIR_LEN; i++) {
 		filename[i] = (const char)recent_images[1].fileName[i + IMG_FILENAME_DIR_LEN];
 	}
+	*/
 	/*
 	for (int i = 0; i < IMG_FILENAME_DIR_LEN; i++) {
 		dirname[i] = (const char)recent_images[1].fileName[i];
 	}
 	*/
+	for (int i = 0; i < IMG_FILENAME_LEN; i++) {
+		filename[i] = (const char)recent_images[imgReadyID].fileName[i];
+	}
 
 	// fill data buffer
 	uint8_t *data;
@@ -751,10 +756,10 @@ void SenteraDouble4k::sendImage(int quality) {
 	//std::string dirname_string(dirname);
 
 	// debug
-	//fprintf(stderr, "Compressed unprocessed image data to jpg: %s\n", filename);
+	fprintf(stderr, "Compressed unprocessed image data to jpg: %s\n", filename);
 
 	
-	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI_FULL/" + filename_string; //TODO - make a new folder for R and NIR
+	std::string outname = "/home/pi/pi-transmit/CascadingSentera/Unprocessed/" + filename_string; //TODO - make a new folder for R and NIR
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
 		outfile.write(reinterpret_cast<const char*> (jpegBuf), jpegSize);
