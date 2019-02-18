@@ -712,14 +712,15 @@ void SenteraDouble4k::sendImage(int quality) {
 	int width = sensor_data[0].width; // doesnt have to be!! can choose to send any size image. will resample and scale accordingly
 	int height = sensor_data[0].height;
 	char filename[IMG_FILENAME_LEN];
-	char dirname[IMG_FILENAME_DIR_LEN];
+	//char dirname[IMG_FILENAME_DIR_LEN];
 	for (int i = 0; i < IMG_FILENAME_LEN - IMG_FILENAME_DIR_LEN; i++) {
-		filename[i] = (const char)recent_images[imgReadyID-1].fileName[i + IMG_FILENAME_DIR_LEN];
+		filename[i] = (const char)recent_images[1].fileName[i + IMG_FILENAME_DIR_LEN];
 	}
+	/*
 	for (int i = 0; i < IMG_FILENAME_DIR_LEN; i++) {
-		dirname[i] = (const char)recent_images[imgReadyID-1].fileName[i];
+		dirname[i] = (const char)recent_images[1].fileName[i];
 	}
-	fprintf(stderr, "filename is: %s \n dirname is: %s\n", filename, dirname);
+	*/
 
 	// fill data buffer
 	uint8_t *data;
@@ -727,7 +728,7 @@ void SenteraDouble4k::sendImage(int quality) {
 		data = new uint8_t[width * height];
 	}
 	catch (std::bad_alloc ba) {
-		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold Image data of size %d", width * height * 3);
+		fprintf(stderr, "Heap allocation failed attempted to create buffer to hold Image data of size %d", width * height);
 		return;
 	}
 
@@ -746,14 +747,14 @@ void SenteraDouble4k::sendImage(int quality) {
 		fprintf(stderr, "Caught exception attempting to compress full-size R/NIR image to jpg: %s", ex.what());
 	}
 
-	std::string filename_string(filename);
-	std::string dirname_string(dirname);
+	//std::string filename_string(filename);
+	//std::string dirname_string(dirname);
 
 	// debug
-	fprintf(stderr, "Compressed unprocessed %s image data to jpg: %s\n", dirname, filename);
+	fprintf(stderr, "Compressed unprocessed image data to jpg: %s\n", filename);
 
 	
-	std::string outname = "/home/pi/pi-transmit/CascadingSentera/Compressed/" + dirname_string + filename_string; //TODO - make a new folder for R and NIR
+	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI/" + filename_string; //TODO - make a new folder for R and NIR
 	try {
 		std::ofstream outfile(outname, std::ofstream::binary);
 		outfile.write(reinterpret_cast<const char*> (jpegBuf), jpegSize);
@@ -766,13 +767,11 @@ void SenteraDouble4k::sendImage(int quality) {
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
-		fprintf(stderr, "Caught exception attempting to save full %s image jpg locally to %s: %s", dirname, outname.c_str(), ex.what());
+		fprintf(stderr, "Caught exception attempting to save full image jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
 
 	// debug
 	//fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
-
-	//TODO: fix directories below here
 
 	// process RGB/NIR img
 	uint8_t *processed_data, *processed_data_tmp;
