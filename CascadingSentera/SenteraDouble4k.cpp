@@ -756,7 +756,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	//std::string dirname_string(dirname);
 
 	// debug
-	fprintf(stderr, "Compressed unprocessed image data to jpg: %s\n", filename);
+	//fprintf(stderr, "Compressed unprocessed image data to jpg: %s\n", filename);
 
 	
 	std::string outname = "/home/pi/pi-transmit/CascadingSentera/Unprocessed/" + filename_string; //TODO - make a new folder for R and NIR
@@ -776,7 +776,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
+	//fprintf(stderr, "Saved unprocessed jpg: %s\n", filename);
 
 	// process RGB/NIR img
 	uint8_t *processed_data, *processed_data_tmp;
@@ -826,7 +826,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
+	//fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
 	
 	outname = "/home/pi/pi-transmit/CascadingSentera/Processed/" + filename_string;
 	try {
