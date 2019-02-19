@@ -750,7 +750,7 @@ void SenteraDouble4k::sendNDVI(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
+	//fprintf(stderr, "Compressed unprocessed NDVI data to jpg: %s\n", filename);
 
 	std::string filename_string(filename);
 	std::string outname = "/home/pi/pi-transmit/CascadingSentera/NDVI_FULL/" + filename_string;

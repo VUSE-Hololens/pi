@@ -178,7 +178,7 @@ public:
 
 		lock.unlock();
 
-		fprintf(stderr, "Successfully sent transmission to: %s\n", SockAddrToStr(primConn).c_str());
+		//fprintf(stderr, "Successfully sent transmission to: %s\n", SockAddrToStr(primConn).c_str());
 	}
 
 private:
