@@ -873,7 +873,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	Serializer::serializeInt(transBuf + 8, height);
 	Serializer::serializeFloat(transBuf + 12, sensor_data[imgReadyID - 1].inv_ev); //Serialize float to 4 bytes inverter ev
 	Serializer::serializeFloat(transBuf + 16, sensor_data[imgReadyID - 1].iso);  //Serialize float to 4 bytes iso
-	std::memcpy(transBuf + 20, (uint8_t*)(&imgReadyID), 1); //Marker for camera type
+	Serializer::serializeInt(transBuf + 20, imgReadyID);
 
 	// add in data
 	try {
