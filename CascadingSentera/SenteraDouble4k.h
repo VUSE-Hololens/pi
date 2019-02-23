@@ -12,6 +12,7 @@
 #include <string>
 #include <streambuf>
 #include <fstream>
+#include <ctime>
 
 // user includes
 #include "Bufferizer.h" // bufferizes packets of data
@@ -89,6 +90,11 @@ private:
 	// cascading transmission
 	//transmit transmitter;													// for transmitting cascade style
 	compress compressor;													// for testing compression
+
+	// timing evaluation
+	clock_t start = clock();
+	int r_calls = 0;
+	int nir_calls = 0;
 
 // methods
 private:

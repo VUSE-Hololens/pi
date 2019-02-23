@@ -897,7 +897,17 @@ void SenteraDouble4k::sendImage(int quality) {
 		trans.transmit((char*)transBuf, messageLen);
 	}
 
-	
+	// timing
+	if (imgReadyID == 1) {
+		r_calls++;
+		double elapsed = double(end - begin) / CLOCKS_PER_SEC;
+		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d)\n.", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
+	}
+	else {
+		nir_calls++;
+		double elapsed = double(end - begin) / CLOCKS_PER_SEC;
+		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d)\n.", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
+	}
 
 	//delete[] ndvibuf;
 	delete[] data;
