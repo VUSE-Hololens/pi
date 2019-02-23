@@ -906,6 +906,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 	else {
 		nir_calls++;
+		clock_t cur = clock();
 		double elapsed = double(cur - start) / CLOCKS_PER_SEC;
 		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d)\n.", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
 	}
