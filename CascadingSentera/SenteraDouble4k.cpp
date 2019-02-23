@@ -898,7 +898,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	// timing
-	if (clock_started = false) {
+	if (clock_started == false) {
 		start = clock();
 		clock_started = true;
 	}
