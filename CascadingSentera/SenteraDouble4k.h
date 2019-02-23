@@ -47,7 +47,7 @@ class SenteraDouble4k : public Sensor // implements sensor
 public:
 	static const TransmitMode TRANS_MODE = fullFile;
 	static const ProcessMode PROCESS_MODE = quarterSample;
-	static const Toggle DEBUG_MODE = on;
+	static const Toggle DEBUG_MODE = off;
 private:
 	// class variables
 	static const int BUFLEN = 512;											// Buffer length
