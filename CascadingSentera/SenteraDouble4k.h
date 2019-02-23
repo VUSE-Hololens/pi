@@ -92,7 +92,8 @@ private:
 	compress compressor;													// for testing compression
 
 	// timing evaluation
-	clock_t start = clock();
+	clock_t start;
+	bool clock_started = false;
 	int r_calls = 0;
 	int nir_calls = 0;
 

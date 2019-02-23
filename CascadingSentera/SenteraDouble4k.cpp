@@ -898,13 +898,18 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	// timing
+	if (clock_started = false) {
+		start = clock();
+		clock_started = true;
+	}
+
 	if (imgReadyID == 1) { r_calls += 1; }
 	else { nir_calls += 1; }
 
 	clock_t cur = clock();
 	double elapsed = double(cur - start) / CLOCKS_PER_SEC;
 	double avg_time = elapsed / ((r_calls + nir_calls) / 2);
-	printf("Avg. data rate: %f ms (elapsed: %f, calls: R: %d, NIR: %d).\n\n", avg_time, elapsed, r_calls, nir_calls);
+	printf("Avg. data rate: %f s (elapsed: %f s, calls: R: %d, NIR: %d).\n\n", avg_time, elapsed, r_calls, nir_calls);
 
 	//delete[] ndvibuf;
 	delete[] data;
