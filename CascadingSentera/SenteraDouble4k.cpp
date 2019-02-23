@@ -672,7 +672,7 @@ int SenteraDouble4k::processImage(int cam) {
 
 	// decompress the jpg
 	resultCode = tjDecompress2(_jpegDecompressor, compressedImg, compressedImgLength, sensor_data[cam-1].pixels, width, 0, height, TJPF_RGB, TJFLAG_FASTDCT);
-	if (resultCode == -1) { fprintf(stderr, "jpeg body decompression failed"); }
+	if (resultCode == -1) { fprintf(stderr, "jpeg body decompression failed.\n"); }
 
 	// get relevant exif data
 	easyexif::EXIFInfo result;
@@ -807,7 +807,7 @@ void SenteraDouble4k::sendImage(int quality) {
 				DataProcessor::HalfSample(processed_data_tmp, processed_data, tmp_size, &processedSize);
 			}
 			catch (std::exception ex) {
-				fprintf(stderr, "Caught exception attempting to quarterSample ndvi: %s", ex.what());
+				fprintf(stderr, "Caught exception attempting to quarterSample ndvi: %s\n", ex.what());
 			}
 	}
 
@@ -899,16 +899,16 @@ void SenteraDouble4k::sendImage(int quality) {
 
 	// timing
 	if (imgReadyID == 1) {
-		r_calls++;
+		r_calls += 1;
 		clock_t cur = clock();
 		double elapsed = double(cur - start) / CLOCKS_PER_SEC;
-		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d)\n.", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
+		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d).\n", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
 	}
 	else {
-		nir_calls++;
+		nir_calls += 1;
 		clock_t cur = clock();
 		double elapsed = double(cur - start) / CLOCKS_PER_SEC;
-		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d)\n.", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
+		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d).\n", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
 	}
 
 	//delete[] ndvibuf;
