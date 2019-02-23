@@ -891,7 +891,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	
 
 	// transmit
-	fprintf(stderr, "Attempting transmission to Hololens (%s)... Trans. mode: %s, Trans. size (bytes): %d\n\n", 
+	fprintf(stderr, "Attempting transmission to Hololens (%s)... Trans. mode: %s, Trans. size (bytes): %d\n", 
 		filename, TRANS_MODE_NAMES[TRANS_MODE], messageLen);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
@@ -902,13 +902,14 @@ void SenteraDouble4k::sendImage(int quality) {
 		r_calls += 1;
 		clock_t cur = clock();
 		double elapsed = double(cur - start) / CLOCKS_PER_SEC;
-		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d).\n", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
+		double avg_time = elapsed / ((r_calls + nir_calls) / 2);
+		fprintf(stderr, "Avg. data rate: %d ms (elapsed: %d, calls: R: %d, NIR: %d).\n\n", avg_time, elapsed, r_calls, nir_calls);
 	}
 	else {
 		nir_calls += 1;
 		clock_t cur = clock();
 		double elapsed = double(cur - start) / CLOCKS_PER_SEC;
-		fprintf(stderr, "Avg. data rate: %d ms (calls: R: %d, NIR: %d).\n", elapsed / ((r_calls + nir_calls) / 2), r_calls, nir_calls);
+		fprintf(stderr, "Avg. data rate: %d ms (elapsed: %d, calls: R: %d, NIR: %d).\n\n", avg_time, elapsed, r_calls, nir_calls);
 	}
 
 	//delete[] ndvibuf;
