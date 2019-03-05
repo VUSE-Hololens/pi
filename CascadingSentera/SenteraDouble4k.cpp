@@ -136,8 +136,6 @@ int SenteraDouble4k::sessionListener() {
 
 				// prepares images
 				processImage(imgReadyID); // process data for appropriate image
-
-				//if (imgReadyID == 2 && getUpdated()) 
 					
 				sendImage(jpg_quality); 
 			}
@@ -712,17 +710,6 @@ void SenteraDouble4k::sendImage(int quality) {
 	int width = sensor_data[0].width; // doesnt have to be!! can choose to send any size image. will resample and scale accordingly
 	int height = sensor_data[0].height;
 	char filename[IMG_FILENAME_LEN];
-	//char dirname[IMG_FILENAME_DIR_LEN];
-	/*
-	for (int i = 0; i < IMG_FILENAME_LEN - IMG_FILENAME_DIR_LEN; i++) {
-		filename[i] = (const char)recent_images[1].fileName[i + IMG_FILENAME_DIR_LEN];
-	}
-	*/
-	/*
-	for (int i = 0; i < IMG_FILENAME_DIR_LEN; i++) {
-		dirname[i] = (const char)recent_images[1].fileName[i];
-	}
-	*/
 	for (int i = 0; i < IMG_FILENAME_LEN; i++) {
 		filename[i] = (const char)recent_images[imgReadyID-1].fileName[i];
 	}
@@ -753,7 +740,6 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	std::string filename_string(filename);
-	//std::string dirname_string(dirname);
 
 	// debug
 	//fprintf(stderr, "Compressed unprocessed image data to jpg: %s\n", filename);

@@ -64,40 +64,6 @@ public:
 		}
 		delete[] sep_band;
 		return true;
-		
-		//End new code
-		//--------------------------------------------
-		// separate & normalize R & NIR bands, find k
-		
-		/*
-		uint8_t r, g, b, nir1, nir2;
-		uint32_t r_sep, nir_sep;
-		uint32_t max = 0;
-		double k;
-		for (int i = 0; i < width * height; i++) {
-			// grab data
-			r = sensorData[0].pixels[3*i + 0];
-			g = sensorData[0].pixels[3*i + 1];
-			b = sensorData[0].pixels[3*i + 2];
-			nir1 = sensorData[1].pixels[3*i + 0];
-			nir2 = sensorData[1].pixels[3*i + 2];
-
-			// separate bands
-			r_sep = 1.150*r - 0.110*g - 0.034*b;
-			nir_sep = -0.341*nir1 + 2.436*nir2;
-
-			// normalize
-			r_norm[i] = r_sep / ((sensorData[0].iso / 100.0f) * (1.0f / sensorData[0].inv_ev));
-			nir_norm[i] = nir_sep / ((sensorData[1].iso / 100.0f) * (1.0f / sensorData[1].inv_ev));
-
-			// update max
-			if (r_norm[i] > max) { max = r_norm[i]; }
-			if (nir_norm[i] > max) { max = nir_norm[i]; }
-		}
-
-		k = 255.0 / (double)max;
-
-		*/
 	}
 	
 	// currently: sets buf (pre-allocated) to array holding NDVI
