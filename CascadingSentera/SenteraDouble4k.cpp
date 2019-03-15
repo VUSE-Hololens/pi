@@ -805,7 +805,7 @@ void SenteraDouble4k::sendImage(int quality) {
 		processedSize.x = (int)(full_fov_width * FOV_WIDTH_RATIO);
 		processedSize.y = (int)(full_fov_height * FOV_HEIGHT_RATIO);
 		uint8_t* full_fov_data = processed_data;
-		processedData = new uint8_t[processedSize.x*processedSize.y];
+		processed_data = new uint8_t[processedSize.x*processedSize.y];
 		int i_start = (full_fov_height - processedSize.y) / 2;
 		int i_end = i_start + processedSize.y;
 		int j_start = (full_fov_width - processedSize.x) / 2;
@@ -814,10 +814,10 @@ void SenteraDouble4k::sendImage(int quality) {
 		int new_loc = 0;
 		for (int i = i_start; i = i_end; ++i)
 		{
-			for (int j = j_start; j < j_end;; ++j)
+			for (int j = j_start; j < j_end; ++j)
 			{
 				old_loc = i * processedSize.x + j;
-				processedData[new_loc] = full_fov_data[old_loc];
+				processed_data[new_loc] = full_fov_data[old_loc];
 				++new_loc;
 			}
 		}
