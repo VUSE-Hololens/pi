@@ -49,8 +49,11 @@ public:
 	static const TransmitMode TRANS_MODE = fullFile;
 	static const ProcessMode PROCESS_MODE = quarterSample;
 	static const Toggle DEBUG_MODE = off;
+	static const Toggle DEMO_MODE = on;
 private:
 	// class variables
+	static const double FOV_WIDTH_RATIO = 0.3333;
+	static const double FOV_HEIGHT_RATIO = 0.4104;
 	static const int BUFLEN = 512;											// Buffer length
 	static const int IMG_FILENAME_LEN = 48;
 	static const int IMG_FILENAME_DIR_LEN = 4;								// length of leading directory in img filepath

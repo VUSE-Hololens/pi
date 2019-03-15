@@ -754,7 +754,7 @@ void SenteraDouble4k::sendImage(int quality) {
 			fprintf(stderr, "Error saving full image jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
 		}
 		else {
-			//fprintf(stderr, "Saved NDVI image locally as: %s\n", outname.c_str());
+			//fprintf(stderr, "Saved image locally as: %s\n", outname.c_str());
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
@@ -781,7 +781,7 @@ void SenteraDouble4k::sendImage(int quality) {
 				DataProcessor::HalfSample(data, processed_data, unprocessSize, &processedSize);
 			}
 			catch (std::exception ex) {
-				fprintf(stderr, "Caught exception attempting to halfSample ndvi: %s", ex.what()); 
+				fprintf(stderr, "Caught exception attempting to halfSample image: %s", ex.what()); 
 			} 
 			break;
 		case quarterSample:
@@ -793,12 +793,39 @@ void SenteraDouble4k::sendImage(int quality) {
 				DataProcessor::HalfSample(processed_data_tmp, processed_data, tmp_size, &processedSize);
 			}
 			catch (std::exception ex) {
-				fprintf(stderr, "Caught exception attempting to quarterSample ndvi: %s\n", ex.what());
+				fprintf(stderr, "Caught exception attempting to quarterSample image: %s\n", ex.what());
 			}
 	}
 
+	//Crop the uncompressed image for faster demonstrations
+	if (DEMO_MODE)
+	{
+		int full_fov_width = processedSize.x;
+		int full_fov_height = processedSize.y;
+		processedSize.x = (int)(full_fov_width * FOV_WIDTH_RATIO);
+		processedSize.y = (int)(full_fov_height * FOV_HEIGHT_RATIO);
+		uint8_t* full_fov_data = processed_data;
+		processedData = new uint8_t[processedSize.x*processedSize.y];
+		int i_start = (full_fov_height - processedSize.y) / 2;
+		int i_end = i_start + processedSize.y;
+		int j_start = (full_fov_width - processedSize.x) / 2;
+		int j_end = j_start + processedSize.x;
+		int old_loc;
+		int new_loc = 0;
+		for (int i = i_start; i = i_end; ++i)
+		{
+			for (int j = j_start; j < j_end;; ++j)
+			{
+				old_loc = i * processedSize.x + j;
+				processedData[new_loc] = full_fov_data[old_loc];
+				++new_loc;
+			}
+		}
+
+	}
+
 	// debug
-	//fprintf(stderr, "Processed NDVI data: %s\n", filename);
+	//fprintf(stderr, "Processed image data: %s\n", filename);
 
 	// save processed jpg locally
 	uint8_t* processed_jpegBuf = nullptr;
@@ -812,7 +839,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	// debug
-	//fprintf(stderr, "Compressed processed NDVI data to jpg: %s\n", filename);
+	//fprintf(stderr, "Compressed processed Image data to jpg: %s\n", filename);
 	
 	outname = "/home/pi/pi-transmit/CascadingSentera/Processed/" + filename_string;
 	try {
@@ -820,14 +847,14 @@ void SenteraDouble4k::sendImage(int quality) {
 		outfile2.write(reinterpret_cast<const char*> (processed_jpegBuf), processed_jpegSize);
 		// check if successful
 		if ((outfile2.rdstate() & std::ofstream::failbit) != 0) {
-			fprintf(stderr, "Error saving processed NDVI jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
+			fprintf(stderr, "Error saving processed jpg locally to %s: %s\n", outname.c_str(), strerror(errno));
 		}
 		else {
-			//fprintf(stderr, "Saved processed NDVI image locally as: %s\n", outname.c_str());
+			//fprintf(stderr, "Saved processed image locally as: %s\n", outname.c_str());
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
-		fprintf(stderr, "Caught exception attempting to save processed NDVI jpg locally to %s: %s", outname.c_str(), ex.what());
+		fprintf(stderr, "Caught exception attempting to save processed jpg locally to %s: %s", outname.c_str(), ex.what());
 	}
 
 	// debug
@@ -837,7 +864,7 @@ void SenteraDouble4k::sendImage(int quality) {
 
 	
 	
-	// transmit processed NDVI jpg
+	// transmit processed jpg
 	int messageLen;
 	switch (TRANS_MODE) {
 		case fullFile: messageLen = trans.HEADER_SIZE + IMG_FILENAME_LEN + processed_jpegSize; break;
@@ -855,8 +882,8 @@ void SenteraDouble4k::sendImage(int quality) {
 
 	// add in header: length, img width, img height
 	Serializer::serializeInt(transBuf, messageLen);
-	Serializer::serializeInt(transBuf + 4, width);
-	Serializer::serializeInt(transBuf + 8, height);
+	Serializer::serializeInt(transBuf + 4, processedSize.x);
+	Serializer::serializeInt(transBuf + 8, processedSize.y);
 	Serializer::serializeFloat(transBuf + 12, sensor_data[imgReadyID - 1].inv_ev); //Serialize float to 4 bytes inverter ev
 	Serializer::serializeFloat(transBuf + 16, sensor_data[imgReadyID - 1].iso);  //Serialize float to 4 bytes iso
 	Serializer::serializeInt(transBuf + 20, imgReadyID);
@@ -912,6 +939,6 @@ void SenteraDouble4k::sendImage(int quality) {
 	//delete[] transBuf;
 	
 	// debug
-	//printf("Transmitted NDVI Image jpg\n\n");
+	//printf("Transmitted jpg\n\n");
 }
 
