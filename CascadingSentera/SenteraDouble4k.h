@@ -49,7 +49,7 @@ public:
 	static const TransmitMode TRANS_MODE = fullFile;
 	static const ProcessMode PROCESS_MODE = quarterSample;
 	static const Toggle DEBUG_MODE = off;
-	static const Toggle DEMO_MODE = on;
+	static const bool DEMO_MODE = true;
 private:
 	// class variables
 	static const double FOV_WIDTH_RATIO = 0.3333;
