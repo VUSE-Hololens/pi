@@ -816,9 +816,9 @@ void SenteraDouble4k::sendImage(int quality) {
 		printf("Attempting to crop img data. FOV ratio: %f x %f. i_start: %d, i_end: %d, j_start: %d, j_end: %d.\n", 
 			FOV_WIDTH_RATIO, FOV_HEIGHT_RATIO, i_start, i_end, j_start, j_end);
 
-		for (int i = i_start; i = i_end; ++i)
+		for (int i = i_start; i < i_end; i++)
 		{
-			for (int j = j_start; j < j_end; ++j)
+			for (int j = j_start; j < j_end; j++)
 			{
 				//old_loc = i * processedSize.x + j;
 				old_loc = i * full_fov_width + j;
