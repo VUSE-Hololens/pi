@@ -799,9 +799,7 @@ void SenteraDouble4k::sendImage(int quality) {
 
 	//Crop the uncompressed image for faster demonstrations
 	if (DEMO_MODE)
-	{
-		printf("Attempting to crop img data. FOV ratio: %d x %d.\n", FOV_WIDTH_RATIO, FOV_HEIGHT_RATIO);
-		
+	{	
 		int full_fov_width = processedSize.x;
 		int full_fov_height = processedSize.y;
 		processedSize.x = (int)(full_fov_width * FOV_WIDTH_RATIO);
@@ -814,20 +812,24 @@ void SenteraDouble4k::sendImage(int quality) {
 		int j_end = j_start + processedSize.x;
 		int old_loc;
 		int new_loc = 0;
+
+		printf("Attempting to crop img data. FOV ratio: %f x %f. i_start: %d, i_end: %d, j_start: %d, j_end: %d.\n", 
+			FOV_WIDTH_RATIO, FOV_HEIGHT_RATIO, i_start, i_end, j_start, j_end);
+
 		for (int i = i_start; i = i_end; ++i)
 		{
 			for (int j = j_start; j < j_end; ++j)
 			{
-				old_loc = i * processedSize.x + j;
+				//old_loc = i * processedSize.x + j;
+				old_loc = i * full_fov_width + j;
 				processed_data[new_loc] = full_fov_data[old_loc];
 				++new_loc;
 			}
 		}
-
 	}
 
 	// debug
-	//fprintf(stderr, "Processed image data: %s\n", filename);
+	fprintf(stderr, "Processed image data: %s. Now %d x %d.\n", filename, processedSize.x, processedSize.y);
 
 	// save processed jpg locally
 	uint8_t* processed_jpegBuf = nullptr;
