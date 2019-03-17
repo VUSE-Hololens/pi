@@ -800,6 +800,8 @@ void SenteraDouble4k::sendImage(int quality) {
 	//Crop the uncompressed image for faster demonstrations
 	if (DEMO_MODE)
 	{
+		printf("Attempting to crop img data. FOV ratio: %d x %d.\n", FOV_WIDTH_RATIO, FOV_HEIGHT_RATIO);
+		
 		int full_fov_width = processedSize.x;
 		int full_fov_height = processedSize.y;
 		processedSize.x = (int)(full_fov_width * FOV_WIDTH_RATIO);
