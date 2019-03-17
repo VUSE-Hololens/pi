@@ -642,7 +642,7 @@ int SenteraDouble4k::processImage(int cam) {
 			fprintf(stderr, "Error saving sentera jpg locally to %s... Camera: %d: %s\n", outname.c_str(), cam, strerror(errno));
 		}
 		else {
-			fprintf(stderr, "Successfully saved downloaded sentera .jpg locally to %s, Camera ID: %d\n", outname.c_str(), cam);
+			fprintf(stderr, "Saved downloaded jpg to %s, camera ID: %d\n", outname.c_str(), cam);
 		}
 	}
 	catch (std::ofstream::failure const &ex) {
@@ -813,14 +813,13 @@ void SenteraDouble4k::sendImage(int quality) {
 		int old_loc;
 		int new_loc = 0;
 
-		printf("Attempting to crop img data. FOV ratio: %f x %f. i_start: %d, i_end: %d, j_start: %d, j_end: %d.\n", 
-			FOV_WIDTH_RATIO, FOV_HEIGHT_RATIO, i_start, i_end, j_start, j_end);
+		/*printf("Attempting to crop img data. FOV ratio: %f x %f. i_start: %d, i_end: %d, j_start: %d, j_end: %d.\n", 
+			FOV_WIDTH_RATIO, FOV_HEIGHT_RATIO, i_start, i_end, j_start, j_end);*/
 
 		for (int i = i_start; i < i_end; i++)
 		{
 			for (int j = j_start; j < j_end; j++)
 			{
-				//old_loc = i * processedSize.x + j;
 				old_loc = i * full_fov_width + j;
 				processed_data[new_loc] = full_fov_data[old_loc];
 				++new_loc;
@@ -829,7 +828,7 @@ void SenteraDouble4k::sendImage(int quality) {
 	}
 
 	// debug
-	fprintf(stderr, "Processed image data: %s. Now %d x %d.\n", filename, processedSize.x, processedSize.y);
+	//fprintf(stderr, "Processed image data: %s. Now %d x %d.\n", filename, processedSize.x, processedSize.y);
 
 	// save processed jpg locally
 	uint8_t* processed_jpegBuf = nullptr;
@@ -908,8 +907,8 @@ void SenteraDouble4k::sendImage(int quality) {
 	
 
 	// transmit
-	fprintf(stderr, "Attempting transmission to Hololens (%s)... Trans. mode: %s, Trans. size (bytes): %d\n", 
-		filename, TRANS_MODE_NAMES[TRANS_MODE], messageLen);
+	fprintf(stderr, "Attempting transmission to Hololens (%s, %dx%d)... Trans. mode: %s, Trans. size (bytes): %d.\n", 
+		filename, processedSize.x, processedSize.y, TRANS_MODE_NAMES[TRANS_MODE], messageLen);
 	if (trans.hasConnection()) {
 		trans.transmit((char*)transBuf, messageLen);
 	}

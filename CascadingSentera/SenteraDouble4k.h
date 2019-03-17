@@ -52,8 +52,8 @@ public:
 	static const bool DEMO_MODE = true;
 private:
 	// class variables
-	const double FOV_WIDTH_RATIO = 0.3333;
-	const double FOV_HEIGHT_RATIO = 0.4104;
+	const double FOV_WIDTH_RATIO = 0.5;
+	const double FOV_HEIGHT_RATIO = 0.475;
 	static const int BUFLEN = 512;											// Buffer length
 	static const int IMG_FILENAME_LEN = 48;
 	static const int IMG_FILENAME_DIR_LEN = 4;								// length of leading directory in img filepath
